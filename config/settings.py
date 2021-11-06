@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-c6t0j1ps%x=5%1nuggr7(#1j62uc$56aju2u_fgb5f_y4=*224
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -42,6 +42,9 @@ INSTALLED_APPS = [
     "graphene_django",
     'rest_framework',
     'rest_framework.authtoken',
+    "graphene_django",
+    'graphql_jwt.refresh_token.apps.RefreshTokenConfig',
+    "graphql_auth",
     'drf_yasg',
     'djoser',
     'django_filters',
@@ -173,4 +176,32 @@ REST_FRAMEWORK = {
 DJOSER = {
     'SEND_ACTIVATION_EMAIL': False,
     'SERIALIZERS': {},
+}
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "graphql_auth.backends.GraphQLAuthBackend",
+]
+
+GRAPHQL_AUTH = {
+    'LOGIN_ALLOWED_FIELDS': ['phone', 'email'],
+    'REGISTER_MUTATION_FIELDS': ['phone', 'email'],
+    'UPDATE_MUTATION_FIELDS':[],
+    'USER_NODE_EXCLUDE_FIELDS' : ["password"]
+}
+
+GRAPHQL_JWT = {
+    'JWT_VERIFY_EXPIRATION': False,
+    'JWT_LONG_RUNNING_REFRESH_TOKEN': True,
+    # 'JWT_AUTH_HEADER_PREFIX' : "IAGP_TOKEN"
+}
+
+GRAPHENE = {
+    "ATOMIC_MUTATIONS": True,
+    "SUBSCRIPTION_PATH": "/ws/graphql",
+    "DJANGO_CHOICE_FIELD_ENUM_V3_NAMING": True,
+    # 'SCHEMA': 'config.schema.schema',  # this file doesn't exist yet
+    'MIDDLEWARE': [
+        'graphql_jwt.middleware.JSONWebTokenMiddleware',
+    ],
 }

@@ -24,6 +24,8 @@ class Routing(BaseModel):
         "where from"), on_delete=models.CASCADE, related_name="whereFrom")
     whreTo = models.ForeignKey(CoverCity, verbose_name=_(
         "where to"), on_delete=models.CASCADE, related_name="whreTo")
+    def __str__(self) -> str:
+        return f"{self.whereFrom} -- {self.whreTo}"
 
 
 class PointOfSale(BaseModel):
@@ -50,10 +52,15 @@ class PointOfSaleWorker(BaseModel):
 
 
 class Journey(BaseModel):
+    DEVISE = [
+        ("CDF","CDF"),
+        ("USD", "USD")
+    ]
     company = models.ForeignKey(
         Company, related_name="journey", on_delete=models.CASCADE)
     numJourney = models.CharField(_("number of journey"), max_length=50)
     price = models.IntegerField(_("price"))
+    devise = models.CharField(_("money devise"), max_length=5, choices=DEVISE, default="CDF")
     dateDeparture = models.DateField(_("date of departure"))
     dateReturn = models.DateField(_("date of departure"))
     hoursDeparture = models.TimeField(_("hours of departure"))
@@ -68,4 +75,4 @@ class Journey(BaseModel):
 
     @property
     def is_direct(self) -> bool:
-        return self.routing.count() > 0
+        return self.routing.count() > 1

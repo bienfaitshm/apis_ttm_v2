@@ -10,9 +10,9 @@ from apps.dash.models.transport import Journey, Routing
 class JourneyClientFolder(BaseModel):
     number = models.CharField(_("number folder"), unique=True, max_length=200)
     session = models.CharField(
-        _("session"), max_length=200, blank=True, null=True)
+        _("session"), max_length=200, blank=True, null=True, default=None)
     client = models.ForeignKey(
-        Client, verbose_name=_("client"), related_name="folder", on_delete=models.CASCADE)
+        Client, verbose_name=_("client"), related_name="folder", on_delete=models.CASCADE, null=True)
 
     def __str__(self) -> str:
         return self.number
@@ -65,6 +65,8 @@ class PlaceReserved(BaseModel):
     passenger = models.ForeignKey(Passenger, verbose_name=_(
         "passenger"), related_name="passengers", on_delete=models.CASCADE)
     expired = models.BooleanField(_("expiration"), default=False)
+    journey = models.ForeignKey(Journey, verbose_name=_(
+        "journey"), on_delete=models.CASCADE, related_name="journey_seats")
     routing = models.ManyToManyField(Routing, verbose_name=_(
         "routing"), related_name="seats_on_route")
 

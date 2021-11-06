@@ -66,13 +66,17 @@ class PointOfSaleWorkerSerializer(serializers.ModelSerializer):
         
 
 class JourneySerializer(serializers.ModelSerializer):
+    direct = serializers.BooleanField(source="is_direct", default=False, read_only=True)
     class Meta:
         model = Journey
         fields = "__all__"
 
 
-class JourneyMoreInfoSerializer(serializers.ModelSerializer):
+class JourneyMoreInfoSerializer(JourneySerializer):
     routing = RoutingMoreInfoSerializer(many=True)
-    class Meta:
-        model = Journey
-        fields = "__all__"
+    class Meta(JourneySerializer.Meta):
+        pass
+    
+    def is_direct(self, instance):
+        print("is_direct :", instance.is_direct)
+        return True

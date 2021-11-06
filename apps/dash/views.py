@@ -43,6 +43,7 @@ class JourneyView(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter,
                        IsComponyFilterBackend, SearchWhereFromToFilterBackend]
     search_fields = ['numJourney', 'price']
+    
     def get_serializer_class(self):
         if self.action == "list" or self.action =="retrieve":
             return JourneyMoreInfoSerializer

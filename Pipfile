@@ -54,7 +54,10 @@ Markdown = "==3.3.4"
 MarkupSafe = "==2.0.1"
 PyJWT = "==2.1.0"
 Rx = "==1.6.1"
-Django = "==3.2.5"
+Django = "==3.2.3"
+django-graphql-auth = "==0.3.16"
+django-graphql-jwt = "==0.3.0"
+graphene-file-upload = "==1.3.0"
 
 [dev-packages]
 
