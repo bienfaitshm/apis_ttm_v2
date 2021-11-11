@@ -1,7 +1,7 @@
 import graphene
 from apps.dash.schema import Query as DashQueries
-
-class Query(DashQueries, graphene.ObjectType):
+from apps.clients.schema import Query as ClientQueries, Mutation as ClientMutation
+class Query(DashQueries, ClientQueries, graphene.ObjectType):
     hello = graphene.String()
 
     def resolve_hello(self, info):
@@ -9,7 +9,7 @@ class Query(DashQueries, graphene.ObjectType):
         return "hello"
 
 
-class Mutation(graphene.ObjectType):
+class Mutation(ClientMutation, graphene.ObjectType):
     pass
 
 
@@ -19,4 +19,4 @@ class Subscription(graphene.ObjectType):
 
 types = []
 
-schema = graphene.Schema(query=Query,  types=types)
+schema = graphene.Schema(query=Query, mutation=Mutation, types=types)

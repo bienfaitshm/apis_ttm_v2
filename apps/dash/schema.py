@@ -4,8 +4,10 @@ from graphene_django.filter import DjangoFilterConnectionField
 from .types import (
     CarsType, SeatType, CabinePlaneType, CompanyType,
     EmployeType,CoverCityType,JourneyType,
-    PointOfSaleType,PointOfSaleWorkerType
+    PointOfSaleType,PointOfSaleWorkerType, RoutingType
 )
+
+
 
 from .models import (
     CabinePlane,PointOfSale,Cars,Company,
@@ -40,4 +42,11 @@ class Query(graphene.ObjectType):
 
     employe = relay.Node.Field(EmployeType)
     employes = DjangoFilterConnectionField(EmployeType)
+
+    routing = relay.Node.Field(RoutingType)
+    routings = DjangoFilterConnectionField(RoutingType)
+
+
+class Mutation(graphene.ObjectType):
+    pass
     

@@ -5,6 +5,14 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
+from django.views.decorators.csrf import csrf_exempt
+from graphql_jwt.decorators import jwt_cookie
+from django.conf.urls.static import static
+from django.conf import settings
+from .schemas import schema
+from graphene_django.views import GraphQLView
+
+
 schema_view = get_schema_view(
     openapi.Info(
         title="Ttm API",
@@ -36,4 +44,7 @@ urlpatterns = [
     # main
     path("", include("apps.dash.urls")),
     path("", include("apps.clients.urls")),
-]
+    path('graphql/', csrf_exempt(
+            jwt_cookie(
+                GraphQLView.as_view(graphiql=True, schema=schema)))),
+]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

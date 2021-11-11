@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext as _
-
+import datetime
 from apps.account.models import Company, Employe
 from utils.base_model import BaseModel
 from apps.dash.models.technique import Cars
@@ -76,3 +76,15 @@ class Journey(BaseModel):
     @property
     def is_direct(self) -> bool:
         return self.routing.count() > 1
+    
+    @property
+    def exprired(self) -> bool:
+        now = datetime.datetime.now()
+        day_expired = self.dateDeparture > now.date()
+        hours_expired = (self.hoursDeparture.hour > now.hour) and (self.hoursDeparture.nimute > now.nimute)
+        return not (hours_expired and day_expired)
+    
+    def number_places_taken(self):
+        if hasattr(self,"journey_seats"):
+            return self.journey_seats.filter(seat__type="SEAT").count()
+        return 0

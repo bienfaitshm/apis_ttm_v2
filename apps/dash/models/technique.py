@@ -23,6 +23,12 @@ class CabinePlane(BaseModel):
     def __str__(self):
         return f"{self.name}"
 
+    @property
+    def number_of_seats(self):
+        if hasattr(self,"seats"):
+            return self.seats.filter(type = "SEAT").count()
+        return 0
+
 
 class Seat(BaseModel):
     TYPE = [
@@ -38,6 +44,13 @@ class Seat(BaseModel):
 
     def __str__(self) -> str:
         return f"{self.idConfigCab} {self.name}"
+    
+    def get_seats(self):
+        return self.objects.filter(type="SEAT")
+    
+    @property
+    def number_of_seats(self):
+        return self.get_seats().count()
 
 
 class Cars(BaseModel):

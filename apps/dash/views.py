@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from rest_framework import filters
-from .filters import IsComponyFilterBackend, SearchWhereFromToFilterBackend
+from .filters.filters import IsComponyFilterBackend, SearchWhereFromToFilterBackend
 
 from .serializers import (
     CarSerializer, CoverCitySerializer, JourneyMoreInfoSerializer, JourneySerializer, PointOfSaleSerializer,
