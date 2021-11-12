@@ -1,9 +1,12 @@
+import datetime
 from rest_framework import serializers
+from django.utils.crypto import get_random_string
 from .models import (
     FretPassenger, JourneyClientFolder, Passenger, SeletectedJourney, PlaceReserved,
     JourneySession
 )
 
+KEY = "1234567890qwertyuiopasdfghjklzxcvbnm<>,./?:;+_)(*&^%$#@!"
 
 class FretPassengerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -18,15 +21,37 @@ class JourneyClientFolderSerializer(serializers.ModelSerializer):
 
 
 class PassengerSerializer(serializers.ModelSerializer):
+    type = serializers.CharField(source="typeUser")
+    sexe = serializers.CharField(source="gender")
     class Meta:
         model = Passenger
         fields = "__all__"
+        
 
 
 class SeletectedJourneySerializer(serializers.ModelSerializer):
+    session_key = serializers.CharField(source="session.key", read_only=True)
     class Meta:
         model = SeletectedJourney
         fields = "__all__"
+        read_only_fields =["folder","session"]
+    
+    def create(self, validated_data):
+        key =  get_random_string(10,KEY)
+        date_expiration = datetime.datetime.now().date() + datetime.timedelta(days=2)
+        request = self.context.get("request")
+        cookie = request.headers.get("Cookie")
+        folder = self.get_JourneyClientFolder(cookie)
+        session = JourneySession.objects.create(key=key, dateExpiration = date_expiration)
+        valide_data = {**validated_data, "folder":folder, "session":session}
+        return super().create(valide_data)
+
+    def get_JourneyClientFolder(self, session):
+        num = get_random_string(5,"1234567890AB")
+        try:
+            return JourneyClientFolder.objects.get(session = session)
+        except JourneyClientFolder.DoesNotExist:
+            return JourneyClientFolder.objects.create(session = session, number= num)
 
 
 class PlaceReservedSerializer(serializers.ModelSerializer):

@@ -49,6 +49,7 @@ class SelectSeatOfPassengerStepForMutation(SerializerMutation):
 class PassengerMutation(SerializerMutation):
     class Meta:
         serializer_class = PassengerSerializer
+        exclude_fields = ["gender","typeUser"]
 
 class SeletectedJourneyMutation(SerializerMutation):
     class Meta:

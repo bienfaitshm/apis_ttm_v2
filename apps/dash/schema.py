@@ -1,5 +1,4 @@
 import graphene
-from graphene import relay
 from graphene_django.filter import DjangoFilterConnectionField
 from .types import (
     CarsType, SeatType, CabinePlaneType, CompanyType,
@@ -15,35 +14,37 @@ from .models import (
     PointOfSaleWorker,Routing,Seat
 )
 
+from utils.node import CustomNode
+
 class Query(graphene.ObjectType):
-    car = relay.Node.Field(CarsType)
+    car =CustomNode.Field(CarsType)
     cars = DjangoFilterConnectionField(CarsType)
 
-    seat = relay.Node.Field(SeatType)
+    seat =CustomNode.Field(SeatType)
     seats = DjangoFilterConnectionField(SeatType)
 
-    cabine_plane = relay.Node.Field(CabinePlaneType)
+    cabine_plane =CustomNode.Field(CabinePlaneType)
     cabine_planes = DjangoFilterConnectionField(CabinePlaneType)
 
-    company = relay.Node.Field(CompanyType)
+    company =CustomNode.Field(CompanyType)
     companies = DjangoFilterConnectionField(CompanyType)
 
-    cover_city = relay.Node.Field(CoverCityType)
+    cover_city =CustomNode.Field(CoverCityType)
     cover_cities = DjangoFilterConnectionField(CoverCityType)
 
-    journey = relay.Node.Field(JourneyType)
+    journey =CustomNode.Field(JourneyType)
     journies = DjangoFilterConnectionField(JourneyType)
 
-    pos = relay.Node.Field(PointOfSaleType)
+    pos =CustomNode.Field(PointOfSaleType)
     poss = DjangoFilterConnectionField(PointOfSaleType)
 
-    pos_worker = relay.Node.Field(PointOfSaleWorkerType)
+    pos_worker =CustomNode.Field(PointOfSaleWorkerType)
     pos_workers = DjangoFilterConnectionField(PointOfSaleWorkerType)
 
-    employe = relay.Node.Field(EmployeType)
+    employe =CustomNode.Field(EmployeType)
     employes = DjangoFilterConnectionField(EmployeType)
 
-    routing = relay.Node.Field(RoutingType)
+    routing =CustomNode.Field(RoutingType)
     routings = DjangoFilterConnectionField(RoutingType)
 
 

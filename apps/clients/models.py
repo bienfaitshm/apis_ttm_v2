@@ -47,7 +47,7 @@ class Passenger(PersonalMixin):
         ("baby", _("Baby")),
     ]
 
-    GENDER = [
+    GENDERS = [
         ("F", _("Woman")),
         ("H", _("Man")),
         ("I", _("Indeterminate")),
@@ -55,7 +55,7 @@ class Passenger(PersonalMixin):
 
     journey = models.ForeignKey(SeletectedJourney, verbose_name=_(
         "journey"), on_delete=models.CASCADE, related_name="passengers")
-    gender = models.CharField(_("gender"), max_length=10, choices=GENDER)
+    gender = models.CharField(_("gender"), max_length=10, choices=GENDERS)
     typeUser = models.CharField(_("type of user"), max_length=20, choices=TYPE)
 
 
