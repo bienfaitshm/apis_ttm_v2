@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import gettext as _
 import datetime
 from apps.account.models import Company, Employe
+from apps.dash.utils import get_routes_to_string
 from utils.base_model import BaseModel
 from apps.dash.models.technique import Cars
 
@@ -88,3 +89,8 @@ class Journey(BaseModel):
         if hasattr(self,"journey_seats"):
             return self.journey_seats.filter(seat__type="SEAT").count()
         return 0
+    
+    @property
+    def route_names(self):
+        routes = self.routing.all()
+        return get_routes_to_string(routes)

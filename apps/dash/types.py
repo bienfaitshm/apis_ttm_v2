@@ -69,6 +69,7 @@ class JourneyType(UserMixin, DjangoObjectType):
     number_of_places_reserved = graphene.Int()
     is_direct = graphene.Boolean()
     exprired = graphene.Boolean()
+    route_names = graphene.String()
     class Meta:
         model = Journey
         interfaces = (node.CustomNode,)
