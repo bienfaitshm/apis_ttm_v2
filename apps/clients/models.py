@@ -33,7 +33,7 @@ class SeletectedJourney(BaseModel):
     journey = models.ForeignKey(Journey, verbose_name=_(
         "journey"), on_delete=models.CASCADE, related_name="journey_selected")
     session = models.ForeignKey(JourneySession, verbose_name=_(
-        "session"), on_delete=models.CASCADE, related_name="session_journey_selected")
+        "session"), on_delete=models.CASCADE, unique=True,related_name="session_journey_selected")
     numberAdult = models.IntegerField(_("number of adult"), default=1)
     numberChild = models.IntegerField(_("number of child"), default=0)
     numberBaby = models.IntegerField(_("number of baby"), default=0)

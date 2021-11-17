@@ -129,11 +129,11 @@ class PersonalMixin(BaseModel):
         ordering = ['firstname']
 
     def get_full_name(self):
-        return f"{self.prenom} {self.nom} {self.postnom}"
+        return f"{self.firstname} {self.middlename} {self.lastname}"
 
     def __str__(self):
         """ """
-        return self.nom
+        return self.firstname
 
 
 class Employe (PersonalMixin):

@@ -39,7 +39,7 @@ class Query(graphene.ObjectType):
 
 class Mutation(graphene.ObjectType):
     # frets = FretPassengerMutation.Field()
-    # step_3 = InputPassengerInfoStepThreeMutation.Field()
+    reserve_info_passengers = InputPassengerInfoStepThreeMutation.Field()
     # client_folder = JourneyClientFolderMutation.Field()
     # session = JourneySessionMutation.Field()
     passengers = PassengerMutation.Field()
