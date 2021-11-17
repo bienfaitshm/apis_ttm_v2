@@ -102,18 +102,14 @@ class SetNumberOfPassengerStepTwoSerializer(serializers.Serializer):
         return instance
 
 
-def session_validators(value):
-    print("session", value)
-    # raise serializers.ValidationError('Not a multiple of ten')
+
 class InputPassengerInfoStepThreeSerializer(serializers.Serializer):
     journey_selected = SeletectedJourneySerializer(read_only=True)
     passengers = PassengerSerializer(many=True, write_only=True)
     session = fields.SessionField(
-        required = True, write_only=True, 
-        validators= [session_validators], 
+        required = True, write_only=True,
         queryset = SeletectedJourney.objects.all()
     )
-    # session = serializers.CharField(required = True, write_only=True, validators= [session_validators])
     class Meta:
         model = SeletectedJourney
         read_only_fields = ["journey_selected"]
