@@ -1,0 +1,25 @@
+mode de payement!
+    cash (basic)
+    integration des apis
+        paypal (demo)
+        mobile moneys
+
+*3em ends user
+    agent pos (worker)
+    client
+    dealer (partener):
+
+
+pour cette semaine
+___________________
+
+1. integrations le system du paie
+    - cash
+    - billeterie
+    - historiques de paiement (log)
+    - documentation
+2. integrations apis et dash front
+    -
+    -
+    -
+3.  
