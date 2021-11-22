@@ -57,9 +57,16 @@ class SeletectedJourneySerializer(serializers.ModelSerializer):
 
 
 class PlaceReservedSerializer(serializers.ModelSerializer):
+    session = serializers.CharField(max_length=100, write_only=True)
     class Meta:
         model = PlaceReserved
         fields = "__all__"
+        read_only_fields =["journey","expired"]
+
+    def create(self, validated_data):
+        model = self.Meta.model
+        print("#data",validated_data)
+        return model.objects.none()
 
 
 class JourneySessionSerializer(serializers.ModelSerializer):
