@@ -83,7 +83,7 @@ class Journey(BaseModel):
 
     @property
     def is_direct(self) -> bool:
-        return self.routes.count() > 1
+        return self.routes.count() <= 1
     
     @property
     def exprired(self) -> bool:
@@ -100,7 +100,8 @@ class Journey(BaseModel):
     @property
     def route_names(self):
         routes = self.routes.all()
-        return "get_routes_to_string(routes)"
+        route_name = get_routes_to_string(routes)
+        return _("non route names") if route_name == "" else route_name
 
 class RouteJourney(BaseModel):
     route = models.ForeignKey(Routing, verbose_name=_(

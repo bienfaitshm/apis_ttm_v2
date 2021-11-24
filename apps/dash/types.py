@@ -7,7 +7,8 @@ from utils.user_mixin import UserMixin
 from .models import (
     CabinePlane,PointOfSale,Cars,Company,
     CoverCity,Employe,Journey,
-    PointOfSaleWorker,Routing,Seat
+    PointOfSaleWorker,Routing,Seat,
+    RouteJourney
 )
 
 # class MixinType(UserMixin, DjangoObjectType):
@@ -100,6 +101,13 @@ class RoutingType(UserMixin, DjangoObjectType):
             'whereFrom__town':['exact', 'icontains', 'istartswith'],
             'whreTo__town':['exact', 'icontains', 'istartswith'],
         }
+        fields = "__all__"
+
+class RouteJourneyType(UserMixin, DjangoObjectType):
+    class Meta:
+        model = RouteJourney
+        interfaces = (node.CustomNode,)
+        filter_fields = []
         fields = "__all__"
 
 class SeatType(UserMixin, DjangoObjectType):

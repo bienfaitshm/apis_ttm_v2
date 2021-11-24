@@ -99,8 +99,12 @@ class ValidationPayment(BaseModel):
     def __str__(self) -> str:
         return f"{self.costTotal} {self.confirmed}"
 
+
 @receiver(post_save, sender=SeletectedJourney)
-def recevingaction_signale(sender, instance, created, **kwargs):
+def creation_validation_signal(sender, instance, created, **kwargs):
+    """
+        the signal to automatise the creation of Validation of payment!
+    """
     if created:
         ValidationPayment.objects.create(
             journey_selected = instance,

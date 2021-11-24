@@ -3,7 +3,7 @@ from graphene_django.filter import DjangoFilterConnectionField
 from .types import (
     CarsType, SeatType, CabinePlaneType, CompanyType,
     EmployeType,CoverCityType,JourneyType,
-    PointOfSaleType,PointOfSaleWorkerType, RoutingType
+    PointOfSaleType,PointOfSaleWorkerType, RoutingType, RouteJourneyType
 )
 
 
@@ -46,6 +46,9 @@ class Query(graphene.ObjectType):
 
     routing =CustomNode.Field(RoutingType)
     routings = DjangoFilterConnectionField(RoutingType)
+
+    route_journey = CustomNode.Field(RouteJourneyType)
+    routes_jounies = DjangoFilterConnectionField(RouteJourneyType)
 
 
 class Mutation(graphene.ObjectType):
