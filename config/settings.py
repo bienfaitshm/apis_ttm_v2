@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'graphql_jwt.refresh_token.apps.RefreshTokenConfig',
-    "graphql_auth",
+    # "graphql_auth",
     'drf_yasg',
     'djoser',
     'django_filters',
@@ -179,7 +179,7 @@ DJOSER = {
 
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
-    "graphql_auth.backends.GraphQLAuthBackend",
+    # "graphql_auth.backends.GraphQLAuthBackend",
 ]
 
 GRAPHQL_AUTH = {
