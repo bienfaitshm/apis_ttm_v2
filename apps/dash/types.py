@@ -77,8 +77,8 @@ class JourneyType(UserMixin, DjangoObjectType):
             'company__nom': ['exact', 'icontains', 'istartswith'],
             'company__code': ['exact'],
             'company__id': ['exact'],
-            'routing__whereFrom__town':['exact', 'icontains', 'istartswith'],
-            'routing__whreTo__town':['exact', 'icontains', 'istartswith'],
+            'routes__whereFrom__town':['exact', 'icontains', 'istartswith'],
+            'routes__whreTo__town':['exact', 'icontains', 'istartswith'],
         }
         fields = "__all__"
     

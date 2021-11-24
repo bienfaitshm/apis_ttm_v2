@@ -7,6 +7,11 @@ from utils.base_model import BaseModel
 from apps.dash.models.technique import Cars
 
 
+DEVISE = [
+    ("CDF","CDF"),
+    ("USD", "USD")
+]
+
 class CoverCity(BaseModel):
     company = models.ManyToManyField(Company, related_name="cities")
     town = models.CharField(_("cover city"), max_length=200)
@@ -53,10 +58,6 @@ class PointOfSaleWorker(BaseModel):
 
 
 class Journey(BaseModel):
-    DEVISE = [
-        ("CDF","CDF"),
-        ("USD", "USD")
-    ]
     company = models.ForeignKey(
         Company, related_name="journey", on_delete=models.CASCADE)
     numJourney = models.CharField(_("number of journey"), max_length=50)
@@ -68,15 +69,21 @@ class Journey(BaseModel):
     hoursReturn = models.TimeField(_("hours of return"))
     cars = models.ForeignKey(Cars, verbose_name=_(
         "cars"), on_delete=models.CASCADE, related_name="cars_journies")
-    routing = models.ManyToManyField(
-        Routing, verbose_name=_("routing"), related_name="routing_journies")
+    # routing = models.ManyToManyField(
+    #     Routing, verbose_name=_("routing"), related_name="routing_journies")
+    
+    routes = models.ManyToManyField(
+        Routing,
+        through='RouteJourney',
+        through_fields=('journey', 'route'),
+    )
 
     def __str__(self) -> str:
         return f"{self.numJourney} {self.company}"
 
     @property
     def is_direct(self) -> bool:
-        return self.routing.count() > 1
+        return self.routes.count() > 1
     
     @property
     def exprired(self) -> bool:
@@ -92,5 +99,15 @@ class Journey(BaseModel):
     
     @property
     def route_names(self):
-        routes = self.routing.all()
-        return get_routes_to_string(routes)
+        routes = self.routes.all()
+        return "get_routes_to_string(routes)"
+
+class RouteJourney(BaseModel):
+    route = models.ForeignKey(Routing, verbose_name=_(
+        "routes"), on_delete=models.CASCADE, related_name="routes")
+    journey = models.ForeignKey(Journey, verbose_name=_(
+        "journey"), on_delete=models.CASCADE, related_name="journey_routes")
+    price = models.IntegerField(_("price"))
+    devise = models.CharField(_("money devise"), max_length=5, choices=DEVISE, default="CDF")
+    def __str__(self) -> str:
+        return f"{self.key} : {self.user} {self.key}"
