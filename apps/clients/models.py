@@ -4,7 +4,10 @@ from django.utils.translation import gettext as _
 from utils.base_model import BaseModel
 from apps.account.models import Client, PersonalMixin
 from apps.dash.models.technique import Seat
-from apps.dash.models.transport import Journey, Routing
+from apps.dash.models.transport import Journey, Routing, RouteJourney
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class JourneyClientFolder(BaseModel):
@@ -27,13 +30,14 @@ class JourneySession(BaseModel):
         return self.key
 
 
+
 class SeletectedJourney(BaseModel):
     folder = models.ForeignKey(JourneyClientFolder, verbose_name=_(
         "folder"), on_delete=models.CASCADE, related_name="folder_journey_selected")
     journey = models.ForeignKey(Journey, verbose_name=_(
         "journey"), on_delete=models.CASCADE, related_name="journey_selected")
-    session = models.ForeignKey(JourneySession, verbose_name=_(
-        "session"), on_delete=models.CASCADE, unique=True,related_name="session_journey_selected")
+    session = models.OneToOneField(JourneySession, verbose_name=_(
+        "session"), on_delete=models.CASCADE, related_name="session_journey_selected")
     numberAdult = models.IntegerField(_("number of adult"), default=1)
     numberChild = models.IntegerField(_("number of child"), default=0)
     numberBaby = models.IntegerField(_("number of baby"), default=0)
@@ -65,8 +69,8 @@ class PlaceReserved(BaseModel):
     passenger = models.ForeignKey(Passenger, verbose_name=_(
         "passenger"), related_name="passengers", on_delete=models.CASCADE)
     expired = models.BooleanField(_("expiration"), default=False)
-    journey = models.ForeignKey(Journey, verbose_name=_(
-        "journey"), on_delete=models.CASCADE, related_name="journey_seats")
+    journey = models.ForeignKey(RouteJourney, verbose_name=_(
+        "routes journey"), on_delete=models.CASCADE, related_name="journey_seats")
     routing = models.ManyToManyField(Routing, verbose_name=_(
         "routing"), related_name="seats_on_route")
 
@@ -80,3 +84,24 @@ class FretPassenger(BaseModel):
 
     def __str__(self) -> str:
         return f"{self.passenger} {self.code}"
+
+class ValidationPayment(BaseModel):
+    journey_selected = models.ForeignKey(
+        SeletectedJourney,
+        verbose_name=_("voyage selectionner"),
+        related_name="payment",
+        on_delete= models.CASCADE
+    )
+    provider = models.CharField(max_length=200, verbose_name="provider", help_text=_("provider determine the mode of payment"), default="CASH")
+    confirmed = models.BooleanField(verbose_name=_("confirmation"), default=False)
+    costTotal = models.CharField(max_length=200, null=True)
+    date_payment = models.DateTimeField(null=True)
+    def __str__(self) -> str:
+        return f"{self.costTotal} {self.confirmed}"
+
+@receiver(post_save, sender=SeletectedJourney)
+def recevingaction_signale(sender, instance, created, **kwargs):
+    if created:
+        ValidationPayment.objects.create(
+            journey_selected = instance,
+        )
