@@ -21,7 +21,7 @@ class CabinePlane(BaseModel):
         choices=TYPE_SEAT, max_length=10, default="SEAT")
 
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.name} {self.pk}"
 
     @property
     def number_of_seats(self):
@@ -43,7 +43,7 @@ class Seat(BaseModel):
     y = models.IntegerField(_("y"))
 
     def __str__(self) -> str:
-        return f"{self.idConfigCab} {self.name}"
+        return f" {self.pk} {self.idConfigCab} {self.name}"
     
     def get_seats(self):
         return self.objects.filter(type="SEAT")
@@ -51,6 +51,9 @@ class Seat(BaseModel):
     @property
     def number_of_seats(self):
         return self.get_seats().count()
+    
+    def __str__(self) -> str:
+        return f"{self.idConfigCab} {self.type} {self.pk}"
 
 
 class Cars(BaseModel):

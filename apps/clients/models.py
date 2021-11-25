@@ -70,9 +70,8 @@ class PlaceReserved(BaseModel):
         "passenger"), related_name="passengers", on_delete=models.CASCADE)
     expired = models.BooleanField(_("expiration"), default=False)
     journey = models.ForeignKey(RouteJourney, verbose_name=_(
-        "routes journey"), on_delete=models.CASCADE, related_name="journey_seats")
-    routing = models.ManyToManyField(Routing, verbose_name=_(
-        "routing"), related_name="seats_on_route")
+        "routes journey"), on_delete=models.CASCADE, related_name="journey_seats_reserved")
+    
 
 
 class FretPassenger(BaseModel):

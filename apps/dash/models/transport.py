@@ -76,10 +76,11 @@ class Journey(BaseModel):
         Routing,
         through='RouteJourney',
         through_fields=('journey', 'route'),
+        verbose_name=_("routing"), related_name="routing_journies"
     )
 
     def __str__(self) -> str:
-        return f"{self.numJourney} {self.company}"
+        return f"{self.pk} {self.numJourney} {self.company}"
 
     @property
     def is_direct(self) -> bool:
@@ -111,4 +112,7 @@ class RouteJourney(BaseModel):
     price = models.IntegerField(_("price"))
     devise = models.CharField(_("money devise"), max_length=5, choices=DEVISE, default="CDF")
     def __str__(self) -> str:
-        return f"{self.key} : {self.user} {self.key}"
+        return f"{self.pk} {self.route} : {self.journey}"
+    
+    def __str__(self) -> str:
+        return f"{self.pk} {self.route} {self.journey}"
