@@ -5,12 +5,27 @@ from utils import node
 from utils.user_mixin import UserMixin
 from .models import (
     JourneyClientFolder, JourneySession, SeletectedJourney, 
-    Passenger, PlaceReserved, FretPassenger
+    Passenger, PlaceReserved, FretPassenger, OtherInfoReservation, ValidationPayment
 )
 
 class JourneyClientFolderType(UserMixin, DjangoObjectType):
     class Meta:
         model = JourneyClientFolder
+        interfaces = (node.CustomNode,)
+        filter_fields = []
+        fields = "__all__"
+
+class OtherInfoReservationType(UserMixin, DjangoObjectType):
+    class Meta:
+        model = OtherInfoReservation
+        interfaces = (node.CustomNode,)
+        filter_fields = []
+        # fields = "__all__"
+        exclude = ("gender",)
+
+class ValidationPaymentType(UserMixin, DjangoObjectType):
+    class Meta:
+        model = ValidationPayment
         interfaces = (node.CustomNode,)
         filter_fields = []
         fields = "__all__"

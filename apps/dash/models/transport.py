@@ -20,7 +20,7 @@ class CoverCity(BaseModel):
     longitude = models.FloatField(_("latitude"), null=True, default=None)
 
     def __str__(self) -> str:
-        return self.town
+        return f"{self.town}: #{self.pk}"
 
 
 class Routing(BaseModel):
@@ -28,10 +28,10 @@ class Routing(BaseModel):
         Company, related_name="routing", on_delete=models.CASCADE)
     whereFrom = models.ForeignKey(CoverCity, verbose_name=_(
         "where from"), on_delete=models.CASCADE, related_name="whereFrom")
-    whreTo = models.ForeignKey(CoverCity, verbose_name=_(
-        "where to"), on_delete=models.CASCADE, related_name="whreTo")
+    whereTo = models.ForeignKey(CoverCity, verbose_name=_(
+        "where to"), on_delete=models.CASCADE, related_name="whereTo")
     def __str__(self) -> str:
-        return f"{self.whereFrom} -- {self.whreTo}"
+        return f"{self.pk}: {self.whereFrom} -- {self.whereTo}"
 
 
 class PointOfSale(BaseModel):
@@ -86,6 +86,13 @@ class Journey(BaseModel):
     def is_direct(self) -> bool:
         return self.routes.count() <= 1
     
+    def get_routes(self):
+        return self.routes.all()
+
+    def get_journey_routes(self):
+        if hasattr(self, "journey_routes"):
+            return self.journey_routes.all()
+    
     @property
     def exprired(self) -> bool:
         now = datetime.datetime.now()
@@ -100,7 +107,7 @@ class Journey(BaseModel):
     
     @property
     def route_names(self):
-        routes = self.routes.all()
+        routes = self.get_routes()
         route_name = get_routes_to_string(routes)
         return _("non route names") if route_name == "" else route_name
 

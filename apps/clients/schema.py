@@ -6,14 +6,14 @@ from graphene_django.filter.fields import DjangoFilterConnectionField
 
 from .types import (
     FretPassengerType, JourneyClientFolderType, JourneySessionType,
-    PassengerType, PlaceReservedType, SeletectedJourneyType
+    PassengerType, PlaceReservedType, SeletectedJourneyType, OtherInfoReservationType, ValidationPaymentType
 )
 
 from .mutation import (
     FretPassengerMutation, InputPassengerInfoStepThreeMutation,JourneyClientFolderMutation,
     JourneySessionMutation, PassengerMutation,PayementStepSixMutation,PlaceReservedMutation,
     SelectJourneyStepOneMutation, SelectSeatOfPassengerStepForMutation, SeletectedJourneyMutation,
-    SetFretStepFiveMutation,ValideStepFinalMutation
+    SetFretStepFiveMutation,ValideStepFinalMutation, OtherInfoReservationMutation, ValidationPaymentMutation
 )
 
 from utils.node import CustomNode
@@ -21,6 +21,12 @@ from utils.node import CustomNode
 class Query(graphene.ObjectType):
     fret_passenger = CustomNode.Field(FretPassengerType)
     fret_passengers = DjangoFilterConnectionField(FretPassengerType)
+
+    detail_info = CustomNode.Field(OtherInfoReservationType)
+    detail_infos = DjangoFilterConnectionField(OtherInfoReservationType)
+
+    validation_payment = CustomNode.Field(ValidationPaymentType)
+    validation_payments = DjangoFilterConnectionField(ValidationPaymentType)
 
     folder_client = CustomNode.Field(JourneyClientFolderType)
     folder_clients = DjangoFilterConnectionField(JourneyClientFolderType)
@@ -44,5 +50,7 @@ class Mutation(graphene.ObjectType):
     # session = JourneySessionMutation.Field()
     passengers = PassengerMutation.Field()
     reserve_place = PlaceReservedMutation.Field()
+    info_details = OtherInfoReservationMutation.Field()
+    valide_payement = ValidationPaymentMutation.Field()
     # select_journey_step1 = SelectJourneyStepOneMutation.Field()
     select_journey = SeletectedJourneyMutation.Field()

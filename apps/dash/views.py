@@ -4,11 +4,12 @@ from .filters.filters import IsComponyFilterBackend, SearchWhereFromToFilterBack
 
 from .serializers import (
     CarSerializer, CoverCitySerializer, JourneyMoreInfoSerializer, JourneySerializer, PointOfSaleSerializer,
-    PointOfSaleWorkerSerializer, RoutingMoreInfoSerializer, RoutingSerializer, SeatSerializer, CabinePlaneSerializer
+    PointOfSaleWorkerSerializer, RoutingMoreInfoSerializer, RoutingSerializer, SeatSerializer,
+    CabinePlaneSerializer, RouteJourneySerializer
 )
 from .models.technique import Cars, Seat, CabinePlane
 from .models.transport import (
-    CoverCity, Journey, PointOfSaleWorker, PointOfSale, Routing
+    CoverCity, Journey, PointOfSaleWorker, PointOfSale, Routing, RouteJourney
 )
 
 
@@ -61,6 +62,10 @@ class PointOfSaleView(viewsets.ModelViewSet):
     queryset = PointOfSale.objects.all()
     filter_backends = [IsComponyFilterBackend,]
 
+class RouteJourneyView(viewsets.ModelViewSet):
+    serializer_class =RouteJourneySerializer
+    queryset =RouteJourney.objects.all()
+    filter_backends = [IsComponyFilterBackend,]
 
 class RoutingView(viewsets.ModelViewSet):
     serializer_class = RoutingSerializer

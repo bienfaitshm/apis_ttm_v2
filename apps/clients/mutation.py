@@ -5,13 +5,29 @@ from .serialzers import (
     JourneySessionSerializer, PayementStepSixSerializer, PlaceReservedSerializer,SelectJourneyStepOneSerializer,
     SelectSeatOfPassengerStepForSerializer,
     PassengerSerializer, SeletectedJourneySerializer, SetFretStepFiveSerializer, SetNumberOfPassengerStepTwoSerializer,
-    ValideStepFinalSerializer
+    ValideStepFinalSerializer, OtherInfoReservationSerializer, ValidationPaymentSerializer
 )
 
 class FretPassengerMutation(SerializerMutation):
     class Meta:
         serializer_class =FretPassengerSerializer
         # exclude_fields = ["pub_type","visibility"]
+
+class FretPassengerMutation(SerializerMutation):
+    class Meta:
+        serializer_class =FretPassengerSerializer
+
+class OtherInfoReservationMutation(SerializerMutation):
+    class Meta:
+        serializer_class =OtherInfoReservationSerializer
+        exclude_fields = ["gender",]
+
+class ValidationPaymentMutation(SerializerMutation):
+    class Meta:
+        serializer_class = ValidationPaymentSerializer
+class FretPassengerMutation(SerializerMutation):
+    class Meta:
+        serializer_class =FretPassengerSerializer
 
 class InputPassengerInfoStepThreeMutation(SerializerMutation):
     class Meta:

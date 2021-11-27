@@ -79,7 +79,7 @@ class JourneyType(UserMixin, DjangoObjectType):
             'company__code': ['exact'],
             'company__id': ['exact'],
             'routes__whereFrom__town':['exact', 'icontains', 'istartswith'],
-            'routes__whreTo__town':['exact', 'icontains', 'istartswith'],
+            'routes__whereTo__town':['exact', 'icontains', 'istartswith'],
         }
         fields = "__all__"
     
@@ -99,7 +99,7 @@ class RoutingType(UserMixin, DjangoObjectType):
         interfaces = (node.CustomNode,)
         filter_fields = {
             'whereFrom__town':['exact', 'icontains', 'istartswith'],
-            'whreTo__town':['exact', 'icontains', 'istartswith'],
+            'whereTo__town':['exact', 'icontains', 'istartswith'],
         }
         fields = "__all__"
 

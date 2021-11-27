@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models.technique import Cars, Seat, CabinePlane
 from .models.transport import (
-    CoverCity, Journey, PointOfSale, Routing, PointOfSaleWorker
+    CoverCity, Journey, PointOfSale, Routing, PointOfSaleWorker, RouteJourney
 )
 
 
@@ -45,6 +45,11 @@ class PointOfSaleSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class RouteJourneySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RouteJourney
+        fields = "__all__"
+
 class RoutingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Routing
@@ -53,7 +58,7 @@ class RoutingSerializer(serializers.ModelSerializer):
 
 class RoutingMoreInfoSerializer(serializers.ModelSerializer):
     whereFrom = serializers.CharField(source="whereFrom.town")
-    whreTo = serializers.CharField(source="whreTo.town")
+    whereTo = serializers.CharField(source="whereTo.town")
     class Meta:
         model = Routing
         fields = "__all__"
@@ -67,13 +72,14 @@ class PointOfSaleWorkerSerializer(serializers.ModelSerializer):
 
 class JourneySerializer(serializers.ModelSerializer):
     direct = serializers.BooleanField(source="is_direct", default=False, read_only=True)
+    journey_routes = RouteJourneySerializer(many=True)
     class Meta:
         model = Journey
         fields = "__all__"
 
 
 class JourneyMoreInfoSerializer(JourneySerializer):
-    routing = RoutingMoreInfoSerializer(many=True)
+    routes = RoutingMoreInfoSerializer(many=True)
     class Meta(JourneySerializer.Meta):
         pass
     

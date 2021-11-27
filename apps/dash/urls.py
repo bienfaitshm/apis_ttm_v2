@@ -2,7 +2,7 @@ from rest_framework.routers import DefaultRouter
 
 from .views import (
     CarsView, SeatView, JourneyView, RoutingView, CoverCityView,
-    PointOfSaleView, PointOfSaleWorkerView, CabinePlaneView
+    PointOfSaleView, PointOfSaleWorkerView, CabinePlaneView, RouteJourneyView
 )
 
 router = DefaultRouter()
@@ -14,6 +14,7 @@ router.register(r'transport/journey', JourneyView, basename='journey')
 router.register(r'transport/routing', RoutingView, basename='routing')
 router.register(r'transport/cover_city', CoverCityView, basename='cover_city')
 router.register(r'transport/pos', PointOfSaleView, basename='point_of_sale')
+router.register(r'transport/routes_journey', RouteJourneyView, basename='journey_routes')
 router.register(r'transport/pos_worker', PointOfSaleWorkerView,
                 basename='point_of_sale_worker')
 

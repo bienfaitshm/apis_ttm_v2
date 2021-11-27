@@ -4,7 +4,7 @@ from django.utils.crypto import get_random_string
 from utils  import fields
 from .models import (
     FretPassenger, JourneyClientFolder, Passenger, SeletectedJourney, PlaceReserved,
-    JourneySession
+    JourneySession, OtherInfoReservation, ValidationPayment
 )
 
 KEY = "1234567890qwertyuiopasdfghjklzxcvbnm<>,./?:;+_)(*&^%$#@!"
@@ -14,6 +14,25 @@ class FretPassengerSerializer(serializers.ModelSerializer):
         model = FretPassenger
         fields = "__all__"
 
+class OtherInfoReservationSerializer(serializers.ModelSerializer):
+    sexe = serializers.CharField(source="gender", read_only=True)
+    session = fields.SessionField(
+        required = True, write_only=True,
+        queryset = SeletectedJourney.objects.all()
+    )
+    class Meta:
+        model = OtherInfoReservation
+        fields = "__all__"
+        read_only_fields = ["journey"]
+class ValidationPaymentSerializer(serializers.ModelSerializer):
+    session = fields.SessionField(
+        required = True, write_only=True,
+        queryset = SeletectedJourney.objects.all()
+    )
+    class Meta:
+        model = ValidationPayment
+        fields = "__all__"
+        read_only_fields = ["journey_selected"]
 
 class JourneyClientFolderSerializer(serializers.ModelSerializer):
     class Meta:

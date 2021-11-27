@@ -84,8 +84,42 @@ class FretPassenger(BaseModel):
     def __str__(self) -> str:
         return f"{self.passenger} {self.code}"
 
+class OtherInfoReservation(PersonalMixin):
+    """
+        other information of model
+    """
+    GENDERS = [
+        ("F", _("Woman")),
+        ("H", _("Man")),
+        ("I", _("Indeterminate")),
+    ]
+    journey = models.OneToOneField(
+        SeletectedJourney, 
+        verbose_name=_("reservations"), 
+        on_delete=models.CASCADE,
+        related_name = "other_info",
+        help_text=_("the selected journey reservations")
+    )
+
+    email = models.EmailField(_("name"), max_length=200)
+    num_tel = models.CharField(_("name"), max_length=200)
+    num_tel_emergency= models.CharField(_("name"), max_length=200)
+    gender = models.CharField(_("gender"), max_length=10, choices=GENDERS)
+    degre_parent = models.CharField(_("degre of parent"), max_length=200, help_text="degre of responsable of reservation")
+    piece_id= models.CharField(_("name"), max_length=200)
+    num_piece_id= models.CharField(_("name"), max_length=200)
+    adress_from = models.CharField(_("name"), max_length=250)
+    adress_to = models.CharField(_("name"), max_length=250)
+
+    def __str__(self):
+        return f"{self.pk} {self.firstname}"
+    
+    def get_full_name(self):
+        return f"{self.firstname} {self.middlename} {self.lastname}"
+
+
 class ValidationPayment(BaseModel):
-    journey_selected = models.ForeignKey(
+    journey_selected = models.OneToOneField(
         SeletectedJourney,
         verbose_name=_("voyage selectionner"),
         related_name="payment",
