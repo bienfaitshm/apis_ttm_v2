@@ -5,7 +5,7 @@ from apps.account.models import Company, Employe
 from apps.dash.utils import get_routes_to_string
 from utils.base_model import BaseModel
 from apps.dash.models.technique import Cars
-
+from utils.trajets import link_routes, get_routes, make_trajet 
 
 DEVISE = [
     ("CDF","CDF"),
@@ -86,8 +86,14 @@ class Journey(BaseModel):
     def is_direct(self) -> bool:
         return self.routes.count() <= 1
     
+    @property
+    def trajets(self):
+        routes = self.get_routes()
+        return  make_trajet(get_routes(link_routes(routes)))
+
     def get_routes(self):
         return self.routes.all()
+    
 
     def get_journey_routes(self):
         if hasattr(self, "journey_routes"):

@@ -11,6 +11,10 @@ from .models import (
     RouteJourney
 )
 
+class TrajetType(graphene.ObjectType):
+    label = graphene.String()
+    value = graphene.Int()
+
 # class MixinType(UserMixin, DjangoObjectType):
 #     class Meta:
 #         interfaces = (node.CustomNode,)
@@ -71,6 +75,7 @@ class JourneyType(UserMixin, DjangoObjectType):
     is_direct = graphene.Boolean()
     exprired = graphene.Boolean()
     route_names = graphene.String()
+    trajets = graphene.List(TrajetType)
     class Meta:
         model = Journey
         interfaces = (node.CustomNode,)
