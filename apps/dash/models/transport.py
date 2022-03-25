@@ -5,15 +5,17 @@ from apps.account.models import Company, Employe
 from apps.dash.utils import get_routes_to_string
 from utils.base_model import BaseModel
 from apps.dash.models.technique import Cars
-from utils.trajets import link_routes, get_routes, make_trajet 
+from utils.trajets import link_routes, get_routes, make_trajet
 
 DEVISE = [
-    ("CDF","CDF"),
+    ("CDF", "CDF"),
     ("USD", "USD")
 ]
 
+
 class CoverCity(BaseModel):
-    company = models.ManyToManyField(Company, related_name="cities")
+    company = models.ForeignKey(
+        Company, on_delete=models.CASCADE, related_name="cities")
     town = models.CharField(_("cover city"), max_length=200)
     code = models.CharField(_("code"), max_length=200, null=True)
     latitude = models.FloatField(_("latitude"), null=True, default=None)
@@ -30,6 +32,7 @@ class Routing(BaseModel):
         "where from"), on_delete=models.CASCADE, related_name="whereFrom")
     whereTo = models.ForeignKey(CoverCity, verbose_name=_(
         "where to"), on_delete=models.CASCADE, related_name="whereTo")
+
     def __str__(self) -> str:
         return f"{self.pk}: {self.whereFrom} -- {self.whereTo}"
 
@@ -62,7 +65,8 @@ class Journey(BaseModel):
         Company, related_name="journey", on_delete=models.CASCADE)
     numJourney = models.CharField(_("number of journey"), max_length=50)
     price = models.IntegerField(_("price"))
-    devise = models.CharField(_("money devise"), max_length=5, choices=DEVISE, default="CDF")
+    devise = models.CharField(
+        _("money devise"), max_length=5, choices=DEVISE, default="CDF")
     dateDeparture = models.DateField(_("date of departure"))
     dateReturn = models.DateField(_("date of departure"))
     hoursDeparture = models.TimeField(_("hours of departure"))
@@ -71,7 +75,7 @@ class Journey(BaseModel):
         "cars"), on_delete=models.CASCADE, related_name="cars_journies")
     # routing = models.ManyToManyField(
     #     Routing, verbose_name=_("routing"), related_name="routing_journies")
-    
+
     routes = models.ManyToManyField(
         Routing,
         through='RouteJourney',
@@ -85,37 +89,38 @@ class Journey(BaseModel):
     @property
     def is_direct(self) -> bool:
         return self.routes.count() <= 1
-    
+
     @property
     def trajets(self):
         routes = self.get_routes()
-        return  make_trajet(get_routes(link_routes(routes)))
+        return make_trajet(get_routes(link_routes(routes)))
 
     def get_routes(self):
         return self.routes.all()
-    
 
     def get_journey_routes(self):
         if hasattr(self, "journey_routes"):
             return self.journey_routes.all()
-    
+
     @property
     def exprired(self) -> bool:
         now = datetime.datetime.now()
         day_expired = self.dateDeparture > now.date()
-        hours_expired = (self.hoursDeparture.hour > now.hour) and (self.hoursDeparture.nimute > now.nimute)
+        hours_expired = (self.hoursDeparture.hour > now.hour) and (
+            self.hoursDeparture.nimute > now.nimute)
         return not (hours_expired and day_expired)
-    
+
     def number_places_taken(self):
-        if hasattr(self,"journey_seats"):
+        if hasattr(self, "journey_seats"):
             return self.journey_seats.filter(seat__type="SEAT").count()
         return 0
-    
+
     @property
     def route_names(self):
         routes = self.get_routes()
         route_name = get_routes_to_string(routes)
         return _("non route names") if route_name == "" else route_name
+
 
 class RouteJourney(BaseModel):
     route = models.ForeignKey(Routing, verbose_name=_(
@@ -123,9 +128,11 @@ class RouteJourney(BaseModel):
     journey = models.ForeignKey(Journey, verbose_name=_(
         "journey"), on_delete=models.CASCADE, related_name="journey_routes")
     price = models.IntegerField(_("price"))
-    devise = models.CharField(_("money devise"), max_length=5, choices=DEVISE, default="CDF")
+    devise = models.CharField(
+        _("money devise"), max_length=5, choices=DEVISE, default="CDF")
+
     def __str__(self) -> str:
         return f"{self.pk} {self.route} : {self.journey}"
-    
+
     def __str__(self) -> str:
         return f"{self.pk} {self.route} {self.journey}"
