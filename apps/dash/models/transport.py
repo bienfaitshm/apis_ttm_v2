@@ -32,6 +32,7 @@ class Routing(BaseModel):
         "where from"), on_delete=models.CASCADE, related_name="whereFrom")
     whereTo = models.ForeignKey(CoverCity, verbose_name=_(
         "where to"), on_delete=models.CASCADE, related_name="whereTo")
+    distance = models.FloatField(_("distance(Km)"), default=0.0)
 
     def __str__(self) -> str:
         return f"{self.pk}: {self.whereFrom} -- {self.whereTo}"
