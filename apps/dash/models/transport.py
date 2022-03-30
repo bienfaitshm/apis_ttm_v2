@@ -65,9 +65,6 @@ class Journey(BaseModel):
     company = models.ForeignKey(
         Company, related_name="journey", on_delete=models.CASCADE)
     numJourney = models.CharField(_("number of journey"), max_length=50)
-    price = models.IntegerField(_("price"))
-    devise = models.CharField(
-        _("money devise"), max_length=5, choices=DEVISE, default="CDF")
     dateDeparture = models.DateField(_("date of departure"))
     dateReturn = models.DateField(_("date of departure"))
     hoursDeparture = models.TimeField(_("hours of departure"))
@@ -86,6 +83,14 @@ class Journey(BaseModel):
 
     def __str__(self) -> str:
         return f"{self.pk} {self.numJourney} {self.company}"
+
+    @property
+    def price(self):
+        return 0
+
+    @property
+    def devise(self):
+        return 'CDF'
 
     @property
     def is_direct(self) -> bool:
