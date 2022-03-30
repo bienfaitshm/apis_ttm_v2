@@ -1,4 +1,4 @@
-from apps.dash.serializers import CabinePlaneSerializer
+from apps.dash.serializers.serializers import CabinePlaneSerializer
 from datetime import datetime, timedelta
 from django.http.response import HttpResponse
 from utils.generate_code import get_random_key

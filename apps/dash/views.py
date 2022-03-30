@@ -44,9 +44,9 @@ class JourneyView(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter,
                        IsComponyFilterBackend, SearchWhereFromToFilterBackend]
     search_fields = ['numJourney', 'price']
-    
+
     def get_serializer_class(self):
-        if self.action == "list" or self.action =="retrieve":
+        if self.action == "list" or self.action == "retrieve":
             return JourneyMoreInfoSerializer
         return super().get_serializer_class()
 
@@ -54,24 +54,27 @@ class JourneyView(viewsets.ModelViewSet):
 class PointOfSaleWorkerView(viewsets.ModelViewSet):
     serializer_class = PointOfSaleWorkerSerializer
     queryset = PointOfSaleWorker.objects.all()
-    filter_backends = [IsComponyFilterBackend,]
+    filter_backends = [IsComponyFilterBackend, ]
 
 
 class PointOfSaleView(viewsets.ModelViewSet):
     serializer_class = PointOfSaleSerializer
     queryset = PointOfSale.objects.all()
-    filter_backends = [IsComponyFilterBackend,]
+    filter_backends = [IsComponyFilterBackend, ]
+
 
 class RouteJourneyView(viewsets.ModelViewSet):
-    serializer_class =RouteJourneySerializer
-    queryset =RouteJourney.objects.all()
-    filter_backends = [IsComponyFilterBackend,]
+    serializer_class = RouteJourneySerializer
+    queryset = RouteJourney.objects.all()
+    filter_backends = [IsComponyFilterBackend, ]
+
 
 class RoutingView(viewsets.ModelViewSet):
     serializer_class = RoutingSerializer
     queryset = Routing.objects.all()
-    filter_backends = [IsComponyFilterBackend,]
+    filter_backends = [IsComponyFilterBackend, ]
+
     def get_serializer_class(self):
-        if self.action == "list" or self.action =="retrieve":
+        if self.action == "list" or self.action == "retrieve":
             return RoutingMoreInfoSerializer
         return super().get_serializer_class()
