@@ -61,6 +61,29 @@ class PointOfSaleWorker(BaseModel):
         return f"{self.worker} {self.company}"
 
 
+class JourneyClass(BaseModel):
+    code = models.CharField(verbose_name=_("code_class"), max_length=10)
+    name = models.CharField(verbose_name=_("name_class"), max_length=10)
+    company = models.ForeignKey(
+        Company, related_name="journey_class", on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return f'{self.name} : {self.code}'
+
+
+class JourneyTarif(BaseModel):
+    journey_class = models.ForeignKey(
+        JourneyClass, on_delete=models.CASCADE, related_name='tarif')
+    route = models.ForeignKey(Routing, verbose_name=_(
+        "routes"), on_delete=models.CASCADE, related_name="routes")
+    devise = models.CharField(
+        _("money devise"), max_length=5, choices=DEVISE, default="CDF")
+    adult = models.FloatField(verbose_name=_('tarif_adult'), default=0.0)
+    child = models.FloatField(verbose_name=_('tarif_child'), default=0.0)
+    baby = models.FloatField(verbose_name=_('tarif_baby'), default=0.0)
+    actif = models.BooleanField(verbose_name=_('actif_tarif'), default=0.0)
+
+
 class Journey(BaseModel):
     company = models.ForeignKey(
         Company, related_name="journey", on_delete=models.CASCADE)
@@ -74,12 +97,8 @@ class Journey(BaseModel):
     # routing = models.ManyToManyField(
     #     Routing, verbose_name=_("routing"), related_name="routing_journies")
 
-    routes = models.ManyToManyField(
-        Routing,
-        through='RouteJourney',
-        through_fields=('journey', 'route'),
-        verbose_name=_("routing"), related_name="routing_journies"
-    )
+    routes = models.ManyToManyField(Routing, verbose_name=_(
+        "routing"), related_name="routing_journies")
 
     def __str__(self) -> str:
         return f"{self.pk} {self.numJourney} {self.company}"
@@ -126,19 +145,3 @@ class Journey(BaseModel):
         routes = self.get_routes()
         route_name = get_routes_to_string(routes)
         return _("non route names") if route_name == "" else route_name
-
-
-class RouteJourney(BaseModel):
-    route = models.ForeignKey(Routing, verbose_name=_(
-        "routes"), on_delete=models.CASCADE, related_name="routes")
-    journey = models.ForeignKey(Journey, verbose_name=_(
-        "journey"), on_delete=models.CASCADE, related_name="journey_routes")
-    price = models.IntegerField(_("price"))
-    devise = models.CharField(
-        _("money devise"), max_length=5, choices=DEVISE, default="CDF")
-
-    def __str__(self) -> str:
-        return f"{self.pk} {self.route} : {self.journey}"
-
-    def __str__(self) -> str:
-        return f"{self.pk} {self.route} {self.journey}"

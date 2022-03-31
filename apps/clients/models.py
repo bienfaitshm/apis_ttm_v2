@@ -4,7 +4,7 @@ from django.utils.translation import gettext as _
 from utils.base_model import BaseModel
 from apps.account.models import Client, PersonalMixin
 from apps.dash.models.technique import Seat
-from apps.dash.models.transport import Journey, Routing, RouteJourney
+from apps.dash.models.transport import Journey, Routing
 
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -28,7 +28,6 @@ class JourneySession(BaseModel):
 
     def __str__(self) -> str:
         return self.key
-
 
 
 class SeletectedJourney(BaseModel):
@@ -69,9 +68,8 @@ class PlaceReserved(BaseModel):
     passenger = models.ForeignKey(Passenger, verbose_name=_(
         "passenger"), related_name="passengers", on_delete=models.CASCADE)
     expired = models.BooleanField(_("expiration"), default=False)
-    journey = models.ForeignKey(RouteJourney, verbose_name=_(
+    journey = models.ForeignKey(Routing, verbose_name=_(
         "routes journey"), on_delete=models.CASCADE, related_name="journey_seats_reserved")
-    
 
 
 class FretPassenger(BaseModel):
@@ -84,6 +82,7 @@ class FretPassenger(BaseModel):
     def __str__(self) -> str:
         return f"{self.passenger} {self.code}"
 
+
 class OtherInfoReservation(PersonalMixin):
     """
         other information of model
@@ -94,26 +93,27 @@ class OtherInfoReservation(PersonalMixin):
         ("I", _("Indeterminate")),
     ]
     journey = models.OneToOneField(
-        SeletectedJourney, 
-        verbose_name=_("reservations"), 
+        SeletectedJourney,
+        verbose_name=_("reservations"),
         on_delete=models.CASCADE,
-        related_name = "other_info",
+        related_name="other_info",
         help_text=_("the selected journey reservations")
     )
 
     email = models.EmailField(_("name"), max_length=200)
     num_tel = models.CharField(_("name"), max_length=200)
-    num_tel_emergency= models.CharField(_("name"), max_length=200)
+    num_tel_emergency = models.CharField(_("name"), max_length=200)
     gender = models.CharField(_("gender"), max_length=10, choices=GENDERS)
-    degre_parent = models.CharField(_("degre of parent"), max_length=200, help_text="degre of responsable of reservation")
-    piece_id= models.CharField(_("name"), max_length=200)
-    num_piece_id= models.CharField(_("name"), max_length=200)
+    degre_parent = models.CharField(
+        _("degre of parent"), max_length=200, help_text="degre of responsable of reservation")
+    piece_id = models.CharField(_("name"), max_length=200)
+    num_piece_id = models.CharField(_("name"), max_length=200)
     adress_from = models.CharField(_("name"), max_length=250)
     adress_to = models.CharField(_("name"), max_length=250)
 
     def __str__(self):
         return f"{self.pk} {self.firstname}"
-    
+
     def get_full_name(self):
         return f"{self.firstname} {self.middlename} {self.lastname}"
 
@@ -123,12 +123,15 @@ class ValidationPayment(BaseModel):
         SeletectedJourney,
         verbose_name=_("voyage selectionner"),
         related_name="payment",
-        on_delete= models.CASCADE
+        on_delete=models.CASCADE
     )
-    provider = models.CharField(max_length=200, verbose_name="provider", help_text=_("provider determine the mode of payment"), default="CASH")
-    confirmed = models.BooleanField(verbose_name=_("confirmation"), default=False)
+    provider = models.CharField(max_length=200, verbose_name="provider", help_text=_(
+        "provider determine the mode of payment"), default="CASH")
+    confirmed = models.BooleanField(
+        verbose_name=_("confirmation"), default=False)
     costTotal = models.CharField(max_length=200, null=True)
     date_payment = models.DateTimeField(null=True)
+
     def __str__(self) -> str:
         return f"{self.costTotal} {self.confirmed}"
 
@@ -140,5 +143,5 @@ def creation_validation_signal(sender, instance, created, **kwargs):
     """
     if created:
         ValidationPayment.objects.create(
-            journey_selected = instance,
+            journey_selected=instance,
         )

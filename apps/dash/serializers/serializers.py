@@ -3,7 +3,7 @@ from rest_framework import serializers
 from apps.dash.serializers.type import JourneyDataType
 from ..models.technique import Cars, Seat, CabinePlane
 from ..models.transport import (
-    CoverCity, Journey, PointOfSale, Routing, PointOfSaleWorker, RouteJourney
+    CoverCity, Journey, PointOfSale, Routing, PointOfSaleWorker
 )
 
 
@@ -48,13 +48,6 @@ class PointOfSaleSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class RouteJourneySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RouteJourney
-        fields = "__all__"
-        read_only_fields = ['journey']
-
-
 class RoutingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Routing
@@ -79,7 +72,6 @@ class PointOfSaleWorkerSerializer(serializers.ModelSerializer):
 class JourneySerializer(serializers.ModelSerializer):
     direct = serializers.BooleanField(
         source="is_direct", default=False, read_only=True)
-    journey_routes = RouteJourneySerializer(many=True)
 
     class Meta:
         model = Journey
@@ -89,16 +81,16 @@ class JourneySerializer(serializers.ModelSerializer):
         journey_routes = validated_data.pop('journey_routes')
         journey_instance = Journey.objects.create(**validated_data)
 
-        r_journey = [
-            RouteJourney(
-                price=i.get('price'),
-                devise=i.get('devise'),
-                route=i.get('route'),
-                journey=journey_instance
-            ) for i in journey_routes
-        ]
+        # r_journey = [
+        #     RouteJourney(
+        #         price=i.get('price'),
+        #         devise=i.get('devise'),
+        #         route=i.get('route'),
+        #         journey=journey_instance
+        #     ) for i in journey_routes
+        # ]
 
-        RouteJourney.objects.bulk_create(r_journey)
+        # RouteJourney.objects.bulk_create(r_journey)
 
         return journey_instance
 
