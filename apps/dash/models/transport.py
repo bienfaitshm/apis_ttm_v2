@@ -72,6 +72,28 @@ class JourneyClass(BaseModel):
 
 
 class JourneyTarif(BaseModel):
+    '''
+        *prix hors taxe
+        *la taxe
+        *PttaxCofondu = pht + tx 
+        *classe de reservations = (classe 1="C", classe 2="J", classe 3="D", classe 4="F")
+        *classe_1(D): (routing -> l'shi - klz, )
+            *adulte = (pdb + tx = pttc) =>(100fc + 30fc = 130fc)
+            *child = (pdb + tx = pttc) =>(70fc + 30fc = 100fc)
+            *baby  = (pdb + tx = pttc) =>(50fc + 30fc = 80fc)
+            ----------------------------------------------------
+        *class_2(J) :(routing -> l'shi - klz, )
+            *adulte = (pdb + tx = pttc) =>(130fc + 30fc = 160fc)
+            *child = (pdb + tx = pttc) =>(80fc + 30fc = 110fc)
+            *baby  = (pdb + tx = pttc) =>(60fc + 30fc = 90fc)
+            ----------------------------------------------------
+        *class_4(F) :(routing -> l'shi - klz, )
+            *adulte = (pdb + tx = pttc) =>(0fc + 30fc = 30fc)
+            *child = (pdb + tx = pttc) =>(0fc + 30fc = 110fc)
+            *baby  = (pdb + tx = pttc) =>(0fc + 30fc = 90fc)
+            NB: "pour les agents c'est l'entreprise qui paye la taxe"
+            ...
+    '''
     journey_class = models.ForeignKey(
         JourneyClass, on_delete=models.CASCADE, related_name='tarif')
     route = models.ForeignKey(Routing, verbose_name=_(
@@ -81,7 +103,11 @@ class JourneyTarif(BaseModel):
     adult = models.FloatField(verbose_name=_('tarif_adult'), default=0.0)
     child = models.FloatField(verbose_name=_('tarif_child'), default=0.0)
     baby = models.FloatField(verbose_name=_('tarif_baby'), default=0.0)
+    taxe = models.FloatField(verbose_name=_('taxe'), default=0.0)
     actif = models.BooleanField(verbose_name=_('actif_tarif'), default=0.0)
+
+    def pttc_adulte(self):
+        return self.adult + self.taxe
 
 
 class Journey(BaseModel):
@@ -113,7 +139,7 @@ class Journey(BaseModel):
 
     @property
     def is_direct(self) -> bool:
-        return self.routes.count() <= 1
+        return True
 
     @property
     def trajets(self):

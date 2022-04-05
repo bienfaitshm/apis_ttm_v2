@@ -88,13 +88,14 @@ class JourneyType(UserMixin, DjangoObjectType):
     class Meta:
         model = Journey
         interfaces = (node.CustomNode,)
-        filter_fields = {
-            'company__nom': ['exact', 'icontains', 'istartswith'],
-            'company__code': ['exact'],
-            'company__id': ['exact'],
-            'routes__whereFrom__town': ['exact', 'icontains', 'istartswith'],
-            'routes__whereTo__town': ['exact', 'icontains', 'istartswith'],
-        }
+        filter_fields = []
+        # filter_fields = {
+        #     'company__nom': ['exact', 'icontains', 'istartswith'],
+        #     'company__code': ['exact'],
+        #     'company__id': ['exact'],
+        #     'routes__whereFrom__town': ['exact', 'icontains', 'istartswith'],
+        #     'routes__whereTo__town': ['exact', 'icontains', 'istartswith'],
+        # }
         fields = "__all__"
 
     def resolve_number_of_places_reserved(self, info):

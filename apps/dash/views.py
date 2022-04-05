@@ -41,8 +41,8 @@ class CoverCityView(viewsets.ModelViewSet):
 class JourneyView(viewsets.ModelViewSet):
     serializer_class = JourneySerializer
     queryset = Journey.objects.all()
-    filter_backends = [filters.SearchFilter,
-                       IsComponyFilterBackend, SearchWhereFromToFilterBackend]
+    # filter_backends = [filters.SearchFilter,
+    #                    IsComponyFilterBackend, SearchWhereFromToFilterBackend]
     search_fields = ['numJourney', 'price']
 
     def get_serializer_class(self):
