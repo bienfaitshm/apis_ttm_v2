@@ -5,11 +5,11 @@ from .filters.filters import IsComponyFilterBackend, SearchWhereFromToFilterBack
 from .serializers import (
     CarSerializer, CoverCitySerializer, JourneyMoreInfoSerializer, JourneySerializer, PointOfSaleSerializer,
     PointOfSaleWorkerSerializer, RoutingMoreInfoSerializer, RoutingSerializer, SeatSerializer,
-    CabinePlaneSerializer
+    CabinePlaneSerializer, JourneyTarifSerializer, JourneyClassSerializer
 )
 from .models.technique import Cars, Seat, CabinePlane
 from .models.transport import (
-    CoverCity, Journey, PointOfSaleWorker, PointOfSale, Routing
+    CoverCity, Journey, PointOfSaleWorker, PointOfSale, Routing, JourneyClass, JourneyTarif
 )
 
 
@@ -36,6 +36,16 @@ class SeatView(viewsets.ModelViewSet):
 class CoverCityView(viewsets.ModelViewSet):
     serializer_class = CoverCitySerializer
     queryset = CoverCity.objects.all()
+
+
+class JourneyClassView(viewsets.ModelViewSet):
+    serializer_class = JourneyClassSerializer
+    queryset = JourneyClass.objects.all()
+
+
+class JourneyTarifView(viewsets.ModelViewSet):
+    serializer_class = JourneyTarifSerializer
+    queryset = JourneyTarif.objects.all()
 
 
 class JourneyView(viewsets.ModelViewSet):

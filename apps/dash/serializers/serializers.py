@@ -3,7 +3,7 @@ from rest_framework import serializers
 from apps.dash.serializers.type import JourneyDataType
 from ..models.technique import Cars, Seat, CabinePlane
 from ..models.transport import (
-    CoverCity, Journey, PointOfSale, Routing, PointOfSaleWorker
+    CoverCity, Journey, JourneyClass, JourneyTarif, PointOfSale, Routing, PointOfSaleWorker
 )
 
 
@@ -104,3 +104,15 @@ class JourneyMoreInfoSerializer(JourneySerializer):
     def is_direct(self, instance):
         print("is_direct :", instance.is_direct)
         return True
+
+
+class JourneyClassSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = JourneyClass
+        fields = "__all__"
+
+
+class JourneyTarifSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = JourneyTarif
+        fields = "__all__"

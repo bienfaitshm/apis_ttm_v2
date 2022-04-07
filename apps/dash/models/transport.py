@@ -104,10 +104,19 @@ class JourneyTarif(BaseModel):
     child = models.FloatField(verbose_name=_('tarif_child'), default=0.0)
     baby = models.FloatField(verbose_name=_('tarif_baby'), default=0.0)
     taxe = models.FloatField(verbose_name=_('taxe'), default=0.0)
-    actif = models.BooleanField(verbose_name=_('actif_tarif'), default=0.0)
+    actif = models.BooleanField(verbose_name=_('actif_tarif'), default=True)
 
-    def pttc_adulte(self):
+    def pttc_adulte(self) -> float:
+        # prix toute taxe confondu adulte
         return self.adult + self.taxe
+
+    def pttc_child(self) -> float:
+        # prix toute taxe confondu adulte
+        return self.child + self.taxe
+
+    def pttc_baby(self) -> float:
+        # prix toute taxe confondu adulte
+        return self.baby + self.taxe
 
 
 class Journey(BaseModel):
