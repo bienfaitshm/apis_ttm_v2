@@ -6,18 +6,20 @@ from .views import (
 )
 
 router = DefaultRouter()
-router.register(r'passenger', PassengerView, basename='passenger')
-router.register(r'fret_client', FretPassengerView, basename='fret_client')
-router.register(r'place_reserved', PlaceReservedView,
+router.register(r'reservation/passenger', PassengerView, basename='passenger')
+router.register(r'reservation/fret_client',
+                FretPassengerView, basename='fret_client')
+router.register(r'reservation/place_reserved', PlaceReservedView,
                 basename='place_reserved')
-router.register(r'jrny_session', JourneySessionView, basename='jrny_session')
-router.register(r'selected_jrny', SeletectedJourneyView,
+router.register(r'reservation/jrny_session',
+                JourneySessionView, basename='jrny_session')
+router.register(r'reservation/selected_jrny', SeletectedJourneyView,
                 basename='selected_jrny')
-router.register(r'jrny_client_folder', JourneyClientFolderView,
+router.register(r'reservation/jrny_client_folder', JourneyClientFolderView,
                 basename='jrny_client_folder')
 
 urlpatterns = [
-    path("reserve/", ReservationWithSteperView.as_view({
+    path("reservation/", ReservationWithSteperView.as_view({
         'get': 'list'
     }))
 ]+router.urls

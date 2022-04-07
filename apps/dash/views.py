@@ -5,11 +5,11 @@ from .filters.filters import IsComponyFilterBackend, SearchWhereFromToFilterBack
 from .serializers import (
     CarSerializer, CoverCitySerializer, JourneyMoreInfoSerializer, JourneySerializer, PointOfSaleSerializer,
     PointOfSaleWorkerSerializer, RoutingMoreInfoSerializer, RoutingSerializer, SeatSerializer,
-    CabinePlaneSerializer, RouteJourneySerializer
+    CabinePlaneSerializer, JourneyTarifSerializer, JourneyClassSerializer
 )
 from .models.technique import Cars, Seat, CabinePlane
 from .models.transport import (
-    CoverCity, Journey, PointOfSaleWorker, PointOfSale, Routing, RouteJourney
+    CoverCity, Journey, PointOfSaleWorker, PointOfSale, Routing, JourneyClass, JourneyTarif
 )
 
 
@@ -38,11 +38,21 @@ class CoverCityView(viewsets.ModelViewSet):
     queryset = CoverCity.objects.all()
 
 
+class JourneyClassView(viewsets.ModelViewSet):
+    serializer_class = JourneyClassSerializer
+    queryset = JourneyClass.objects.all()
+
+
+class JourneyTarifView(viewsets.ModelViewSet):
+    serializer_class = JourneyTarifSerializer
+    queryset = JourneyTarif.objects.all()
+
+
 class JourneyView(viewsets.ModelViewSet):
     serializer_class = JourneySerializer
     queryset = Journey.objects.all()
-    filter_backends = [filters.SearchFilter,
-                       IsComponyFilterBackend, SearchWhereFromToFilterBackend]
+    # filter_backends = [filters.SearchFilter,
+    #                    IsComponyFilterBackend, SearchWhereFromToFilterBackend]
     search_fields = ['numJourney', 'price']
 
     def get_serializer_class(self):
@@ -60,12 +70,6 @@ class PointOfSaleWorkerView(viewsets.ModelViewSet):
 class PointOfSaleView(viewsets.ModelViewSet):
     serializer_class = PointOfSaleSerializer
     queryset = PointOfSale.objects.all()
-    filter_backends = [IsComponyFilterBackend, ]
-
-
-class RouteJourneyView(viewsets.ModelViewSet):
-    serializer_class = RouteJourneySerializer
-    queryset = RouteJourney.objects.all()
     filter_backends = [IsComponyFilterBackend, ]
 
 
