@@ -28,14 +28,16 @@ class CoverCity(BaseModel):
 class Routing(BaseModel):
     company = models.ForeignKey(
         Company, related_name="routing", on_delete=models.CASCADE)
-    whereFrom = models.ForeignKey(CoverCity, verbose_name=_(
-        "where from"), on_delete=models.CASCADE, related_name="whereFrom")
-    whereTo = models.ForeignKey(CoverCity, verbose_name=_(
-        "where to"), on_delete=models.CASCADE, related_name="whereTo")
+    node = models.ForeignKey(CoverCity, verbose_name=_(
+        "Current CoverCity"), on_delete=models.CASCADE, related_name="route")
+    whereFrom = models.ForeignKey("self", verbose_name=_(
+        "where from"), on_delete=models.SET_DEFAULT, related_name="predecessor", null=True, default=None)
+    whereTo = models.ForeignKey("self", verbose_name=_(
+        "where to"), on_delete=models.SET_DEFAULT, related_name="successor", null=True, default=None)
     distance = models.FloatField(_("distance(Km)"), default=0.0)
 
     def __str__(self) -> str:
-        return f"{self.pk}: {self.whereFrom} -- {self.whereTo}"
+        return f"{self.whereFrom} -->{self.node} --> {self.whereTo}"
 
 
 class PointOfSale(BaseModel):

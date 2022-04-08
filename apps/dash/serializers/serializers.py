@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from apps.dash.process.routes import RouteProcess
 
 from apps.dash.serializers.type import JourneyDataType
 from ..models.technique import Cars, Seat, CabinePlane
@@ -53,10 +54,13 @@ class RoutingSerializer(serializers.ModelSerializer):
         model = Routing
         fields = "__all__"
 
+    def create(self, validated_data):
+        return RouteProcess.create(**validated_data)
+
 
 class RoutingMoreInfoSerializer(serializers.ModelSerializer):
-    whereFrom = serializers.CharField(source="whereFrom.town")
-    whereTo = serializers.CharField(source="whereTo.town")
+    # whereFrom = serializers.CharField(source="whereFrom.town")
+    # whereTo = serializers.CharField(source="whereTo.town")
 
     class Meta:
         model = Routing

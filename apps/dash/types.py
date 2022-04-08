@@ -114,10 +114,11 @@ class RoutingType(UserMixin, DjangoObjectType):
     class Meta:
         model = Routing
         interfaces = (node.CustomNode,)
-        filter_fields = {
-            'whereFrom__town': ['exact', 'icontains', 'istartswith'],
-            'whereTo__town': ['exact', 'icontains', 'istartswith'],
-        }
+        filter_fields = []
+        # filter_fields = {
+        #     'whereFrom__town': ['exact', 'icontains', 'istartswith'],
+        #     'whereTo__town': ['exact', 'icontains', 'istartswith'],
+        # }
         fields = "__all__"
 
 
