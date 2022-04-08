@@ -1,4 +1,7 @@
+from abc import ABC, abstractmethod
 from typing import Union
+
+from requests import delete
 
 from apps.account.models import Users, Company
 from utils.args_utils import kwargs_id_creator
@@ -9,7 +12,29 @@ NodeType = Union[CoverCity, int]
 LinkType = Union[Routing, None]
 
 
-class RouteProcess:
+class RouteProcessABC(ABC):
+    @abstractmethod
+    def __len__(self) -> int:
+        pass
+
+    @abstractmethod
+    def is_empty(self) -> bool:
+        pass
+
+    @abstractmethod
+    def insert_between(self, e: Routing, predecessor: Routing, successor: Routing) -> Routing:
+        pass
+
+    @abstractmethod
+    def delete_node(self, e: Routing) -> Routing:
+        pass
+
+    @abstractmethod
+    def first(self) -> Routing:
+        pass
+
+
+class RouteProcess(RouteProcessABC):
     """
         "distance": 0.0,
         "company": 1,
@@ -18,6 +43,23 @@ class RouteProcess:
         "whereTo": null
 
     """
+
+    def first(self, destination: Routing) -> Union[CoverCity, None]:
+        first = None
+        current = destination
+        while current != None:
+            first = current.node
+            current = current.whereFrom
+        return first
+
+    def last(self, debut=Routing) -> Union[CoverCity, None]:
+        last = None
+        current = debut
+        while current != None:
+            last = current.node
+            current = current.whereTo
+        return last
+
     @classmethod
     def create(cls, **kwargs):
 

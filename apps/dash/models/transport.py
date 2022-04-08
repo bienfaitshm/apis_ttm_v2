@@ -37,7 +37,7 @@ class Routing(BaseModel):
     distance = models.FloatField(_("distance(Km)"), default=0.0)
 
     def __str__(self) -> str:
-        return f"{self.whereFrom} -->{self.node} --> {self.whereTo}"
+        return f"Node {self.node}"
 
 
 class PointOfSale(BaseModel):

@@ -1,3 +1,4 @@
+from email.policy import default
 from rest_framework import serializers
 from apps.dash.process.routes import RouteProcess
 
@@ -49,13 +50,17 @@ class PointOfSaleSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class RoutingProcessSerializer(serializers.Serializer):
+    action = serializers.CharField(default="Bienfait")
+
+
 class RoutingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Routing
         fields = "__all__"
 
-    def create(self, validated_data):
-        return RouteProcess.create(**validated_data)
+    # def create(self, validated_data):
+    #     return RouteProcess.create(**validated_data)
 
 
 class RoutingMoreInfoSerializer(serializers.ModelSerializer):
