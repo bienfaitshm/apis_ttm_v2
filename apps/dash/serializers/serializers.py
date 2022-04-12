@@ -50,8 +50,17 @@ class PointOfSaleSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class RoutingProcessSerializer(serializers.Serializer):
-    action = serializers.CharField(default="Bienfait")
+class RoutingProcessSerializer(serializers.ModelSerializer):
+    whereTo = serializers.SerializerMethodField(method_name="get_next")
+
+    class Meta:
+        model = Routing
+        fields = "__all__"
+
+    def get_next(self, obj: Routing):
+        if obj.whereTo == None:
+            return None
+        return RoutingProcessSerializer(obj.whereTo).data
 
 
 class RoutingSerializer(serializers.ModelSerializer):
@@ -59,8 +68,8 @@ class RoutingSerializer(serializers.ModelSerializer):
         model = Routing
         fields = "__all__"
 
-    # def create(self, validated_data):
-    #     return RouteProcess.create(**validated_data)
+    def create(self, validated_data):
+        return RouteProcess.create(**validated_data)
 
 
 class RoutingMoreInfoSerializer(serializers.ModelSerializer):

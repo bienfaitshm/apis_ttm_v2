@@ -131,11 +131,8 @@ class Journey(BaseModel):
     hoursReturn = models.TimeField(_("hours of return"))
     cars = models.ForeignKey(Cars, verbose_name=_(
         "cars"), on_delete=models.CASCADE, related_name="cars_journies")
-    # routing = models.ManyToManyField(
-    #     Routing, verbose_name=_("routing"), related_name="routing_journies")
-
-    routes = models.ManyToManyField(Routing, verbose_name=_(
-        "routing"), related_name="routing_journies")
+    route = models.ForeignKey(Routing, verbose_name=_(
+        "routing"), on_delete=models.SET_DEFAULT, related_name="routing_journies", null=True, default=None)
 
     def __str__(self) -> str:
         return f"{self.pk} {self.numJourney} {self.company}"

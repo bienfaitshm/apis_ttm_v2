@@ -100,10 +100,10 @@ class OtherInfoReservation(PersonalMixin):
         help_text=_("the selected journey reservations")
     )
 
+    gender = models.CharField(_("gender"), max_length=10, choices=GENDERS)
     email = models.EmailField(_("name"), max_length=200)
     num_tel = models.CharField(_("name"), max_length=200)
     num_tel_emergency = models.CharField(_("name"), max_length=200)
-    gender = models.CharField(_("gender"), max_length=10, choices=GENDERS)
     degre_parent = models.CharField(
         _("degre of parent"), max_length=200, help_text="degre of responsable of reservation")
     piece_id = models.CharField(_("name"), max_length=200)

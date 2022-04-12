@@ -62,7 +62,12 @@ class RouteProcess(RouteProcessABC):
 
     @classmethod
     def create(cls, **kwargs):
+        routing: Routing = Routing.objects.create(
+            **kwargs_id_creator(**kwargs))
+        deb: Union[Routing, None] = routing.whereFrom
+        # dest: Union[Routing,None]= routing.whereTo
 
-        routing = Routing.objects.create(**kwargs_id_creator(**kwargs))
-
+        if deb != None:
+            deb.whereTo = routing
+            deb.save()
         return routing
