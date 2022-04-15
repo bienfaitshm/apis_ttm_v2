@@ -24,7 +24,7 @@ class JourneyClientFolder(BaseModel):
 class JourneySession(BaseModel):
     key = models.CharField(_("key session folder"),
                            unique=True, max_length=200)
-    dateExpiration = models.DateTimeField(_("expiration date"))
+    date_expiration = models.DateTimeField(_("expiration date"))
 
     def __str__(self) -> str:
         return self.key
@@ -37,10 +37,13 @@ class SeletectedJourney(BaseModel):
         "journey"), on_delete=models.CASCADE, related_name="journey_selected")
     session = models.OneToOneField(JourneySession, verbose_name=_(
         "session"), on_delete=models.CASCADE, related_name="session_journey_selected")
-    numberAdult = models.IntegerField(_("number of adult"), default=1)
-    numberChild = models.IntegerField(_("number of child"), default=0)
-    numberBaby = models.IntegerField(_("number of baby"), default=0)
-    last_step = models.IntegerField(_("the last step"), default=1)
+    adult = models.IntegerField(_("number of adult"), default=1)
+    child = models.IntegerField(_("number of child"), default=0)
+    baby = models.IntegerField(_("number of baby"), default=0)
+
+    @property
+    def journey_class(self):
+        return 2
 
 
 class Passenger(PersonalMixin):

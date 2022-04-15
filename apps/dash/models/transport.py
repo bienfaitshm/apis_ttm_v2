@@ -138,30 +138,6 @@ class Journey(BaseModel):
         return f"{self.pk} {self.numJourney} {self.company}"
 
     @property
-    def price(self):
-        return 0
-
-    @property
-    def devise(self):
-        return 'CDF'
-
-    @property
-    def is_direct(self) -> bool:
-        return True
-
-    @property
-    def trajets(self):
-        routes = self.get_routes()
-        return make_trajet(get_routes(link_routes(routes)))
-
-    def get_routes(self):
-        return self.routes.all()
-
-    def get_journey_routes(self):
-        if hasattr(self, "journey_routes"):
-            return self.journey_routes.all()
-
-    @property
     def exprired(self) -> bool:
         now = datetime.datetime.now()
         day_expired = self.dateDeparture > now.date()
