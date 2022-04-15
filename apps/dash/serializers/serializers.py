@@ -1,6 +1,8 @@
 from email.policy import default
+from pickle import FALSE, TRUE
 from rest_framework import serializers
 from apps.dash.process.routes import RouteProcess
+from apps.dash.process.tarif import get_tarif_of_route
 
 from apps.dash.serializers.type import JourneyDataType
 from ..models.technique import Cars, Seat, CabinePlane
@@ -88,40 +90,40 @@ class PointOfSaleWorkerSerializer(serializers.ModelSerializer):
 
 
 class JourneySerializer(serializers.ModelSerializer):
-    direct = serializers.BooleanField(
-        source="is_direct", default=False, read_only=True)
+    direct = serializers.SerializerMethodField(method_name="get_is_direct")
 
     class Meta:
         model = Journey
         fields = "__all__"
 
-    def create(self, validated_data: JourneyDataType):
-        journey_routes = validated_data.pop('journey_routes')
-        journey_instance = Journey.objects.create(**validated_data)
-
-        # r_journey = [
-        #     RouteJourney(
-        #         price=i.get('price'),
-        #         devise=i.get('devise'),
-        #         route=i.get('route'),
-        #         journey=journey_instance
-        #     ) for i in journey_routes
-        # ]
-
-        # RouteJourney.objects.bulk_create(r_journey)
-
-        return journey_instance
+    def get_is_direct(self, obj: Journey):
+        return RouteProcess.number_of_escale(obj.route) <= 0
 
 
 class JourneyMoreInfoSerializer(JourneySerializer):
-    routes = RoutingMoreInfoSerializer(many=True)
+    route = RoutingMoreInfoSerializer()
+    scales = serializers.SerializerMethodField(method_name="get_escales")
+    depart = serializers.SerializerMethodField(method_name="get_depart")
+    destination = serializers.SerializerMethodField(
+        method_name="get_destination")
+    tarif = serializers.SerializerMethodField(
+        method_name="get_tarif")
 
     class Meta(JourneySerializer.Meta):
         pass
 
-    def is_direct(self, instance):
-        print("is_direct :", instance.is_direct)
-        return True
+    def get_tarif(self, obj: Journey):
+        return JourneyTarifSerializer(instance=get_tarif_of_route(obj.route), many=True).data
+
+    def get_depart(self, obj: Journey):
+        return CoverCitySerializer(instance=RouteProcess.first(obj.route)).data
+
+    def get_destination(self, obj: Journey):
+        return CoverCitySerializer(instance=obj.route.node).data
+
+    def get_escales(self, obj: Journey):
+        escales = RouteProcess.get_scale(obj.route)
+        return CoverCitySerializer(instance=escales, many=True).data
 
 
 class JourneyClassSerializer(serializers.ModelSerializer):
@@ -131,6 +133,9 @@ class JourneyClassSerializer(serializers.ModelSerializer):
 
 
 class JourneyTarifSerializer(serializers.ModelSerializer):
+    class_name = serializers.CharField(
+        source="journey_class.name", read_only=True)
+
     class Meta:
         model = JourneyTarif
         fields = "__all__"

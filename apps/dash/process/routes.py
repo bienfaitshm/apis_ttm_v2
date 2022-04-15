@@ -43,8 +43,8 @@ class RouteProcess(RouteProcessABC):
         "whereTo": null
 
     """
-
-    def first(self, destination: Routing) -> Union[CoverCity, None]:
+    @classmethod
+    def first(cls, destination: Routing) -> Union[CoverCity, None]:
         first = None
         current = destination
         while current != None:
@@ -52,13 +52,29 @@ class RouteProcess(RouteProcessABC):
             current = current.whereFrom
         return first
 
-    def last(self, debut=Routing) -> Union[CoverCity, None]:
+    @classmethod
+    def last(cls, debut=Routing) -> Union[CoverCity, None]:
         last = None
         current = debut
         while current != None:
             last = current.node
             current = current.whereTo
         return last
+
+    @classmethod
+    def number_of_escale(cls, route: Routing):
+        return len(cls.get_scale(route))
+
+    @classmethod
+    def get_scale(cls, route: Routing):
+        escale = []
+        current = route
+        while current != None:
+            if current.whereFrom and current.whereTo:
+                escale.append(current.node)
+            current = current.whereFrom
+        escale.reverse()
+        return escale
 
     @classmethod
     def create(cls, **kwargs):
