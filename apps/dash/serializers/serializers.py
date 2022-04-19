@@ -131,7 +131,8 @@ class JourneyMoreInfoSerializer(JourneySerializer):
         return CoverCitySerializer(instance=RouteProcess.first(obj.route)).data
 
     def get_destination(self, obj: Journey):
-        return CoverCitySerializer(instance=obj.route.node).data
+        if hasattr(obj.route, "node") and obj.route.node:
+            return CoverCitySerializer(instance=obj.route.node).data
 
     def get_escales(self, obj: Journey):
         escales = RouteProcess.get_scale(obj.route)
