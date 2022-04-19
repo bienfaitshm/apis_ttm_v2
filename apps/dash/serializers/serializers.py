@@ -75,12 +75,24 @@ class RoutingSerializer(serializers.ModelSerializer):
 
 
 class RoutingMoreInfoSerializer(serializers.ModelSerializer):
-    # whereFrom = serializers.CharField(source="whereFrom.town")
-    # whereTo = serializers.CharField(source="whereTo.town")
+    whereFromTown = serializers.SerializerMethodField(method_name="get_depart")
+    whereToTown = serializers.SerializerMethodField(
+        method_name="get_destination")
+    escales = serializers.SerializerMethodField(method_name="get_escales")
 
     class Meta:
         model = Routing
         fields = "__all__"
+
+    def get_depart(self, obj: Routing):
+        return CoverCitySerializer(instance=RouteProcess.first(obj)).data
+
+    def get_destination(self, obj: Routing):
+        return CoverCitySerializer(instance=RouteProcess.last(obj)).data
+
+    def get_escales(self, obj: Routing):
+        escales = RouteProcess.get_scale(obj)
+        return CoverCitySerializer(instance=escales, many=True).data
 
 
 class PointOfSaleWorkerSerializer(serializers.ModelSerializer):

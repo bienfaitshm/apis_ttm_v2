@@ -104,15 +104,16 @@ class OtherInfoReservation(PersonalMixin):
     )
 
     gender = models.CharField(_("gender"), max_length=10, choices=GENDERS)
-    email = models.EmailField(_("name"), max_length=200)
-    num_tel = models.CharField(_("name"), max_length=200)
-    num_tel_emergency = models.CharField(_("name"), max_length=200)
+    email = models.EmailField(_("email"), max_length=200)
+    num_tel = models.CharField(_("num_tel"), max_length=200)
+    num_tel_emergency = models.CharField(
+        _("num_tel_emergency"), max_length=200)
     degre_parent = models.CharField(
         _("degre of parent"), max_length=200, help_text="degre of responsable of reservation")
-    piece_id = models.CharField(_("name"), max_length=200)
-    num_piece_id = models.CharField(_("name"), max_length=200)
-    adress_from = models.CharField(_("name"), max_length=250)
-    adress_to = models.CharField(_("name"), max_length=250)
+    piece_id = models.CharField(_("piece_id"), max_length=200)
+    num_piece_id = models.CharField(_("num_piece_id"), max_length=200)
+    adress_from = models.CharField(_("adress_from"), max_length=250)
+    adress_to = models.CharField(_("adress_to"), max_length=250)
 
     def __str__(self):
         return f"{self.pk} {self.firstname}"

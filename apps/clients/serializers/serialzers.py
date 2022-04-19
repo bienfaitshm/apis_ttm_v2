@@ -17,12 +17,6 @@ class FretPassengerSerializer(serializers.ModelSerializer):
 
 
 class OtherInfoReservationSerializer(serializers.ModelSerializer):
-    sexe = serializers.CharField(source="gender", read_only=True)
-    session = fields.SessionField(
-        required=True, write_only=True,
-        queryset=SeletectedJourney.objects.all()
-    )
-
     class Meta:
         model = OtherInfoReservation
         fields = "__all__"
