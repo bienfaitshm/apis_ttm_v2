@@ -58,6 +58,7 @@ Django = "==3.2.9"
 Markdown = "==3.3.4"
 PyJWT = "*"
 psycopg2 = "*"
+pillow = "*"
 
 [dev-packages]
 
