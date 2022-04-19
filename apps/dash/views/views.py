@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from rest_framework import filters
-from ..filters.filters import IsComponyFilterBackend, SearchWhereFromToFilterBackend
+from ..filters.filters import FromWhereFromeFilterBackend, IsComponyFilterBackend, SearchWhereFromToFilterBackend
 
 from ..serializers import (
     CarSerializer, CoverCitySerializer, JourneyMoreInfoSerializer, JourneySerializer, PointOfSaleSerializer,
@@ -76,7 +76,7 @@ class PointOfSaleView(viewsets.ModelViewSet):
 class RoutingView(viewsets.ModelViewSet):
     serializer_class = RoutingSerializer
     queryset = Routing.objects.all()
-    filter_backends = [IsComponyFilterBackend, ]
+    filter_backends = [IsComponyFilterBackend, FromWhereFromeFilterBackend]
 
     def get_serializer_class(self):
         if self.action == "list" or self.action == "retrieve":

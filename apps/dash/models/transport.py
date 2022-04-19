@@ -18,6 +18,7 @@ class CoverCity(BaseModel):
         Company, on_delete=models.CASCADE, related_name="cities")
     town = models.CharField(_("cover city"), max_length=200)
     code = models.CharField(_("code"), max_length=200, null=True)
+    image = models.ImageField(_("picture of city"), null=True)
     latitude = models.FloatField(_("latitude"), null=True, default=None)
     longitude = models.FloatField(_("latitude"), null=True, default=None)
 

@@ -66,6 +66,11 @@ class SearchJourneyFilterBackend(filters.BaseFilterBackend):
         return queryset
 
 
+class FromWhereFromeFilterBackend(filters.BaseFilterBackend):
+    def filter_queryset(self, request, queryset, view):
+        return queryset.filter(whereFrom=None)
+
+
 class SearchWhereFromToFilterBackend(filters.BaseFilterBackend):
     """
     Filter that only allows users to see their own objects.
@@ -74,10 +79,12 @@ class SearchWhereFromToFilterBackend(filters.BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
         whereFrom = request.query_params.get('whereFrom')
         if whereFrom:
-            queryset = queryset.filter(routing__whereFrom__town__icontains=whereFrom)
+            queryset = queryset.filter(
+                routing__whereFrom__town__icontains=whereFrom)
         whreTo = request.query_params.get('whreTo')
         if whreTo:
-            queryset = queryset.filter(routing__whreTo__town__icontains=whereFrom)
+            queryset = queryset.filter(
+                routing__whreTo__town__icontains=whereFrom)
         return queryset
 
     def get_schema_fields(self, view):
