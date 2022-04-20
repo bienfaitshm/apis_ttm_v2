@@ -96,7 +96,7 @@ DATABASES = {
         'USER': "mluijfgijaivkx",
         'PASSWORD': "9d36ff51c5c6a2804ed86324fa4260cb0cefc0993a79907f5877217c00ee2d27",
         'HOST': "ec2-52-73-155-171.compute-1.amazonaws.com",
-        # 'PORT': "5432",  # 5432 by default
+        'PORT': "5432",  # 5432 by default
     },
 
     # 'default': {
