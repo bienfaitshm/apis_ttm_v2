@@ -41,8 +41,9 @@ class PassengerJourneyReservation(serializers.Serializer):
         passengers: list = validated_data.get("passengers")
         session = validated_data.get("session")
         result = Passenger.objects.bulk_create([
-            Passenger(**i, journey=session.session_journey_selected) for i in passengers
+            Passenger(**i, journey=session) for i in passengers
         ])
+        print(validated_data)
         return result
 
 
@@ -51,11 +52,11 @@ class OtherInfoJourneyReservation(serializers.Serializer):
         required=True, write_only=True,
         queryset=SeletectedJourney.objects.all()
     )
-    other_info = OtherInfoReservationSerializer()
+    other_info = OtherInfoReservationSerializer(write_only=True)
 
     def create(self, validated_data: dict):
         other_info: list = validated_data.get("other_info")
         session = validated_data.get("session")
         result = OtherInfoReservation.objects.create(
-            **other_info, journey=session.session_journey_selected)
+            **other_info, journey=session)
         return result

@@ -1,6 +1,6 @@
 from rest_framework import generics
 
-from ..serializers.reservation import PassengerJourneyReservation, SelectjourneyReservation, OtherInfoReservationSerializer
+from ..serializers.reservation import PassengerJourneyReservation, SelectjourneyReservation, OtherInfoJourneyReservation
 from ..models import SeletectedJourney, Passenger, OtherInfoReservation
 
 
@@ -14,6 +14,6 @@ class PassengerJourneyReservationView(generics.CreateAPIView):
     serializer_class = PassengerJourneyReservation
 
 
-class PassengerJourneyReservationView(generics.CreateAPIView):
+class OtherInfoReservationView(generics.CreateAPIView):
     queryset = OtherInfoReservation.objects.all()
-    serializer_class = OtherInfoReservationSerializer
+    serializer_class = OtherInfoJourneyReservation

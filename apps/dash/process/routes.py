@@ -53,6 +53,15 @@ class RouteProcess(RouteProcessABC):
         return first
 
     @classmethod
+    def firstroute(cls, destination: Routing):
+        first = None
+        current = destination
+        while current != None:
+            first = current
+            current = current.whereFrom
+        return first
+
+    @classmethod
     def last(cls, debut=Routing) -> Union[CoverCity, None]:
         last = None
         current = debut
@@ -68,11 +77,11 @@ class RouteProcess(RouteProcessABC):
     @classmethod
     def get_scale(cls, route: Routing):
         escale = []
-        current = route
+        current = cls.firstroute(route)
         while current != None:
-            if current.whereFrom and current.whereTo:
+            if hasattr(current, 'whereFrom') and hasattr(current, "whereTo") and current.whereFrom and current.whereTo:
                 escale.append(current.node)
-            current = current.whereFrom
+            current = current.whereTo
         escale.reverse()
         return escale
 
