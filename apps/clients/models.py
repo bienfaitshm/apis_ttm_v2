@@ -31,6 +31,10 @@ class JourneySession(BaseModel):
 
 
 class SeletectedJourney(BaseModel):
+    _STATUS = [("OPTION", _('in option')), ("CORFIMED",
+                                            _('confirme')),  ("CANCELED", _('annule'))]
+    state = models.CharField(
+        _('status reservation'), max_length=20, choices=_STATUS, default="OPTION")
     folder = models.ForeignKey(JourneyClientFolder, verbose_name=_(
         "folder"), on_delete=models.CASCADE, related_name="folder_journey_selected")
     journey = models.ForeignKey(Journey, verbose_name=_(
