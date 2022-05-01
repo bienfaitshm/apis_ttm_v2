@@ -82,7 +82,6 @@ class RouteProcess(RouteProcessABC):
             if hasattr(current, 'whereFrom') and hasattr(current, "whereTo") and current.whereFrom and current.whereTo:
                 escale.append(current.node)
             current = current.whereTo
-        escale.reverse()
         return escale
 
     @classmethod

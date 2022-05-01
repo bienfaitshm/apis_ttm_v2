@@ -2,7 +2,7 @@ from utils.base_model import BaseModel
 from django.contrib.auth.models import BaseUserManager, User
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
-from django.utils.translation import gettext as _
+from django.utils.translation import activate, gettext as _
 
 
 class UserManager(BaseUserManager):
@@ -36,7 +36,7 @@ class UserManager(BaseUserManager):
     def create_superuser(self, username, password, phone=None, email=None):
         user = self.create_user(
             username=username, password=password, is_staff=True, is_admin=True,
-            phone=phone, email=email
+            phone=phone, email=email, is_active=True
         )
         return user
 
@@ -64,7 +64,7 @@ class Users(AbstractBaseUser):
     objects = UserManager()
 
     USERNAME_FIELD = "username"
-    REQUIRED_FIELDS = ["email",'phone']
+    REQUIRED_FIELDS = ["email", 'phone']
 
     def __str__(self):
         return f"{self.username}"

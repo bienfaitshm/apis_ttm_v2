@@ -79,10 +79,15 @@ class RoutingMoreInfoSerializer(serializers.ModelSerializer):
     whereToTown = serializers.SerializerMethodField(
         method_name="get_destination")
     escales = serializers.SerializerMethodField(method_name="get_escales")
+    last_route = serializers.SerializerMethodField(
+        method_name="get_last_route")
 
     class Meta:
         model = Routing
         fields = "__all__"
+
+    def get_last_route(self, obj):
+        return RouteProcess.last(obj).pk
 
     def get_depart(self, obj: Routing):
         return CoverCitySerializer(instance=RouteProcess.first(obj)).data
@@ -107,6 +112,9 @@ class JourneySerializer(serializers.ModelSerializer):
     class Meta:
         model = Journey
         fields = "__all__"
+        extra_kwargs = {
+            'route': {'required': True, "allow_null": False}
+        }
 
     def get_is_direct(self, obj: Journey):
         return RouteProcess.number_of_escale(obj.route) <= 0

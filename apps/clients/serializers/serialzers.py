@@ -42,9 +42,6 @@ class JourneyClientFolderSerializer(serializers.ModelSerializer):
 
 
 class PassengerSerializer(serializers.ModelSerializer):
-    type = serializers.CharField(source="typeUser", read_only=True)
-    sexe = serializers.CharField(source="gender", read_only=True)
-
     class Meta:
         model = Passenger
         fields = "__all__"

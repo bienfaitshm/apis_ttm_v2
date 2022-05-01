@@ -1,75 +1,75 @@
 [
-{
-    "model": "account.users",
-    "pk": 1,
-    "fields": {
-        "last_login": "2022-03-25T07:21:27.812Z",
-        "email": "bienfaitshm@gmail.com",
-        "phone": "0973888289",
-        "username": "bienfait",
-        "password": "pbkdf2_sha256$260000$mP2GYVIHiG7oMmrOmJWDf2$ajZ6DOcU6eHRuVU5fANRkHyqe1IqUEVyeAaG5w5hHus=",
-        "active": false,
-        "staff": true,
-        "admin": true,
-        "type_user": ""
+    {
+        "model": "account.users",
+        "pk": 1,
+        "fields": {
+            "last_login": "2022-03-25T07:21:27.812Z",
+            "email": "bienfaitshm@gmail.com",
+            "phone": "0973888289",
+            "username": "bienfait",
+            "password": "pbkdf2_sha256$260000$mP2GYVIHiG7oMmrOmJWDf2$ajZ6DOcU6eHRuVU5fANRkHyqe1IqUEVyeAaG5w5hHus=",
+            "active": true,
+            "staff": true,
+            "admin": true,
+            "type_user": ""
+        }
+    },
+    {
+        "model": "account.users",
+        "pk": 2,
+        "fields": {
+            "last_login": null,
+            "email": "guellordmbiya@26gmail.com",
+            "phone": "903429770",
+            "username": "GuellodrMbiya",
+            "password": "pbkdf2_sha256$260000$rBy9QlZ6qCC5RbzZEU6zsB$vK+rHpnswVU+bQaFHfVqahmO0LV5gFE11xKva9TFKWM=",
+            "active": false,
+            "staff": false,
+            "admin": false,
+            "type_user": ""
+        }
+    },
+    {
+        "model": "account.users",
+        "pk": 3,
+        "fields": {
+            "last_login": null,
+            "email": "beto@mail.com",
+            "phone": "903429771",
+            "username": "Beto",
+            "password": "pbkdf2_sha256$260000$1jdqgF2weuSUbwNPs68lEH$sHXRLxPevWWfi2/rmiUnWAb7P0YidYAynzkpoPSctXg=",
+            "active": false,
+            "staff": false,
+            "admin": false,
+            "type_user": ""
+        }
+    },
+    {
+        "model": "account.company",
+        "pk": 3,
+        "fields": {
+            "date_created": "2022-04-05T13:17:40.934Z",
+            "date_updated": "2022-04-05T13:17:40.934Z",
+            "nom": "MbiyaCompany",
+            "code": "0001",
+            "slogan": "Bonjour",
+            "mail": "zendaya@gmail.com",
+            "responsable": "Zendaya",
+            "description": "ertyuiodfjhgvjhgv"
+        }
+    },
+    {
+        "model": "account.company",
+        "pk": 4,
+        "fields": {
+            "date_created": "2022-04-05T13:32:24.451Z",
+            "date_updated": "2022-04-05T13:32:24.451Z",
+            "nom": "Zendaya Company",
+            "code": "0002",
+            "slogan": "sdgfjghfjg",
+            "mail": "zendaya@gmail.com",
+            "responsable": "Zendaya",
+            "description": "ertyuiodfjhgvjhgv"
+        }
     }
-},
-{
-    "model": "account.users",
-    "pk": 2,
-    "fields": {
-        "last_login": null,
-        "email": "guellordmbiya@26gmail.com",
-        "phone": "903429770",
-        "username": "GuellodrMbiya",
-        "password": "pbkdf2_sha256$260000$rBy9QlZ6qCC5RbzZEU6zsB$vK+rHpnswVU+bQaFHfVqahmO0LV5gFE11xKva9TFKWM=",
-        "active": false,
-        "staff": false,
-        "admin": false,
-        "type_user": ""
-    }
-},
-{
-    "model": "account.users",
-    "pk": 3,
-    "fields": {
-        "last_login": null,
-        "email": "beto@mail.com",
-        "phone": "903429771",
-        "username": "Beto",
-        "password": "pbkdf2_sha256$260000$1jdqgF2weuSUbwNPs68lEH$sHXRLxPevWWfi2/rmiUnWAb7P0YidYAynzkpoPSctXg=",
-        "active": false,
-        "staff": false,
-        "admin": false,
-        "type_user": ""
-    }
-},
-{
-    "model": "account.company",
-    "pk": 3,
-    "fields": {
-        "date_created": "2022-04-05T13:17:40.934Z",
-        "date_updated": "2022-04-05T13:17:40.934Z",
-        "nom": "MbiyaCompany",
-        "code": "0001",
-        "slogan": "Bonjour",
-        "mail": "zendaya@gmail.com",
-        "responsable": "Zendaya",
-        "description": "ertyuiodfjhgvjhgv"
-    }
-},
-{
-    "model": "account.company",
-    "pk": 4,
-    "fields": {
-        "date_created": "2022-04-05T13:32:24.451Z",
-        "date_updated": "2022-04-05T13:32:24.451Z",
-        "nom": "Zendaya Company",
-        "code": "0002",
-        "slogan": "sdgfjghfjg",
-        "mail": "zendaya@gmail.com",
-        "responsable": "Zendaya",
-        "description": "ertyuiodfjhgvjhgv"
-    }
-}
 ]

@@ -4,7 +4,7 @@ from django.utils.translation import gettext as _
 from utils.base_model import BaseModel
 from apps.account.models import Client, PersonalMixin
 from apps.dash.models.technique import Seat
-from apps.dash.models.transport import Journey, Routing
+from apps.dash.models.transport import Journey, JourneyClass, Routing
 
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -17,7 +17,7 @@ class JourneyClientFolder(BaseModel):
     client = models.ForeignKey(
         Client, verbose_name=_("client"), related_name="folder", on_delete=models.CASCADE, null=True)
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.number
 
 
@@ -26,7 +26,7 @@ class JourneySession(BaseModel):
                            unique=True, max_length=200)
     date_expiration = models.DateTimeField(_("expiration date"))
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.key
 
 
@@ -44,10 +44,8 @@ class SeletectedJourney(BaseModel):
     adult = models.IntegerField(_("number of adult"), default=1)
     child = models.IntegerField(_("number of child"), default=0)
     baby = models.IntegerField(_("number of baby"), default=0)
-
-    @property
-    def journey_class(self):
-        return 2
+    journey_class = models.ForeignKey(JourneyClass, verbose_name=_(
+        "journe's class"), on_delete=models.SET_DEFAULT, default=None, null=True)
 
 
 class Passenger(PersonalMixin):
