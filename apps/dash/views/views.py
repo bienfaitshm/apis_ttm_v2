@@ -58,9 +58,12 @@ class JourneyView(viewsets.ModelViewSet):
     search_fields = ['numJourney']
 
     def get_serializer_class(self):
-        if self.action == "list" or self.action == "retrieve":
+        if self.action in ["list", "retrieve"]:
             return JourneyMoreInfoSerializer
         return super().get_serializer_class()
+
+    def get_queryset(self):
+        return self.queryset.exclude(route=None)
 
 
 class PointOfSaleWorkerView(viewsets.ModelViewSet):
@@ -81,6 +84,6 @@ class RoutingView(viewsets.ModelViewSet):
     filter_backends = [IsComponyFilterBackend, FromWhereFromeFilterBackend]
 
     def get_serializer_class(self):
-        if self.action == "list" or self.action == "retrieve":
+        if self.action in ["list", "retrieve"]:
             return RoutingMoreInfoSerializer
         return super().get_serializer_class()
