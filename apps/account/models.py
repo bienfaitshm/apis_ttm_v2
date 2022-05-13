@@ -1,3 +1,5 @@
+from django.db.models import CharField
+
 from utils.base_model import BaseModel
 from django.contrib.auth.models import BaseUserManager, User
 from django.db import models
@@ -43,6 +45,7 @@ class UserManager(BaseUserManager):
     def get_by_natural_key(self, username):
         return self.get(username=username)
 
+
 # user model
 
 
@@ -69,13 +72,13 @@ class Users(AbstractBaseUser):
     def __str__(self):
         return f"{self.username}"
 
-    def has_perm(self, perm, obj=None):
+    def has_perm(self, perm, obj=None) -> bool:
         return True
 
     def has_module_perms(self, app_label):
         return True
 
-    def natural_key(self):
+    def natural_key(self) -> CharField:
         return self.username
 
     @property
@@ -136,10 +139,10 @@ class PersonalMixin(BaseModel):
         return self.firstname
 
 
-class Employe (PersonalMixin):
+class Employe(PersonalMixin):
     user = models.OneToOneField(Users, on_delete=models.CASCADE)
     company = models.ForeignKey(Company, null=True, on_delete=models.CASCADE)
 
 
-class Client (PersonalMixin):
+class Client(PersonalMixin):
     user = models.OneToOneField(Users, on_delete=models.CASCADE)

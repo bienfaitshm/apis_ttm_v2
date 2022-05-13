@@ -34,7 +34,7 @@ class SelectjourneyReservation(serializers.ModelSerializer):
         reservation = ReservationJourney()
         return reservation.select_journey(**validated_data)
 
-    def get_tarif(self, objet):
+    def get_tarif(self, objet: object) -> object:
         tarif = get_tarif_for_a_reservation(
             route=objet.journey.route, journey_class=objet.journey_class)
         return JourneyTarifSerializer(tarif).data

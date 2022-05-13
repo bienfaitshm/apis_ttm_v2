@@ -1,6 +1,7 @@
 from rest_framework import viewsets
 from rest_framework import filters
-from ..filters.filters import FromWhereFromeFilterBackend, IsComponyFilterBackend, SearchWhereFromToFilterBackend
+from ..filters.filters import FromWhereFromeFilterBackend, IsComponyFilterBackend
+from ..filters.search_journey import SearchJourneyByDateFilters, SearchJourneyByDepartureFilters, SearchJourneyByDestinationFilters
 
 from ..serializers import (
     CarSerializer, CoverCitySerializer, JourneyMoreInfoSerializer, JourneySerializer, PointOfSaleSerializer,
@@ -51,9 +52,10 @@ class JourneyTarifView(viewsets.ModelViewSet):
 class JourneyView(viewsets.ModelViewSet):
     serializer_class = JourneySerializer
     queryset = Journey.objects.all()
-    # filter_backends = [filters.SearchFilter,
-    #                    IsComponyFilterBackend, SearchWhereFromToFilterBackend]
-    search_fields = ['numJourney', 'price']
+    filter_backends = [filters.SearchFilter,
+                       IsComponyFilterBackend, SearchJourneyByDateFilters,
+                       SearchJourneyByDepartureFilters, SearchJourneyByDestinationFilters]
+    search_fields = ['numJourney']
 
     def get_serializer_class(self):
         if self.action == "list" or self.action == "retrieve":
