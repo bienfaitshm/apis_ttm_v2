@@ -1,5 +1,4 @@
-from email.policy import default
-from pickle import FALSE, TRUE
+
 from rest_framework import serializers
 from apps.dash.process.routes import RouteProcess
 from apps.dash.process.tarif import get_tarif_of_route
@@ -60,7 +59,7 @@ class RoutingProcessSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def get_next(self, obj: Routing):
-        if obj.whereTo == None:
+        if obj.whereTo is None:
             return None
         return RoutingProcessSerializer(obj.whereTo).data
 

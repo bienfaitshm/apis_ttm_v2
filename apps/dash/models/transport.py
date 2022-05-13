@@ -12,7 +12,7 @@ DEVISE = [
     ("USD", "USD")
 ]
 
-
+ 
 class CoverCity(BaseModel):
     company = models.ForeignKey(
         Company, on_delete=models.CASCADE, related_name="cities")
