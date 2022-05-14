@@ -13,9 +13,14 @@
     route = models.ForeignKey(Routing, verbose_name=_(
         "routing"), on_delete=models.SET_DEFAULT, related_name="routing_journies", null=True, default=None)
 """
-from typing import Union, Optional
+from typing import Optional
 from typing import Any
+from rest_framework.compat import coreapi, coreschema
+from django.utils.encoding import force_str
+
 from rest_framework import filters
+
+from apps.dash.process.tarif import get_tarif_of_route
 from ..process.routes import RouteProcess
 
 
@@ -25,8 +30,10 @@ class SearchJourneyByDateFilters(filters.BaseFilterBackend):
 
     def filter_queryset(self, request, queryset, view):
         qs = queryset
-        dateReturn: Optional[str] = request.query_params.get(self.date_dep_name, None)
-        dateDeparture: Optional[str] = request.query_params.get(self.date_ret_name, None)
+        dateReturn: Optional[str] = request.query_params.get(
+            self.date_dep_name, None)
+        dateDeparture: Optional[str] = request.query_params.get(
+            self.date_ret_name, None)
         #
         if dateDeparture:
             qs = qs.filter(dateDeparture=dateDeparture)
@@ -40,8 +47,7 @@ class SearchJourneyByDestinationFilters(filters.BaseFilterBackend):
 
     def filter_queryset(self, request, queryset, view) -> Any:
         qs = queryset
-        where_to = request.query_params.get(self.where_to_name)
-        if where_to:
+        if where_to := request.query_params.get(self.where_to_name):
             qs = qs.filter(route__node=where_to)
         return qs
 
@@ -57,8 +63,47 @@ class SearchJourneyByDepartureFilters(filters.BaseFilterBackend):
             if inital_route and inital_route.node.pk == self.whereFrom:
                 departure.append(journey.route.node)
 
-        #
-        whereFrom = request.query_params.get(self.whereFrom)
-        if whereFrom:
+        if whereFrom := request.query_params.get(self.whereFrom):
             qs = qs.filter(route__node__in=departure)
         return qs
+
+
+class FilterIntensive(filters.BaseFilterBackend):
+    with_route_name = "only_with_route"
+    with_tarif = "only_with_tarif"
+
+    def filter_queryset(self, request, queryset, view):
+        qs = queryset
+
+        if request.query_params.get(self.with_tarif):
+            qs = qs.exclude(route=None)
+        if request.query_params.get(self.with_tarif):
+            qs = [journey for journey in qs if len(
+                list(get_tarif_of_route(journey.route))) > 0]
+        return qs
+
+    def get_schema_fields(self, view):
+        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
+        assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
+        return [
+            coreapi.Field(
+                name="only_with_route",
+                required=False,
+                location='query',
+                schema=coreschema.String(
+                    title=force_str("only_with_route"),
+                    description=force_str(
+                        "only_with_route allow to filter only journey with route")
+                )
+            ),
+            coreapi.Field(
+                name="only_with_tarif",
+                required=False,
+                location='query',
+                schema=coreschema.String(
+                    title=force_str("only_with_tarif"),
+                    description=force_str(
+                        "only_with_tarif allow to filter only journey with route have the tarif")
+                )
+            )
+        ]

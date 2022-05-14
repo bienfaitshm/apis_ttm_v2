@@ -1,7 +1,10 @@
 from rest_framework import viewsets
 from rest_framework import filters
+from apps.dash.filters.routes import FilterRouteType
+
+from apps.dash.process.tarif import get_tarif_of_route
 from ..filters.filters import FromWhereFromeFilterBackend, IsComponyFilterBackend
-from ..filters.search_journey import SearchJourneyByDateFilters, SearchJourneyByDepartureFilters, SearchJourneyByDestinationFilters
+from ..filters.search_journey import FilterIntensive, SearchJourneyByDateFilters, SearchJourneyByDepartureFilters, SearchJourneyByDestinationFilters
 
 from ..serializers import (
     CarSerializer, CoverCitySerializer, JourneyMoreInfoSerializer, JourneySerializer, PointOfSaleSerializer,
@@ -54,7 +57,7 @@ class JourneyView(viewsets.ModelViewSet):
     queryset = Journey.objects.all()
     filter_backends = [filters.SearchFilter,
                        IsComponyFilterBackend, SearchJourneyByDateFilters,
-                       SearchJourneyByDepartureFilters, SearchJourneyByDestinationFilters]
+                       SearchJourneyByDepartureFilters, SearchJourneyByDestinationFilters, FilterIntensive]
     search_fields = ['numJourney']
 
     def get_serializer_class(self):
@@ -62,8 +65,11 @@ class JourneyView(viewsets.ModelViewSet):
             return JourneyMoreInfoSerializer
         return super().get_serializer_class()
 
-    def get_queryset(self):
-        return self.queryset.exclude(route=None)
+    # def get_queryset(self):
+    #     qs = self.queryset.exclude(route=None)
+    #     # not tarif
+
+    #     return qs
 
 
 class PointOfSaleWorkerView(viewsets.ModelViewSet):
@@ -81,7 +87,7 @@ class PointOfSaleView(viewsets.ModelViewSet):
 class RoutingView(viewsets.ModelViewSet):
     serializer_class = RoutingSerializer
     queryset = Routing.objects.all()
-    filter_backends = [IsComponyFilterBackend, FromWhereFromeFilterBackend]
+    filter_backends = [FilterRouteType, IsComponyFilterBackend]
 
     def get_serializer_class(self):
         if self.action in ["list", "retrieve"]:
