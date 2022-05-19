@@ -89,10 +89,12 @@ class RoutingMoreInfoSerializer(serializers.ModelSerializer):
         return RouteProcess.last(obj).pk
 
     def get_depart(self, obj: Routing):
-        return CoverCitySerializer(instance=RouteProcess.first(obj)).data
+        if route := RouteProcess.first(obj):
+            return CoverCitySerializer(instance=route).data
 
     def get_destination(self, obj: Routing):
-        return CoverCitySerializer(instance=RouteProcess.last(obj)).data
+        if route := RouteProcess.last(obj):
+            return CoverCitySerializer(instance=route).data
 
     def get_escales(self, obj: Routing):
         escales = RouteProcess.get_scale(obj)
@@ -117,6 +119,12 @@ class JourneySerializer(serializers.ModelSerializer):
 
     def get_is_direct(self, obj: Journey):
         return RouteProcess.number_of_escale(obj.route) <= 0
+
+    def validate_route(self, value: Journey):
+        if RouteProcess.is_last_route(value):
+            return value
+        raise serializers.ValidationError(
+            "Route is not destination, please affect destination route to the journey")
 
 
 class JourneyMoreInfoSerializer(JourneySerializer):
@@ -159,3 +167,9 @@ class JourneyTarifSerializer(serializers.ModelSerializer):
     class Meta:
         model = JourneyTarif
         fields = "__all__"
+
+    def validate_route(self, value: Journey):
+        if RouteProcess.is_last_route(value):
+            return value
+        raise serializers.ValidationError(
+            "Route is not destination, select a destination route for affecting a tarif")

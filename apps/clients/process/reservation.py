@@ -1,3 +1,9 @@
+"""
+    48h=>3h
+    >48h=>5h
+    1semaine =>12h
+    >2semaines => 24h
+"""
 from abc import ABC, abstractmethod
 import string
 from datetime import datetime

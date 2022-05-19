@@ -1,9 +1,5 @@
 from abc import ABC, abstractmethod
 from typing import Union
-
-from requests import delete
-
-from apps.account.models import Users, Company
 from utils.args_utils import kwargs_id_creator
 from ..models import Routing, CoverCity
 
@@ -45,15 +41,11 @@ class RouteProcess(RouteProcessABC):
     """
     @classmethod
     def first(cls, destination: Routing) -> Union[CoverCity, None]:
-        first = None
-        current = destination
-        while current != None:
-            first = current.node
-            current = current.whereFrom
-        return first
+        if first_route := cls.firstroute(destination=destination):
+            return first_route.node
 
     @classmethod
-    def firstroute(cls, destination: Routing):
+    def firstroute(cls, destination: Routing) -> LinkType:
         first = None
         current = destination
         while current != None:
@@ -63,12 +55,22 @@ class RouteProcess(RouteProcessABC):
 
     @classmethod
     def last(cls, debut=Routing) -> Union[CoverCity, None]:
+        if last_route := cls.last_route(route=debut):
+            return last_route.node
+
+    @classmethod
+    def last_route(cls, route=Routing) -> LinkType:
         last = None
-        current = debut
+        current = route
         while current != None:
-            last = current.node
+            last = current
             current = current.whereTo
         return last
+
+    @classmethod
+    def is_last_route(cls, route=Routing) -> bool:
+        last_route = cls.last_route(route)
+        return last_route.pk == route.pk
 
     @classmethod
     def number_of_escale(cls, route: Routing):
