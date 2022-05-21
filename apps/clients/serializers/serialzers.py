@@ -1,4 +1,5 @@
 import datetime
+from pickle import TRUE
 from rest_framework import serializers
 from django.utils.crypto import get_random_string
 from utils import fields
@@ -21,6 +22,11 @@ class OtherInfoReservationSerializer(serializers.ModelSerializer):
         model = OtherInfoReservation
         fields = "__all__"
         read_only_fields = ["journey"]
+        extra_kwargs = {
+            'firstname': {'required': False, "allow_null": True},
+            'lastname': {'required': False, "allow_null": True},
+            'middlename': {'required': False, "allow_null": True}
+        }
 
 
 class ValidationPaymentSerializer(serializers.ModelSerializer):
@@ -143,7 +149,6 @@ class InputPassengerInfoStepThreeSerializer(serializers.Serializer):
         write_only_fields = ["passengers", "session"]
 
     def create(self, validated_data):
-        response = {}
         selected_journey = validated_data.get("session")
         passengers = validated_data.get("passengers")
         selected_journey.last_step = 2
@@ -152,8 +157,7 @@ class InputPassengerInfoStepThreeSerializer(serializers.Serializer):
             Passenger(journey=selected_journey, **item) for item in passengers
         ]
         Passenger.objects.bulk_create(items)
-        response["journey_selected"] = selected_journey
-        return response
+        return {"journey_selected": selected_journey}
 
 
 class SelectSeatOfPassengerStepForSerializer(serializers.Serializer):

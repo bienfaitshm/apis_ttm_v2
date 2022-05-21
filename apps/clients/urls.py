@@ -4,13 +4,15 @@ from django.urls import path
 from .views.views import (
     PassengerView
 )
-from .views.reservation import SelectJourneyreservationView, PassengerJourneyReservationView, OtherInfoReservationView
-
+from .views.reservation import (
+    SelectJourneyreservationView, PassengerJourneyReservationView, OtherInfoReservationView, ReachercheJourneyReservationView)
 router = DefaultRouter()
 router.register(r'reservation/passenger', PassengerView, basename='passenger')
 
 
 urlpatterns = [
+    path("reservation/search/", ReachercheJourneyReservationView.as_view(),
+         name="search_journey_reservation"),
     path("reservation/select/", SelectJourneyreservationView.as_view(),
          name="select_journey"),
     path("reservation/passengers/", PassengerJourneyReservationView.as_view(),

@@ -1,7 +1,13 @@
 from rest_framework import generics
 
-from ..serializers.reservation import PassengerJourneyReservation, SelectjourneyReservation, OtherInfoJourneyReservation
-from ..models import SeletectedJourney, Passenger, OtherInfoReservation
+from ..serializers.reservation import ReachercheJourneyReservationSerializer, PassengerJourneyReservation, SelectjourneyReservation, OtherInfoJourneyReservation
+from ..models import SeletectedJourney, Passenger, OtherInfoReservation, ResearchReservation
+
+
+class ReachercheJourneyReservationView(generics.CreateAPIView):
+
+    queryset = ResearchReservation.objects.all()
+    serializer_class = ReachercheJourneyReservationSerializer
 
 
 class SelectJourneyreservationView(generics.CreateAPIView):

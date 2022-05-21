@@ -1,13 +1,31 @@
 from django.utils.translation import gettext as _
 from rest_framework import serializers
+from apps.clients.process.search import SearchProcess
 from apps.clients.process.selectors import get_tarif_for_a_reservation
 from apps.clients.serializers.serialzers import OtherInfoReservationSerializer, PassengerSerializer
 from apps.dash.models.transport import Journey
 from apps.dash.process import routes
 from apps.dash.serializers.serializers import JourneyTarifSerializer
 from utils import fields
-from ..models import SeletectedJourney
+from ..models import SeletectedJourney, ResearchReservation
 from ..process.reservation import ReservationJourney
+
+
+class ReachercheJourneyReservationSerializer(serializers.ModelSerializer):
+    journies = serializers.SerializerMethodField(method_name="get_journies")
+
+    class Meta:
+        model = ResearchReservation
+        # depth = 1
+        fields = "__all__"
+        extra_kwargs = {
+            'journey_class': {'required': True, "allow_null": False},
+            'whereFrom': {'required': True, "allow_null": False},
+            'whereTo': {'required': True, "allow_null": False}
+        }
+
+    def get_journies(self, objt):
+        return SearchProcess.search(objt)
 
 
 class SelectjourneyReservation(serializers.ModelSerializer):
@@ -50,16 +68,14 @@ class SelectjourneyReservation(serializers.ModelSerializer):
         # number of journey
         message.append(_(journey.numJourney))
 
-        # date departure
-        message.append(_(journey.dateDeparture.strftime("%A %d %B %Y")))
-        #
-        message.append(" - Depart a")
+        message.extend(
+            (_(journey.dateDeparture.strftime("%A %d %B %Y")), " - Depart a"))
+
         if depart:
             message.append(depart.town)
 
-        # time depart
-        message.append(journey.hoursDeparture.strftime("%H:%M"))
-        message.append("- Arrivee ")
+        message.extend(
+            (journey.hoursDeparture.strftime("%H:%M"), "- Arrivee "))
         message.append(destination.town)
         # time arrive
         message.append(journey.hoursReturn.strftime("%H:%M"))

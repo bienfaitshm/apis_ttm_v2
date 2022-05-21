@@ -26,7 +26,7 @@ class ModelBaseProcess(ABC):
         Exception: _description_
     """
     @abstractmethod
-    def create(self, *args, **kwargs):
+    def create(self, *args, **kwargs):  # sourcery skip: raise-specific-error
         raise Exception("method not implement")
 
 
@@ -88,7 +88,11 @@ class ReservationJourney:
         return Passenger.objects.filter(journey=jouney)
 
     def add_other_info(self, journey, other_info):
-        return OtherInfoReservation.objects.create(journey=journey, **other_info)
+        existing_other_info = OtherInfoReservation.objects.filter(
+            journey=journey)
+        if not existing_other_info.exists():
+            return OtherInfoReservation.objects.create(journey=journey, **other_info)
+        return existing_other_info.first()
 
     def get_folder(self, *args, **kwargs):
         return self._folder.create(
@@ -101,3 +105,7 @@ class ReservationJourney:
             key=get_random_string(20, string.ascii_letters),
             date_expiration=datetime.now()
         )
+
+
+def getOtherInfo(journey, other_info):
+    passenger = Passenger.objects.filter(journey=journey)

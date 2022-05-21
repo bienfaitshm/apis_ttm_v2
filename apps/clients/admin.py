@@ -1,10 +1,10 @@
 from django.contrib import admin
 from .models import (
     FretPassenger,  JourneyClientFolder, JourneySession, Passenger,
-    PlaceReserved, SeletectedJourney, ValidationPayment, OtherInfoReservation
+    PlaceReserved, SeletectedJourney, ValidationPayment, OtherInfoReservation, ResearchReservation
 )
 # Register your models here.
-
+admin.site.register(ResearchReservation)
 admin.site.register(JourneyClientFolder)
 admin.site.register(SeletectedJourney)
 admin.site.register(FretPassenger)

@@ -29,18 +29,10 @@ class UserManager(BaseUserManager):
         return user_object
 
     def create_staffuser(self, username, password, phone=None, email=None):
-        user = self.create_user(
-            username=username, password=password, is_staff=True,
-            phone=phone, email=email
-        )
-        return user
+        return self.create_user(username=username, password=password, is_staff=True, phone=phone, email=email)
 
     def create_superuser(self, username, password, phone=None, email=None):
-        user = self.create_user(
-            username=username, password=password, is_staff=True, is_admin=True,
-            phone=phone, email=email, is_active=True
-        )
-        return user
+        return self.create_user(username=username, password=password, is_staff=True, is_admin=True, phone=phone, email=email, is_active=True)
 
     def get_by_natural_key(self, username):
         return self.get(username=username)
