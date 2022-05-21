@@ -11,10 +11,10 @@ class SearchJourneyResultSerializers(serializers.Serializer):
     campanyName = serializers.CharField()
     cars = serializers.CharField()
     journey = JourneySerializer()
-    adultPrice = serializers.FloatField()
-    childPrice = serializers.FloatField()
-    babyPrice = serializers.FloatField()
-    total = serializers.FloatField()
+    adultPrice = serializers.CharField()
+    childPrice = serializers.CharField()
+    babyPrice = serializers.CharField()
+    total = serializers.CharField()
     journeyClass = JourneyClassSerializer()
     scales = CoverCitySerializer(many=True)
     depart = CoverCitySerializer()
@@ -31,15 +31,19 @@ class SearchProcess:
             price = get_tarif_of_route(jrny.route).filter(
                 journey_class=values.journey_class).first()
             # price...
-            total = price.pttc_adulte() + price.pttc_child() + price.pttc_baby()
+            adult = price.pttc_adulte() * values.adult
+            child = price.pttc_child() * values.child
+            inch = price.pttc_baby() * values.baby
+            total = adult + child + inch
+
             journies.append({
                 "journey": jrny,
                 "cars": jrny.cars.codeAppareil,
                 "campanyName": jrny.company.nom,
-                "adultPrice": price.pttc_adulte(),
-                "childPrice": price.pttc_child(),
-                "babyPrice": price.pttc_baby(),
-                "total": total,
+                "adultPrice": f"{adult} {price.devise}",
+                "childPrice": f"{child} {price.devise}",
+                "babyPrice": f"{inch} {price.devise}",
+                "total": f"{total} {price.devise}",
                 "journeyClass": values.journey_class,
                 "scales": RouteProcess.get_scale(jrny.route),
                 "depart": RouteProcess.first(jrny.route),
