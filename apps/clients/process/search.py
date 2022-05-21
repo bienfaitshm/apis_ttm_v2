@@ -28,27 +28,26 @@ class SearchProcess:
         queryset = cls.get_queryset()
         for journey in queryset:
             jrny: Journey = journey
-            price = get_tarif_of_route(jrny.route).filter(
-                journey_class=values.journey_class).first()
-            # price...
-            adult = price.pttc_adulte() * values.adult
-            child = price.pttc_child() * values.child
-            inch = price.pttc_baby() * values.baby
-            total = adult + child + inch
+            if price := get_tarif_of_route(jrny.route).filter(journey_class=values.journey_class).first():
+                # price...
+                adult = price.pttc_adulte() * values.adult
+                child = price.pttc_child() * values.child
+                inch = price.pttc_baby() * values.baby
+                total = adult + child + inch
 
-            journies.append({
-                "journey": jrny,
-                "cars": jrny.cars.codeAppareil,
-                "campanyName": jrny.company.nom,
-                "adultPrice": f"{adult} {price.devise}",
-                "childPrice": f"{child} {price.devise}",
-                "babyPrice": f"{inch} {price.devise}",
-                "total": f"{total} {price.devise}",
-                "journeyClass": values.journey_class,
-                "scales": RouteProcess.get_scale(jrny.route),
-                "depart": RouteProcess.first(jrny.route),
-                "destination": RouteProcess.last(jrny.route),
-            })
+                journies.append({
+                    "journey": jrny,
+                    "cars": jrny.cars.codeAppareil,
+                    "campanyName": jrny.company.nom,
+                    "adultPrice": f"{adult} {price.devise}",
+                    "childPrice": f"{child} {price.devise}",
+                    "babyPrice": f"{inch} {price.devise}",
+                    "total": f"{total} {price.devise}",
+                    "journeyClass": values.journey_class,
+                    "scales": RouteProcess.get_scale(jrny.route),
+                    "depart": RouteProcess.first(jrny.route),
+                    "destination": RouteProcess.last(jrny.route),
+                })
         return journies
 
     @classmethod
@@ -57,4 +56,7 @@ class SearchProcess:
 
     @classmethod
     def get_queryset(cls):
-        return Journey.objects.all()
+        qs = Journey.objects.exclude(route=None)
+        qs = [journey for journey in qs if len(
+            list(get_tarif_of_route(journey.route))) > 0]
+        return qs

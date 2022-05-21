@@ -74,7 +74,6 @@ class FilterIntensive(filters.BaseFilterBackend):
 
     def filter_queryset(self, request, queryset, view):
         qs = queryset
-
         if request.query_params.get(self.with_tarif):
             qs = qs.exclude(route=None)
         if request.query_params.get(self.with_tarif):
