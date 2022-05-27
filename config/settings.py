@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'djoser',
     'django_filters',
     'corsheaders',
+    "debug_toolbar",
     #
     "apps.account.apps.AccountsConfig",
     "apps.clients.apps.ClientsConfig",
@@ -63,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -171,6 +173,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
+INTERNAL_IPS = [
+    # ...
+    "127.0.0.1",
+    # ...
+]
 REST_FRAMEWORK = {
     "SEARCH_PARAM": "q",
     "DEFAULT_AUTHENTICATION_CLASSES": [

@@ -86,7 +86,7 @@ class RoutingMoreInfoSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def get_last_route(self, obj):
-        return RouteProcess.last(obj).pk
+        return RouteProcess.last_route(obj).pk
 
     def get_depart(self, obj: Routing):
         if route := RouteProcess.first(obj):

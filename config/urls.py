@@ -27,8 +27,9 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('__debug__/', include('debug_toolbar.urls')),
     path("time", current_datetime),
-    path("",index),
+    path("", index),
     # documentaion route...
     re_path(r'^docs/swagger(?P<format>\.json|\.yaml)/$',
             schema_view.without_ui(cache_timeout=0), name='schema-json'),
@@ -45,6 +46,6 @@ urlpatterns = [
     path("", include("apps.dash.urls")),
     path("", include("apps.clients.urls")),
     path('graphql/', csrf_exempt(
-            jwt_cookie(
-                GraphQLView.as_view(graphiql=True, schema=schema)))),
-]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+        jwt_cookie(
+            GraphQLView.as_view(graphiql=True, schema=schema)))),
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
