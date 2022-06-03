@@ -1,9 +1,8 @@
-from rest_framework import viewsets
-from rest_framework import filters
+from rest_framework import viewsets, filters
 from apps.dash.filters.routes import FilterRouteType
 
-from apps.dash.process.tarif import get_tarif_of_route
-from ..filters.filters import FromWhereFromeFilterBackend, IsComponyFilterBackend
+from utils import methods
+from ..filters.filters import IsComponyFilterBackend
 from ..filters.search_journey import FilterIntensive, SearchJourneyByDateFilters, SearchJourneyByDepartureFilters, SearchJourneyByDestinationFilters
 
 from ..serializers import (
@@ -61,15 +60,9 @@ class JourneyView(viewsets.ModelViewSet):
     search_fields = ['numJourney']
 
     def get_serializer_class(self):
-        if self.action in ["list", "retrieve"]:
+        if self.action in methods.DETAIL_METHODS:
             return JourneyMoreInfoSerializer
         return super().get_serializer_class()
-
-    # def get_queryset(self):
-    #     qs = self.queryset.exclude(route=None)
-    #     # not tarif
-
-    #     return qs
 
 
 class PointOfSaleWorkerView(viewsets.ModelViewSet):

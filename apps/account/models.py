@@ -1,13 +1,20 @@
 from django.db.models import CharField
+from apps.account.employe_type import Employetype
 
 from utils.base_model import BaseModel
-from django.contrib.auth.models import BaseUserManager, User
+from django.contrib.auth.models import BaseUserManager
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 from django.utils.translation import activate, gettext as _
 
 
 class UserManager(BaseUserManager):
+    def employes(self):
+        return self.filter(type_user=Users.EMPLOYE)
+
+    def clients(self):
+        return self.filter(type_user=Users.CLIENT)
+
     def create_user(self, username, password, email=None, phone=None, is_admin=False, is_staff=False, is_active=False):
         if not username:
             raise ValueError(_("username is required"))
@@ -42,10 +49,13 @@ class UserManager(BaseUserManager):
 
 
 class Users(AbstractBaseUser):
+    CLIENT = "Cl"
+    EMPLOYE = "Ep"
+    BOTH = "Bh"
     TYPE_USER = [
-        ("Cl", "Client"),
-        ("Ep", "Employe"),
-        ("Bh", "Both"),
+        (CLIENT, "Client"),
+        (EMPLOYE, "Employe"),
+        (BOTH, "Both"),
     ]
     email = models.EmailField(max_length=254, unique=True, null=True)
     phone = models.CharField(max_length=254, unique=True, null=True)
@@ -131,9 +141,11 @@ class PersonalMixin(BaseModel):
         return self.firstname
 
 
-class Employe(PersonalMixin):
+class Employe(Employetype, PersonalMixin):
     user = models.OneToOneField(Users, on_delete=models.CASCADE)
     company = models.ForeignKey(Company, null=True, on_delete=models.CASCADE)
+    type_employe = models.CharField(
+        max_length=5, choices=Employetype.EMPLOYE_TYPE)
 
 
 class Client(PersonalMixin):

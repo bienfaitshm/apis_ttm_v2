@@ -1,13 +1,17 @@
 from rest_framework.routers import DefaultRouter
 from django.urls import path
 
-from .views.views import (
-    PassengerView
-)
+from .views import views as ActionView
 from .views.reservation import (
     SelectJourneyreservationView, PassengerJourneyReservationView, OtherInfoReservationView, ReachercheJourneyReservationView)
+
 router = DefaultRouter()
-router.register(r'reservation/passenger', PassengerView, basename='passenger')
+router.register(r'actions/folder',
+                ActionView.JourneyClientFolderView, basename='folder')
+router.register(r"actions/reservations",
+                ActionView.SeletectedJourneyView, basename="reservations")
+router.register(r'actions/passengers',
+                ActionView.PassengerView, basename='passengers')
 
 
 urlpatterns = [

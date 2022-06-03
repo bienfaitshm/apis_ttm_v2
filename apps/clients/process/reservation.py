@@ -101,6 +101,7 @@ class ReservationJourney:
         )
 
     def get_session(self, *args, **kwargs):
+        # TODO temps de l'expiration de reservation et update les expirers
         return self._journey_session.create(
             key=get_random_string(20, string.ascii_letters),
             date_expiration=datetime.now()
