@@ -68,7 +68,7 @@ class SearchProcess:
             dateDeparture__gte=date_depart,
             route__node=arrive,
             route__tarif_routes__journey_class=journey_class
-        ).select_related("route", "cars")
+        ).select_related("route", "cars", "company")
 
         qs = [journey for journey in qs if len(
             list(get_tarif_of_route(journey.route))) > 0]

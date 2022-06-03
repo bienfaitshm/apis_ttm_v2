@@ -5,7 +5,7 @@ from utils.base_model import BaseModel
 from django.contrib.auth.models import BaseUserManager
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
-from django.utils.translation import activate, gettext as _
+from django.utils.translation import gettext as _
 
 
 class UserManager(BaseUserManager):
@@ -142,11 +142,13 @@ class PersonalMixin(BaseModel):
 
 
 class Employe(Employetype, PersonalMixin):
-    user = models.OneToOneField(Users, on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        Users, on_delete=models.CASCADE, related_name="employe")
     company = models.ForeignKey(Company, null=True, on_delete=models.CASCADE)
     type_employe = models.CharField(
         max_length=5, choices=Employetype.EMPLOYE_TYPE)
 
 
 class Client(PersonalMixin):
-    user = models.OneToOneField(Users, on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        Users, on_delete=models.CASCADE, related_name="client")
