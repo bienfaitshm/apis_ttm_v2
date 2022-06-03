@@ -12,7 +12,7 @@ DEVISE = [
     ("USD", "USD")
 ]
 
- 
+
 class CoverCity(BaseModel):
     company = models.ForeignKey(
         Company, on_delete=models.CASCADE, related_name="cities")
@@ -100,7 +100,7 @@ class JourneyTarif(BaseModel):
     journey_class = models.ForeignKey(
         JourneyClass, on_delete=models.CASCADE, related_name='tarif')
     route = models.ForeignKey(Routing, verbose_name=_(
-        "routes"), on_delete=models.CASCADE, related_name="routes")
+        "routes"), on_delete=models.CASCADE, related_name="tarif_routes")
     devise = models.CharField(
         _("money devise"), max_length=5, choices=DEVISE, default="CDF")
     adult = models.FloatField(verbose_name=_('tarif_adult'), default=0.0)

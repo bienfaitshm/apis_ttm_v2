@@ -3,7 +3,7 @@ from apps.dash.process.routes import RouteProcess
 
 from apps.dash.process.tarif import get_tarif_of_route
 from ..models import ResearchReservation
-from apps.dash.models import Journey
+from apps.dash.models import Journey, JourneyClass
 from apps.dash.serializers import JourneyClassSerializer, CoverCitySerializer, JourneySerializer
 
 
@@ -25,10 +25,18 @@ class SearchProcess:
     @classmethod
     def process_data(cls, values: ResearchReservation):
         journies = []
-        queryset = cls.get_queryset()
+        journey_class = values.journey_class
+
+        queryset = cls.get_queryset(
+            date_depart=values.dateDepart,
+            depart=values.whereFrom,
+            arrive=values.whereTo,
+            journey_class=journey_class
+        )
+
         for journey in queryset:
             jrny: Journey = journey
-            if price := get_tarif_of_route(jrny.route).filter(journey_class=values.journey_class).first():
+            if price := get_tarif_of_route(jrny.route).filter(journey_class=journey_class).first():
                 # price...
                 adult = price.pttc_adulte() * values.adult
                 child = price.pttc_child() * values.child
@@ -55,8 +63,13 @@ class SearchProcess:
         return SearchJourneyResultSerializers(cls.process_data(values), many=True).data
 
     @classmethod
-    def get_queryset(cls):
-        qs = Journey.objects.exclude(route=None)
+    def get_queryset(cls, date_depart=None, depart=None, arrive=None, journey_class=None):
+        qs = Journey.objects.exclude(route=None).filter(
+            dateDeparture__gte=date_depart,
+            route__node=arrive,
+            route__tarif_routes__journey_class=journey_class
+        ).select_related("route", "cars")
+
         qs = [journey for journey in qs if len(
             list(get_tarif_of_route(journey.route))) > 0]
         return qs

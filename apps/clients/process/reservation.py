@@ -6,7 +6,7 @@
 """
 from abc import ABC, abstractmethod
 import string
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any, List
 from django.utils.crypto import get_random_string
 
@@ -69,16 +69,9 @@ class ReservationJourney:
         self._folder = JourneyClientFolderModelProcess()
 
     def select_journey(self, *args, **kwargs):
-        print(args, kwargs)
         session = self.get_session()
         folder = self.get_folder()
-        selected = self._selected_journey.create(
-            session=session,
-            folder=folder,
-            **kwargs
-        )
-        print("\t", dir(selected))
-        return selected
+        return self._selected_journey.create(session=session, folder=folder, **kwargs)
 
     def addPassengers(self, jouney, passengers: List[Any]):
         Passenger.objects.bulk_create([
