@@ -106,7 +106,7 @@ LOCAL_DATEBASE = {
 }
 
 DATABASES = {
-    'default': LOCAL_DATEBASE
+    'default': ONLINE_DATABASE
 }
 
 # DATABASES = {
