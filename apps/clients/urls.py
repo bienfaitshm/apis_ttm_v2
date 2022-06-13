@@ -1,6 +1,8 @@
 from rest_framework.routers import DefaultRouter
 from django.urls import path
 
+from apps.clients.views.actions import SplitFolderView, VoidSelectedJourneyView
+
 from .views import views as ActionView
 from .views.reservation import (
     SelectJourneyreservationView, PassengerJourneyReservationView, OtherInfoReservationView, ReachercheJourneyReservationView)
@@ -15,6 +17,9 @@ router.register(r'actions/passengers',
 
 
 urlpatterns = [
+    path("actions/splite", SplitFolderView.as_view(), name="splite_folder"),
+    path("actions/reservations/<id>/void/",
+         VoidSelectedJourneyView.as_view(), name="void_folder"),
     path("reservation/search/", ReachercheJourneyReservationView.as_view(),
          name="search_journey_reservation"),
     path("reservation/select/", SelectJourneyreservationView.as_view(),

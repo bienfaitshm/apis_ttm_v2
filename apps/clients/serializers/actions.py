@@ -11,3 +11,6 @@ class SplitFolderSerialiser(serializers.Serializer):
         queryset=JourneyClientFolder.objects.all())
     passengers = serializers.PrimaryKeyRelatedField(
         queryset=Passenger.objects.all(), write_only=True)
+
+    def create(self, validated_data):
+        return super().create(validated_data)

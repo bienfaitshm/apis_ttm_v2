@@ -5,7 +5,6 @@ from apps.account.models import Company, Employe
 from apps.dash.utils import get_routes_to_string
 from utils.base_model import BaseModel
 from apps.dash.models.technique import Cars
-from utils.trajets import link_routes, get_routes, make_trajet
 
 DEVISE = [
     ("CDF", "CDF"),

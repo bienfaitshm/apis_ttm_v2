@@ -66,10 +66,13 @@ class SeletectedJourney(BaseModel):
 
 
 class Passenger(PersonalMixin):
+    ADULT = 'adult'
+    CHILD = 'child'
+    BABY = 'baby'
     TYPE = [
-        ("adult", _("Adult")),
-        ("child", _("Child")),
-        ("baby", _("Baby")),
+        (ADULT, _("Adult")),
+        (CHILD, _("Child")),
+        (BABY, _("Baby")),
     ]
 
     GENDERS = [

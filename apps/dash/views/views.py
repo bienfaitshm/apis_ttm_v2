@@ -1,5 +1,7 @@
-from rest_framework import viewsets, filters
+from rest_framework import viewsets, filters, generics
 from apps.dash.filters.routes import FilterRouteType
+from utils import methods
+
 
 from utils import methods
 from ..filters.filters import IsComponyFilterBackend
@@ -83,6 +85,10 @@ class RoutingView(viewsets.ModelViewSet):
     filter_backends = [FilterRouteType, IsComponyFilterBackend]
 
     def get_serializer_class(self):
-        if self.action in ["list", "retrieve"]:
+        # get the specifique serializers on method of reading
+        if self.action in methods.DETAIL_METHODS:
             return RoutingMoreInfoSerializer
         return super().get_serializer_class()
+
+    def get_queryset(self):
+        return self.queryset.select_related("whereTo", "node")
