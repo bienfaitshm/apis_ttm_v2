@@ -185,7 +185,8 @@ REST_FRAMEWORK = {
     "SEARCH_PARAM": "q",
     "DEFAULT_AUTHENTICATION_CLASSES": [
         'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication'
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         'rest_framework.permissions.AllowAny',
@@ -201,6 +202,10 @@ DJOSER = {
         'user': 'apps.account.serializers.UserSerializer',
         'current_user': 'apps.account.serializers.UserSerializer',
     },
+}
+
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('Bearer', 'JWT', 'SPEAKER', 'Token', 'Jwt',)
 }
 
 AUTHENTICATION_BACKENDS = [
