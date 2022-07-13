@@ -51,8 +51,8 @@ INSTALLED_APPS = [
     "debug_toolbar",
     #
     "apps.account.apps.AccountsConfig",
-    "apps.clients.apps.ClientsConfig",
     "apps.dash.apps.DashConfig",
+    "apps.clients.apps.ClientsConfig",
 ]
 
 MIDDLEWARE = [
@@ -106,7 +106,7 @@ LOCAL_DATEBASE = {
 }
 
 DATABASES = {
-    'default': ONLINE_DATABASE
+    'default': LOCAL_DATEBASE
 }
 
 # DATABASES = {

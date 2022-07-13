@@ -6,9 +6,6 @@ from apps.account.models import Client, PersonalMixin
 from apps.dash.models.technique import Seat
 from apps.dash.models.transport import Journey, JourneyClass, Routing, CoverCity
 
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-
 
 class ResearchReservation(BaseModel):
     adult = models.IntegerField(_("number of adult"), default=1)
@@ -46,30 +43,33 @@ class JourneySession(BaseModel):
 
 
 class SeletectedJourney(BaseModel):
-    IN_OPTION = "InOption"
-    VOIDED = "Voided"
-    EMITED = "Emis"
-    STATUS = [(IN_OPTION, 'En option'), (VOIDED, "voide"), (EMITED, "Emis")]
+    OPTION = "OP"
+    VOIDED = "VD"
+    EMITED = "ES"
+    RESERVAION_STATUS = [(OPTION, 'In option'),
+                         (VOIDED, "Voided"), (EMITED, "Emis")]
     status = models.CharField(
-        _('status reservation'), max_length=20, choices=STATUS, default=IN_OPTION)
+        verbose_name=_('status reservation'), max_length=20, choices=RESERVAION_STATUS, default=OPTION)
+    adult = models.IntegerField(_("number of adult"), default=1)
+    child = models.IntegerField(_("number of child"), default=0)
+    baby = models.IntegerField(_("number of baby"), default=0)
+    pnr = models.CharField(
+        verbose_name=_("Passenger name record"), max_length=7, unique=True, null=True)
     folder = models.ForeignKey(JourneyClientFolder, verbose_name=_(
         "folder"), on_delete=models.CASCADE, related_name="reservations")
     journey = models.ForeignKey(Journey, verbose_name=_(
         "journey"), on_delete=models.CASCADE, related_name="journey_selected")
     session = models.OneToOneField(JourneySession, verbose_name=_(
         "session"), on_delete=models.CASCADE, related_name="session_journey_selected")
-    adult = models.IntegerField(_("number of adult"), default=1)
-    child = models.IntegerField(_("number of child"), default=0)
-    baby = models.IntegerField(_("number of baby"), default=0)
     journey_class = models.ForeignKey(JourneyClass, verbose_name=_(
         "journe's class"), on_delete=models.SET_DEFAULT, default=None, null=True)
 
 
 class Passenger(PersonalMixin):
-    ADULT = 'adult'
-    CHILD = 'child'
-    BABY = 'baby'
-    TYPE = [
+    ADULT = 'AD'
+    CHILD = 'CHD'
+    BABY = 'INF'
+    PASSENGER_TYPE = [
         (ADULT, _("Adult")),
         (CHILD, _("Child")),
         (BABY, _("Baby")),
@@ -81,10 +81,11 @@ class Passenger(PersonalMixin):
         ("I", _("Indeterminate")),
     ]
 
-    journey = models.ForeignKey(SeletectedJourney, verbose_name=_(
-        "journey"), on_delete=models.CASCADE, related_name="passengers")
+    journey = models.ForeignKey(SeletectedJourney,
+                                verbose_name=_("journey"), on_delete=models.CASCADE, related_name="passengers")
     gender = models.CharField(_("gender"), max_length=10, choices=GENDERS)
-    typeUser = models.CharField(_("type of user"), max_length=20, choices=TYPE)
+    typeUser = models.CharField(
+        verbose_name=_("type of user"), max_length=20, choices=PASSENGER_TYPE, default=ADULT)
 
 
 class PlaceReserved(BaseModel):
@@ -147,32 +148,3 @@ class OtherInfoReservation(PersonalMixin):
 
     def get_full_name(self):
         return f"{self.firstname} {self.middlename} {self.lastname}"
-
-
-class ValidationPayment(BaseModel):
-    journey_selected = models.OneToOneField(
-        SeletectedJourney,
-        verbose_name=_("voyage selectionner"),
-        related_name="payment",
-        on_delete=models.CASCADE
-    )
-    provider = models.CharField(max_length=200, verbose_name="provider", help_text=_(
-        "provider determine the mode of payment"), default="CASH")
-    confirmed = models.BooleanField(
-        verbose_name=_("confirmation"), default=False)
-    costTotal = models.CharField(max_length=200, null=True)
-    date_payment = models.DateTimeField(null=True)
-
-    def __str__(self) -> str:
-        return f"{self.costTotal} {self.confirmed}"
-
-
-@receiver(post_save, sender=SeletectedJourney)
-def creation_validation_signal(sender, instance, created, **kwargs):
-    """
-        the signal to automatise the creation of Validation of payment!
-    """
-    if created:
-        ValidationPayment.objects.create(
-            journey_selected=instance,
-        )

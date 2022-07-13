@@ -3,6 +3,7 @@ from rest_framework import serializers
 from apps.clients.process.search import SearchProcess
 from apps.clients.process.selectors import get_tarif_for_a_reservation
 from apps.clients.serializers.serialzers import OtherInfoReservationSerializer, PassengerSerializer
+from apps.clients.services.reservations_services import create_reservation
 from apps.dash.models.transport import Journey
 from apps.dash.process import routes
 from apps.dash.serializers.serializers import JourneyTarifSerializer
@@ -42,15 +43,19 @@ class SelectjourneyReservation(serializers.ModelSerializer):
         model = SeletectedJourney
         # depth = 2
         exclude = ['folder', 'session']
-        read_only_fields = ['session', 'folder', 'state']
+        read_only_fields = ['session', 'folder', 'state', "pnr"]
         extra_kwargs = {
             'journey_class': {'required': True, "allow_null": False}
         }
 
     def create(self, validated_data: dict):
         """ create a new reservation """
-        reservation = ReservationJourney()
-        return reservation.select_journey(**validated_data)
+        # validated_data.pop("pnr")
+        print(validated_data)
+        journey = validated_data.pop("journey")
+        return create_reservation(journey=journey, **validated_data)
+        # reservation = ReservationJourney()
+        # return reservation.select_journey(**validated_data)
 
     def get_tarif(self, objet: object) -> object:
         tarif = get_tarif_for_a_reservation(

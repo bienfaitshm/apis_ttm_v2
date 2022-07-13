@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (
     CabinePlane, Cars, CoverCity,  Journey, PointOfSale,
-    PointOfSaleWorker, Routing, Seat, JourneyClass, JourneyTarif
+    PointOfSaleWorker, Routing, Seat, JourneyClass, JourneyTarif, Ticket
 )
 
 
@@ -17,3 +17,4 @@ admin.site.register(PointOfSaleWorker)
 admin.site.register(JourneyClass)
 admin.site.register(JourneyTarif)
 admin.site.register(Routing)
+admin.site.register(Ticket)

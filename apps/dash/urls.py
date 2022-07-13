@@ -1,4 +1,5 @@
 from rest_framework.routers import DefaultRouter
+from django.urls import path
 
 from .views.views import (
     CarsView, SeatView, JourneyView, RoutingView, CoverCityView,
@@ -6,6 +7,7 @@ from .views.views import (
 )
 
 from .views.routes import RouteProcessView
+from .views import view_reservations as VR
 
 router = DefaultRouter()
 router.register(r'technic/cars', CarsView, basename='cars')
@@ -23,4 +25,9 @@ router.register(r'transport/pos', PointOfSaleView, basename='point_of_sale')
 router.register(r'transport/pos_worker', PointOfSaleWorkerView,
                 basename='point_of_sale_worker')
 
-urlpatterns = router.urls
+urlpatterns = router.urls + [
+    path("dash/reservation",
+         VR.DashViewReservation.as_view(), name="dash_reservation"),
+    path("dash/reservation/<int:id>",
+         VR.DashViewDetailReservation.as_view(), name="dash_detail_reservation"),
+]
