@@ -7,7 +7,7 @@ import datetime
 
 def current_datetime(request):
     now = datetime.datetime.now()
-    html = "<html><body><h1>It is now %s.</h1></body></html>" % now
+    html = f"<html><body><h1>It is now {now}.</h1></body></html>"
     print(dir(request))
     return HttpResponse(html)
 

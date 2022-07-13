@@ -5,11 +5,11 @@ from utils import node
 from utils.user_mixin import UserMixin
 
 from .models import (
-    CabinePlane,PointOfSale,Cars,Company,
-    CoverCity,Employe,Journey,
-    PointOfSaleWorker,Routing,Seat,
-    RouteJourney
+    CabinePlane, PointOfSale, Cars, Company,
+    CoverCity, Employe, Journey,
+    PointOfSaleWorker, Routing, Seat
 )
+
 
 class TrajetType(graphene.ObjectType):
     label = graphene.String()
@@ -21,15 +21,19 @@ class TrajetType(graphene.ObjectType):
 #         filter_fields = []
 #         fields = "__all__"
 
+
 class CabinePlaneType(UserMixin, DjangoObjectType):
     number_of_seats = graphene.Int()
+
     class Meta:
         model = CabinePlane
         interfaces = (node.CustomNode,)
         filter_fields = []
         fields = "__all__"
+
     def resolve_number_of_seats(self, info):
         return self.number_of_seats
+
 
 class PointOfSaleType(UserMixin, DjangoObjectType):
     class Meta:
@@ -38,12 +42,14 @@ class PointOfSaleType(UserMixin, DjangoObjectType):
         filter_fields = []
         fields = "__all__"
 
+
 class CarsType(UserMixin, DjangoObjectType):
     class Meta:
         model = Cars
         interfaces = (node.CustomNode,)
         filter_fields = []
         fields = "__all__"
+
 
 class CompanyType(UserMixin, DjangoObjectType):
     class Meta:
@@ -58,10 +64,11 @@ class CoverCityType(UserMixin, DjangoObjectType):
         model = CoverCity
         interfaces = (node.CustomNode,)
         filter_fields = {
-            'town':['exact', 'icontains', 'istartswith'],
-            'code':['exact', 'icontains', 'istartswith'],
+            'town': ['exact', 'icontains', 'istartswith'],
+            'code': ['exact', 'icontains', 'istartswith'],
         }
         fields = "__all__"
+
 
 class EmployeType(UserMixin, DjangoObjectType):
     class Meta:
@@ -70,26 +77,30 @@ class EmployeType(UserMixin, DjangoObjectType):
         filter_fields = []
         fields = "__all__"
 
+
 class JourneyType(UserMixin, DjangoObjectType):
     number_of_places_reserved = graphene.Int()
     is_direct = graphene.Boolean()
     exprired = graphene.Boolean()
     route_names = graphene.String()
     trajets = graphene.List(TrajetType)
+
     class Meta:
         model = Journey
         interfaces = (node.CustomNode,)
-        filter_fields = {
-            'company__nom': ['exact', 'icontains', 'istartswith'],
-            'company__code': ['exact'],
-            'company__id': ['exact'],
-            'routes__whereFrom__town':['exact', 'icontains', 'istartswith'],
-            'routes__whereTo__town':['exact', 'icontains', 'istartswith'],
-        }
+        filter_fields = []
+        # filter_fields = {
+        #     'company__nom': ['exact', 'icontains', 'istartswith'],
+        #     'company__code': ['exact'],
+        #     'company__id': ['exact'],
+        #     'routes__whereFrom__town': ['exact', 'icontains', 'istartswith'],
+        #     'routes__whereTo__town': ['exact', 'icontains', 'istartswith'],
+        # }
         fields = "__all__"
-    
+
     def resolve_number_of_places_reserved(self, info):
         return self.number_places_taken()
+
 
 class PointOfSaleWorkerType(UserMixin, DjangoObjectType):
     class Meta:
@@ -98,22 +109,18 @@ class PointOfSaleWorkerType(UserMixin, DjangoObjectType):
         filter_fields = []
         fields = "__all__"
 
+
 class RoutingType(UserMixin, DjangoObjectType):
     class Meta:
         model = Routing
         interfaces = (node.CustomNode,)
-        filter_fields = {
-            'whereFrom__town':['exact', 'icontains', 'istartswith'],
-            'whereTo__town':['exact', 'icontains', 'istartswith'],
-        }
+        filter_fields = []
+        # filter_fields = {
+        #     'whereFrom__town': ['exact', 'icontains', 'istartswith'],
+        #     'whereTo__town': ['exact', 'icontains', 'istartswith'],
+        # }
         fields = "__all__"
 
-class RouteJourneyType(UserMixin, DjangoObjectType):
-    class Meta:
-        model = RouteJourney
-        interfaces = (node.CustomNode,)
-        filter_fields = []
-        fields = "__all__"
 
 class SeatType(UserMixin, DjangoObjectType):
     class Meta:

@@ -1,11 +1,20 @@
+from django.db.models import CharField
+from apps.account.employe_type import Employetype
+
 from utils.base_model import BaseModel
-from django.contrib.auth.models import BaseUserManager, User
+from django.contrib.auth.models import BaseUserManager
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 from django.utils.translation import gettext as _
 
 
 class UserManager(BaseUserManager):
+    def employes(self):
+        return self.filter(type_user=Users.EMPLOYE)
+
+    def clients(self):
+        return self.filter(type_user=Users.CLIENT)
+
     def create_user(self, username, password, email=None, phone=None, is_admin=False, is_staff=False, is_active=False):
         if not username:
             raise ValueError(_("username is required"))
@@ -27,30 +36,26 @@ class UserManager(BaseUserManager):
         return user_object
 
     def create_staffuser(self, username, password, phone=None, email=None):
-        user = self.create_user(
-            username=username, password=password, is_staff=True,
-            phone=phone, email=email
-        )
-        return user
+        return self.create_user(username=username, password=password, is_staff=True, phone=phone, email=email)
 
     def create_superuser(self, username, password, phone=None, email=None):
-        user = self.create_user(
-            username=username, password=password, is_staff=True, is_admin=True,
-            phone=phone, email=email
-        )
-        return user
+        return self.create_user(username=username, password=password, is_staff=True, is_admin=True, phone=phone, email=email, is_active=True)
 
     def get_by_natural_key(self, username):
         return self.get(username=username)
+
 
 # user model
 
 
 class Users(AbstractBaseUser):
+    CLIENT = "Cl"
+    EMPLOYE = "Ep"
+    BOTH = "Bh"
     TYPE_USER = [
-        ("Cl", "Client"),
-        ("Ep", "Employe"),
-        ("Bh", "Both"),
+        (CLIENT, "Client"),
+        (EMPLOYE, "Employe"),
+        (BOTH, "Both"),
     ]
     email = models.EmailField(max_length=254, unique=True, null=True)
     phone = models.CharField(max_length=254, unique=True, null=True)
@@ -64,18 +69,18 @@ class Users(AbstractBaseUser):
     objects = UserManager()
 
     USERNAME_FIELD = "username"
-    REQUIRED_FIELDS = ["email",'phone']
+    REQUIRED_FIELDS = ["email", 'phone']
 
     def __str__(self):
         return f"{self.username}"
 
-    def has_perm(self, perm, obj=None):
+    def has_perm(self, perm, obj=None) -> bool:
         return True
 
     def has_module_perms(self, app_label):
         return True
 
-    def natural_key(self):
+    def natural_key(self) -> CharField:
         return self.username
 
     @property
@@ -136,10 +141,14 @@ class PersonalMixin(BaseModel):
         return self.firstname
 
 
-class Employe (PersonalMixin):
-    user = models.OneToOneField(Users, on_delete=models.CASCADE)
+class Employe(Employetype, PersonalMixin):
+    user = models.OneToOneField(
+        Users, on_delete=models.CASCADE, related_name="employe")
     company = models.ForeignKey(Company, null=True, on_delete=models.CASCADE)
+    type_employe = models.CharField(
+        max_length=5, choices=Employetype.EMPLOYE_TYPE)
 
 
-class Client (PersonalMixin):
-    user = models.OneToOneField(Users, on_delete=models.CASCADE)
+class Client(PersonalMixin):
+    user = models.OneToOneField(
+        Users, on_delete=models.CASCADE, related_name="client")

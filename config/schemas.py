@@ -1,24 +1,14 @@
 import graphene
-import json
-from apps.dash.schema import Query as DashQueries
-from apps.clients.schema import Query as ClientQueries, Mutation as ClientMutation
 
-from apps.dash.models import Journey
-from utils import trajets
-class Query(DashQueries, ClientQueries, graphene.ObjectType):
+
+class Query(graphene.ObjectType):
     hello = graphene.String()
 
     def resolve_hello(self, info):
-        journey = Journey.objects.all()
-        for v in journey:
-            routes = v.trajets
-            print("")
-            trajets.log(routes)
-            # routes_trajets(routes)
-        # print("seeting", phone_verify_settings)
         return "hello"
 
-class Mutation(ClientMutation, graphene.ObjectType):
+
+class Mutation(graphene.ObjectType):
     pass
 
 
@@ -26,6 +16,7 @@ class Subscription(graphene.ObjectType):
     """Root GraphQL subscription."""
     pass
 
+
 types = []
 
-schema = graphene.Schema(query=Query, mutation=Mutation, types=types)
+schema = graphene.Schema(query=Query, types=types)

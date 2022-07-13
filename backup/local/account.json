@@ -1,0 +1,74 @@
+[
+{
+    "model": "account.users",
+    "pk": 1,
+    "fields": {
+        "last_login": "2021-08-31T00:13:40.433Z",
+        "email": "bienfait@gmail.com",
+        "phone": "0973888289",
+        "username": "bienfait",
+        "password": "pbkdf2_sha256$260000$TwkbjIzOW3eJL9mWdZclQi$HTuZGyNwoBf5qF7QNBMCRdAsbNEcHKOkC5qXcrqqGVA=",
+        "active": false,
+        "staff": true,
+        "admin": true,
+        "type_user": ""
+    }
+},
+{
+    "model": "account.users",
+    "pk": 2,
+    "fields": {
+        "last_login": "2022-03-31T12:46:21.110Z",
+        "email": "admin@ttm.com",
+        "phone": "admin",
+        "username": "admin",
+        "password": "pbkdf2_sha256$260000$ZgxVyoz1trH5zFVPHDD4IO$APDybyktg4BCsv9LHLBa1InEXKgXSPH+wqPon4jf8bU=",
+        "active": false,
+        "staff": true,
+        "admin": true,
+        "type_user": ""
+    }
+},
+{
+    "model": "account.company",
+    "pk": 1,
+    "fields": {
+        "date_created": "2021-07-28T23:04:03.597Z",
+        "date_updated": "2021-07-28T23:04:03.597Z",
+        "nom": "MULYCAP",
+        "code": "RAZDKXUT",
+        "slogan": "rien que l'amour",
+        "mail": "shomarishm@gmail.com",
+        "responsable": "Bienfait Shomari",
+        "description": null
+    }
+},
+{
+    "model": "account.company",
+    "pk": 2,
+    "fields": {
+        "date_created": "2021-07-28T23:04:49.963Z",
+        "date_updated": "2021-07-28T23:04:49.963Z",
+        "nom": "MULYCAP 2",
+        "code": "0000",
+        "slogan": "only love",
+        "mail": "shomarishm@gmail.com",
+        "responsable": "Bienfait Shomari",
+        "description": null
+    }
+},
+{
+    "model": "account.company",
+    "pk": 3,
+    "fields": {
+        "date_created": "2021-11-28T00:51:40.058Z",
+        "date_updated": "2021-11-28T00:51:40.058Z",
+        "nom": "Transco",
+        "code": "Gk12345",
+        "slogan": "rien qure pour vous",
+        "mail": "a@g.com",
+        "responsable": "Moi",
+        "description": "no description"
+    }
+}
+]

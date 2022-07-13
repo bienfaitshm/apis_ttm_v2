@@ -1,23 +1,31 @@
 from rest_framework.routers import DefaultRouter
 from django.urls import path
-from .views import (
-    PassengerView, FretPassengerView, PlaceReservedView, JourneySessionView, SeletectedJourneyView,
-    JourneyClientFolderView, ReservationWithSteperView
-)
+
+from apps.clients.views.actions import SplitFolderView, VoidSelectedJourneyView
+
+from .views import views as ActionView
+from .views.reservation import (
+    SelectJourneyreservationView, PassengerJourneyReservationView, OtherInfoReservationView, ReachercheJourneyReservationView)
 
 router = DefaultRouter()
-router.register(r'passenger', PassengerView, basename='passenger')
-router.register(r'fret_client', FretPassengerView, basename='fret_client')
-router.register(r'place_reserved', PlaceReservedView,
-                basename='place_reserved')
-router.register(r'jrny_session', JourneySessionView, basename='jrny_session')
-router.register(r'selected_jrny', SeletectedJourneyView,
-                basename='selected_jrny')
-router.register(r'jrny_client_folder', JourneyClientFolderView,
-                basename='jrny_client_folder')
+router.register(r'actions/folder',
+                ActionView.JourneyClientFolderView, basename='folder')
+router.register(r"actions/reservations",
+                ActionView.SeletectedJourneyView, basename="reservations")
+router.register(r'actions/passengers',
+                ActionView.PassengerView, basename='passengers')
+
 
 urlpatterns = [
-    path("reserve/", ReservationWithSteperView.as_view({
-        'get': 'list'
-    }))
+    path("actions/splite", SplitFolderView.as_view(), name="splite_folder"),
+    path("actions/reservations/<id>/void/",
+         VoidSelectedJourneyView.as_view(), name="void_folder"),
+    path("reservation/search/", ReachercheJourneyReservationView.as_view(),
+         name="search_journey_reservation"),
+    path("reservation/select/", SelectJourneyreservationView.as_view(),
+         name="select_journey"),
+    path("reservation/passengers/", PassengerJourneyReservationView.as_view(),
+         name="passengers_journey"),
+    path("reservation/other_info/", OtherInfoReservationView.as_view(),
+         name="other_info_journey"),
 ]+router.urls
