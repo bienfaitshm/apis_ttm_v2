@@ -1,6 +1,11 @@
-from rest_framework import viewsets
-from rest_framework import filters
-from ..filters.filters import FromWhereFromeFilterBackend, IsComponyFilterBackend, SearchWhereFromToFilterBackend
+from rest_framework import viewsets, filters, generics
+from apps.dash.filters.routes import FilterRouteType
+from utils import methods
+
+
+from utils import methods
+from ..filters.filters import IsComponyFilterBackend
+from ..filters.search_journey import FilterIntensive, SearchJourneyByDateFilters, SearchJourneyByDepartureFilters, SearchJourneyByDestinationFilters
 
 from ..serializers import (
     CarSerializer, CoverCitySerializer, JourneyMoreInfoSerializer, JourneySerializer, PointOfSaleSerializer,
@@ -51,12 +56,13 @@ class JourneyTarifView(viewsets.ModelViewSet):
 class JourneyView(viewsets.ModelViewSet):
     serializer_class = JourneySerializer
     queryset = Journey.objects.all()
-    # filter_backends = [filters.SearchFilter,
-    #                    IsComponyFilterBackend, SearchWhereFromToFilterBackend]
-    search_fields = ['numJourney', 'price']
+    filter_backends = [filters.SearchFilter,
+                       IsComponyFilterBackend, SearchJourneyByDateFilters,
+                       SearchJourneyByDepartureFilters, SearchJourneyByDestinationFilters, FilterIntensive]
+    search_fields = ['numJourney']
 
     def get_serializer_class(self):
-        if self.action == "list" or self.action == "retrieve":
+        if self.action in methods.DETAIL_METHODS:
             return JourneyMoreInfoSerializer
         return super().get_serializer_class()
 
@@ -76,9 +82,13 @@ class PointOfSaleView(viewsets.ModelViewSet):
 class RoutingView(viewsets.ModelViewSet):
     serializer_class = RoutingSerializer
     queryset = Routing.objects.all()
-    filter_backends = [IsComponyFilterBackend, FromWhereFromeFilterBackend]
+    filter_backends = [FilterRouteType, IsComponyFilterBackend]
 
     def get_serializer_class(self):
-        if self.action == "list" or self.action == "retrieve":
+        # get the specifique serializers on method of reading
+        if self.action in methods.DETAIL_METHODS:
             return RoutingMoreInfoSerializer
         return super().get_serializer_class()
+
+    def get_queryset(self):
+        return self.queryset.select_related("whereTo", "node")

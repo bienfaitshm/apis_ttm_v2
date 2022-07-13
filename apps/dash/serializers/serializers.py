@@ -1,5 +1,4 @@
-from email.policy import default
-from pickle import FALSE, TRUE
+
 from rest_framework import serializers
 from apps.dash.process.routes import RouteProcess
 from apps.dash.process.tarif import get_tarif_of_route
@@ -60,7 +59,7 @@ class RoutingProcessSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def get_next(self, obj: Routing):
-        if obj.whereTo == None:
+        if obj.whereTo is None:
             return None
         return RoutingProcessSerializer(obj.whereTo).data
 
@@ -79,16 +78,23 @@ class RoutingMoreInfoSerializer(serializers.ModelSerializer):
     whereToTown = serializers.SerializerMethodField(
         method_name="get_destination")
     escales = serializers.SerializerMethodField(method_name="get_escales")
+    last_route = serializers.SerializerMethodField(
+        method_name="get_last_route")
 
     class Meta:
         model = Routing
         fields = "__all__"
 
+    def get_last_route(self, obj):
+        return RouteProcess.last_route(obj).pk
+
     def get_depart(self, obj: Routing):
-        return CoverCitySerializer(instance=RouteProcess.first(obj)).data
+        if route := RouteProcess.first(obj):
+            return CoverCitySerializer(instance=route).data
 
     def get_destination(self, obj: Routing):
-        return CoverCitySerializer(instance=RouteProcess.last(obj)).data
+        if route := RouteProcess.last(obj):
+            return CoverCitySerializer(instance=route).data
 
     def get_escales(self, obj: Routing):
         escales = RouteProcess.get_scale(obj)
@@ -107,9 +113,18 @@ class JourneySerializer(serializers.ModelSerializer):
     class Meta:
         model = Journey
         fields = "__all__"
+        extra_kwargs = {
+            'route': {'required': True, "allow_null": False}
+        }
 
     def get_is_direct(self, obj: Journey):
         return RouteProcess.number_of_escale(obj.route) <= 0
+
+    def validate_route(self, value: Journey):
+        if RouteProcess.is_last_route(value):
+            return value
+        raise serializers.ValidationError(
+            "Route is not destination, please affect destination route to the journey")
 
 
 class JourneyMoreInfoSerializer(JourneySerializer):
@@ -131,7 +146,8 @@ class JourneyMoreInfoSerializer(JourneySerializer):
         return CoverCitySerializer(instance=RouteProcess.first(obj.route)).data
 
     def get_destination(self, obj: Journey):
-        return CoverCitySerializer(instance=obj.route.node).data
+        if hasattr(obj.route, "node") and obj.route.node:
+            return CoverCitySerializer(instance=obj.route.node).data
 
     def get_escales(self, obj: Journey):
         escales = RouteProcess.get_scale(obj.route)
@@ -151,3 +167,9 @@ class JourneyTarifSerializer(serializers.ModelSerializer):
     class Meta:
         model = JourneyTarif
         fields = "__all__"
+
+    def validate_route(self, value: Journey):
+        if RouteProcess.is_last_route(value):
+            return value
+        raise serializers.ValidationError(
+            "Route is not destination, select a destination route for affecting a tarif")

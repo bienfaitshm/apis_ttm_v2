@@ -1,0 +1,5 @@
+
+RETRIEVE = "retrieve"
+LISTS = "list"
+
+DETAIL_METHODS = [LISTS, RETRIEVE]

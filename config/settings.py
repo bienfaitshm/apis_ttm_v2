@@ -48,10 +48,11 @@ INSTALLED_APPS = [
     'djoser',
     'django_filters',
     'corsheaders',
+    "debug_toolbar",
     #
     "apps.account.apps.AccountsConfig",
-    "apps.clients.apps.ClientsConfig",
     "apps.dash.apps.DashConfig",
+    "apps.clients.apps.ClientsConfig",
 ]
 
 MIDDLEWARE = [
@@ -63,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -89,20 +91,22 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': "d39og1aadlht5s",
-        'USER': "mluijfgijaivkx",
-        'PASSWORD': "9d36ff51c5c6a2804ed86324fa4260cb0cefc0993a79907f5877217c00ee2d27",
-        'HOST': "ec2-52-73-155-171.compute-1.amazonaws.com",
-        # 'PORT': "5432",  # 5432 by default
-    },
+ONLINE_DATABASE = {
+    'ENGINE': 'django.db.backends.postgresql',
+    'NAME': "d39og1aadlht5s",
+    'USER': "mluijfgijaivkx",
+    'PASSWORD': "9d36ff51c5c6a2804ed86324fa4260cb0cefc0993a79907f5877217c00ee2d27",
+    'HOST': "ec2-52-73-155-171.compute-1.amazonaws.com",
+    'PORT': "5432",  # 5432 by default
+}
 
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
+LOCAL_DATEBASE = {
+    'ENGINE': 'django.db.backends.sqlite3',
+    'NAME': BASE_DIR / 'db.sqlite3',
+}
+
+DATABASES = {
+    'default': ONLINE_DATABASE
 }
 
 # DATABASES = {
@@ -172,11 +176,17 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
+INTERNAL_IPS = [
+    # ...
+    "127.0.0.1",
+    # ...
+]
 REST_FRAMEWORK = {
     "SEARCH_PARAM": "q",
     "DEFAULT_AUTHENTICATION_CLASSES": [
         'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication'
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         'rest_framework.permissions.AllowAny',
@@ -188,7 +198,14 @@ REST_FRAMEWORK = {
 
 DJOSER = {
     'SEND_ACTIVATION_EMAIL': False,
-    'SERIALIZERS': {},
+    'SERIALIZERS': {
+        'user': 'apps.account.serializers.UserSerializer',
+        'current_user': 'apps.account.serializers.UserSerializer',
+    },
+}
+
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('Bearer', 'JWT', 'SPEAKER', 'Token', 'Jwt',)
 }
 
 AUTHENTICATION_BACKENDS = [

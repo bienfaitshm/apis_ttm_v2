@@ -1,7 +1,6 @@
 
 
 import graphene
-from graphene import relay
 from graphene_django.filter.fields import DjangoFilterConnectionField
 
 from .types import (
@@ -9,14 +8,13 @@ from .types import (
     PassengerType, PlaceReservedType, SeletectedJourneyType, OtherInfoReservationType, ValidationPaymentType
 )
 
-from .mutation import (
-    FretPassengerMutation, InputPassengerInfoStepThreeMutation,JourneyClientFolderMutation,
-    JourneySessionMutation, PassengerMutation,PayementStepSixMutation,PlaceReservedMutation,
-    SelectJourneyStepOneMutation, SelectSeatOfPassengerStepForMutation, SeletectedJourneyMutation,
-    SetFretStepFiveMutation,ValideStepFinalMutation, OtherInfoReservationMutation, ValidationPaymentMutation
-)
+from .mutation import (InputPassengerInfoStepThreeMutation, PlaceReservedMutation,
+                       SeletectedJourneyMutation,
+                       OtherInfoReservationMutation, ValidationPaymentMutation
+                       )
 
 from utils.node import CustomNode
+
 
 class Query(graphene.ObjectType):
     fret_passenger = CustomNode.Field(FretPassengerType)
@@ -40,15 +38,16 @@ class Query(graphene.ObjectType):
     place_reserved = CustomNode.Field(PlaceReservedType)
     place_reserveds = DjangoFilterConnectionField(PlaceReservedType)
 
-    journey_selected = CustomNode.Field(SeletectedJourneyType)
-    journey_selecteds = DjangoFilterConnectionField(SeletectedJourneyType)
+    # journey_selected = CustomNode.Field(SeletectedJourneyType)
+    # journey_selecteds = DjangoFilterConnectionField(SeletectedJourneyType)
+
 
 class Mutation(graphene.ObjectType):
     # frets = FretPassengerMutation.Field()
     reserve_info_passengers = InputPassengerInfoStepThreeMutation.Field()
     # client_folder = JourneyClientFolderMutation.Field()
     # session = JourneySessionMutation.Field()
-    passengers = PassengerMutation.Field()
+    # passengers = PassengerMutation.Field()
     reserve_place = PlaceReservedMutation.Field()
     info_details = OtherInfoReservationMutation.Field()
     valide_payement = ValidationPaymentMutation.Field()

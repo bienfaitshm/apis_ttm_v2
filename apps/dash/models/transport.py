@@ -5,7 +5,6 @@ from apps.account.models import Company, Employe
 from apps.dash.utils import get_routes_to_string
 from utils.base_model import BaseModel
 from apps.dash.models.technique import Cars
-from utils.trajets import link_routes, get_routes, make_trajet
 
 DEVISE = [
     ("CDF", "CDF"),
@@ -38,7 +37,7 @@ class Routing(BaseModel):
     distance = models.FloatField(_("distance(Km)"), default=0.0)
 
     def __str__(self) -> str:
-        return f"Node {self.node}"
+        return f"pk {self.pk } : Node {self.node}"
 
 
 class PointOfSale(BaseModel):
@@ -100,7 +99,7 @@ class JourneyTarif(BaseModel):
     journey_class = models.ForeignKey(
         JourneyClass, on_delete=models.CASCADE, related_name='tarif')
     route = models.ForeignKey(Routing, verbose_name=_(
-        "routes"), on_delete=models.CASCADE, related_name="routes")
+        "routes"), on_delete=models.CASCADE, related_name="tarif_routes")
     devise = models.CharField(
         _("money devise"), max_length=5, choices=DEVISE, default="CDF")
     adult = models.FloatField(verbose_name=_('tarif_adult'), default=0.0)
