@@ -45,17 +45,17 @@ class DashViewDetailReservation(GenericMixinView, generics.RetrieveAPIView):
     class OutputSerializer(serializers.ModelSerializer):
         client_full_name = serializers.CharField()
         n_folder = serializers.CharField()
-        passengers = inline_serializer(many=True, fields={
-            'id': serializers.IntegerField(),
-            "firstname": serializers.CharField(),
-            'middlename': serializers.CharField(),
-            'lastname': serializers.CharField()
-        })
+        # passengers = inline_serializer(many=True, fields={
+        #     'id': serializers.IntegerField(),
+        #     "firstname": serializers.CharField(),
+        #     'middlename': serializers.CharField(),
+        #     'lastname': serializers.CharField()
+        # })
 
         class Meta:
             model = SeletectedJourney
             fields = ("id", "status", "pnr", "folder", "n_folder",
-                      "client_full_name", "date_created", "passengers", )
+                      "client_full_name", "date_created", )
 
     def get_queryset(self):
         return SR.get_dash_detail_reservation()
