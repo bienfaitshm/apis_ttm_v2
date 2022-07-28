@@ -142,6 +142,7 @@ def splite_reservation(
         if reservation.status == Reservation.VOIDED:
             return "error", MessageExpection.VOID_NO_ALLOWED
 
+        n_pnr = create_pnr()
         n_passengers = _get_number_type_user(passengers)  # type: ignore
 
         new_session = create_session(
@@ -150,7 +151,7 @@ def splite_reservation(
         new_reservation_data = clone_and_value(
             reservation, {
                 "id": None,
-                "session_id": new_session.pk, ** n_passengers})
+                "session_id": new_session.pk, ** n_passengers, "pnr": n_pnr})
 
         new_reservation = Reservation.objects.create(
             **new_reservation_data)
