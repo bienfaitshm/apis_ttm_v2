@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 import os
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -106,7 +107,7 @@ LOCAL_DATEBASE = {
 }
 
 DATABASES = {
-    'default': LOCAL_DATEBASE
+    'default': ONLINE_DATABASE
 }
 
 # DATABASES = {
