@@ -1,15 +1,22 @@
+from typing import Any, Dict
+
 from django.utils.translation import gettext as _
 from rest_framework import serializers
+
 from apps.clients.process.search import SearchProcess
 from apps.clients.process.selectors import get_tarif_for_a_reservation
-from apps.clients.serializers.serialzers import OtherInfoReservationSerializer, PassengerSerializer
-from apps.clients.services.reservations_services import create_reservation
+from apps.clients.serializers.serialzers import (
+    OtherInfoReservationSerializer, PassengerSerializer,
+)
+from apps.clients.services.reservations_services import (
+    add_other_info, add_passengers, create_reservation,
+)
 from apps.dash.models.transport import Journey
 from apps.dash.process import routes
 from apps.dash.serializers.serializers import JourneyTarifSerializer
 from utils import fields
-from ..models import SeletectedJourney, ResearchReservation
-from ..process.reservation import ReservationJourney
+
+from ..models import ResearchReservation, SeletectedJourney
 
 
 class ReachercheJourneyReservationSerializer(serializers.ModelSerializer):
@@ -99,8 +106,7 @@ class PassengerJourneyReservation(serializers.Serializer):
         passengers: list = validated_data.get("passengers")
         session = validated_data.get("session")
 
-        reservation = ReservationJourney()
-        _passenger = reservation.addPassengers(
+        _passenger = add_passengers(
             jouney=session, passengers=passengers)
         return {"passengers": _passenger}
 
@@ -112,11 +118,10 @@ class OtherInfoJourneyReservation(serializers.Serializer):
     )
     other_info = OtherInfoReservationSerializer()
 
-    def create(self, validated_data: dict):
+    def create(self, validated_data: Dict[str, Any]):
         other_info: list = validated_data.get("other_info")
         session = validated_data.get("session")
-        reservation = ReservationJourney()
-        _other_info = reservation.add_other_info(
+        _other_info = add_other_info(
             journey=session, other_info=other_info)
 
         return {"other_info": _other_info}
