@@ -23,6 +23,7 @@ class SeletectedJourneyView(viewsets.ModelViewSet):
     serializer_class = sz.SeletectedJourneySerializer
     queryset = SeletectedJourney.objects.all()\
         .select_related("session", "journey", "journey_class")
+    # .prefetch_related("passengers")
 
     def get_serializer_class(self):
         if self.action is methods.RETRIEVE:

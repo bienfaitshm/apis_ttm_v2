@@ -122,7 +122,7 @@ class Company(BaseModel):
         return self.mail
 
 
-class PersonneGenderBase(BaseModel):
+class PersonneGenderBase(models.Model):
     WOMAN = "F"
     MAN = "H"
     INDERTEMINAT = "I"
@@ -152,7 +152,7 @@ class PersonalMixin(BaseModel):
         abstract = True
         ordering = ['firstname']
 
-    def get_full_name(self):
+    def fullname(self):
         return f"{self.firstname} {self.middlename} {self.lastname}"
 
     def __str__(self):

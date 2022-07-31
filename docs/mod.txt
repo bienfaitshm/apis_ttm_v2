@@ -1,0 +1,106 @@
+account:
+    *users:
+        - type = ENUM(
+            ("Cl","Client"),
+            ("Ep","Employe"),
+            ("Bh","Both"),
+        )
+        - phoneNumberOrEmail
+        - password
+    *Compony:
+        _
+    *Client:
+        - firstname 
+        - middlename
+        - lastname
+        - birthDay
+    *Employe:
+        - *compony
+        - firstname 
+        - middlename
+        - lastname
+        - birthDay
+        - maticule
+
+    
+dash:
+    *vehicule:
+        - ETAT_APPARAIL = ENUM(
+            ("OP", "Operationnel"),
+            ("NO","Non operationnel"),
+            ("HS","Hors service")
+        )
+        - typeAppareil
+        - indexKm
+        - immatriculation
+        - codeAppareil
+        - etat
+        - miseEnService
+
+
+    *seat:
+        - id
+        - idConfigCab (*vehicule)
+        - name
+        - type = ENUM(
+            ("SEAT", "SEAT"),
+            ("SPACE", "SPACE")
+        )
+        - x
+        - y
+    
+    *voyage:
+        - numVoyage
+        - price
+        - whereFrom
+        - whreTo
+        - dateDeparture
+        - dateReturn
+        - hoursDeparture
+        - hoursReturn
+        - *vehicule
+        - *rooting
+
+        - (passengers
+        - (onlyDirect
+
+client:
+    *folder:
+        - number
+        - *client(null)
+    *sessionVoyage:
+        - key
+        - dateExpiration
+        -
+    *selectedVoyage:
+        - *folder
+        - key
+        - dateExpiration
+        - *sessionVoyage
+        - *voyage
+        - 
+    *passengers:
+        - *selectedVoyage
+        - type = ENUM(
+            ("Adult","Adult"),
+            ("Child","Child"),
+            ("Baby","Baby"),
+        )
+        - gender = ENUM(
+            ("F","FEMME"),
+            ("H","HOMME"),
+            ("I","INDERTIMER"),
+        )
+        - firstname 
+        - middlename
+        - lastname
+        - birthDay
+
+    *placeReserved:
+        - *seat
+        - *passengers
+        - expired
+    
+    *bagage:
+        - *passengers
+        - poid
