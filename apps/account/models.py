@@ -1,11 +1,10 @@
-from django.db.models import CharField
-from apps.account.employe_type import Employetype
-
-from utils.base_model import BaseModel
-from django.contrib.auth.models import BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser
+from django.db.models import CharField
 from django.utils.translation import gettext as _
+
+from apps.account.employe_type import Employetype
+from utils.base_model import BaseModel
 
 
 class UserManager(BaseUserManager):
@@ -121,6 +120,26 @@ class Company(BaseModel):
     def get_mail(self):
         """return le email"""
         return self.mail
+
+
+class PersonneGenderBase(BaseModel):
+    WOMAN = "F"
+    MAN = "H"
+    INDERTEMINAT = "I"
+    _GENDERS = [
+        (WOMAN, _("Woman")),
+        (MAN, _("Man")),
+        (INDERTEMINAT, _("Indeterminate")),
+    ]
+    gender = models.CharField(
+        verbose_name=_("gender"),
+        max_length=10,
+        choices=_GENDERS,
+        default=INDERTEMINAT
+    )
+
+    class Meta:
+        abstract = True
 
 
 class PersonalMixin(BaseModel):

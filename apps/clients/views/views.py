@@ -1,12 +1,10 @@
 
-from rest_framework import viewsets, filters
-from django.utils.translation import gettext as _
-from apps.dash.filters.filters import IsComponyFilterBackend
+from rest_framework import viewsets
+
 from utils import methods
 
 from ..models import (
-    FretPassenger, JourneyClientFolder, PlaceReserved, SeletectedJourney,
-    JourneySession, Passenger,
+    FretPassenger, JourneySession, Passenger, PlaceReserved, SeletectedJourney,
 )
 from ..serializers import serialzers as sz
 
@@ -16,18 +14,6 @@ class FretPassengerView(viewsets.ModelViewSet):
     queryset = FretPassenger.objects.all()
 
 
-class JourneyClientFolderView(viewsets.ModelViewSet):
-    serializer_class = sz.JourneyClientFolderSerializer
-    queryset = JourneyClientFolder.objects.all()
-    filter_backends = [filters.SearchFilter, IsComponyFilterBackend]
-    search_fields = ['number']
-
-    def get_serializer_class(self):
-        if self.action is methods.RETRIEVE:
-            return sz.JourneyClientFolderMoreSerializer
-        return super().get_serializer_class()
-
-
 class PlaceReservedView(viewsets.ModelViewSet):
     serializer_class = sz.PlaceReservedSerializer
     queryset = PlaceReserved.objects.all()
@@ -35,7 +21,8 @@ class PlaceReservedView(viewsets.ModelViewSet):
 
 class SeletectedJourneyView(viewsets.ModelViewSet):
     serializer_class = sz.SeletectedJourneySerializer
-    queryset = SeletectedJourney.objects.all()
+    queryset = SeletectedJourney.objects.all()\
+        .select_related("session", "journey", "journey_class")
 
     def get_serializer_class(self):
         if self.action is methods.RETRIEVE:

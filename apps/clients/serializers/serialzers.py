@@ -1,11 +1,15 @@
 import datetime
+
 from email.policy import default
-from rest_framework import serializers
+
 from django.utils.crypto import get_random_string
+from rest_framework import serializers
+
 from utils import fields
+
 from ..models import (
-    FretPassenger, JourneyClientFolder, Passenger, SeletectedJourney, PlaceReserved,
-    JourneySession, OtherInfoReservation
+    FretPassenger, JourneyClientFolder, JourneySession, OtherInfoReservation,
+    Passenger, PlaceReserved, SeletectedJourney,
 )
 
 KEY = "1234567890qwertyuiopasdfghjklzxcvbnm<>,./?:;+_)(*&^%$#@!"
