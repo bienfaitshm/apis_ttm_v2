@@ -96,7 +96,8 @@ ONLINE_DATABASE = {
     'ENGINE': 'django.db.backends.postgresql',
     'NAME': "d39og1aadlht5s",
     'USER': "mluijfgijaivkx",
-    'PASSWORD': "9d36ff51c5c6a2804ed86324fa4260cb0cefc0993a79907f5877217c00ee2d27",
+    'PASSWORD':
+        "9d36ff51c5c6a2804ed86324fa4260cb0cefc0993a79907f5877217c00ee2d27",
     'HOST': "ec2-52-73-155-171.compute-1.amazonaws.com",
     'PORT': "5432",  # 5432 by default
 }
@@ -107,7 +108,7 @@ LOCAL_DATEBASE = {
 }
 
 DATABASES = {
-    'default': ONLINE_DATABASE
+    'default': LOCAL_DATEBASE
 }
 
 # DATABASES = {
@@ -127,16 +128,20 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME':
+            'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME':
+            'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME':
+            'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
 
