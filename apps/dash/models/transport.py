@@ -1,11 +1,13 @@
 
+from datetime import datetime
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from apps.account.models import Company, Employe
 from apps.dash.models.technique import Cars
 from utils.base_model import BaseModel, PaymentBaseModel
-from utils.times import is_expired
+from utils.times import cobine_date_n_time, is_expired
 
 
 class CoverCity(BaseModel):
@@ -69,9 +71,9 @@ class Routing(BaseModel):
         default=None,
         on_delete=models.SET_DEFAULT,
     )
-    orgine = models.ForeignKey(
+    origin = models.ForeignKey(
         "self",
-        verbose_name=_("orgine"),
+        verbose_name=_("origin"),
         null=True,
         default=None,
         on_delete=models.SET_DEFAULT,
@@ -155,6 +157,18 @@ class JourneyClass(BaseModel):
 class JourneyTarif(PaymentBaseModel):
     """
     """
+    USD = "USD"
+    CDF = "CDF"
+    DEVISES = [
+        (USD, _("Dollars")),
+        (CDF, _("Franc congolais"))
+    ]
+
+    devise = models.CharField(
+        choices=DEVISES,
+        default=CDF,
+        max_length=10
+    )
     journey_class = models.ForeignKey(
         JourneyClass,
         on_delete=models.CASCADE,
@@ -177,15 +191,20 @@ class JourneyTarif(PaymentBaseModel):
     )
     baby = models.FloatField(
         verbose_name=_('tarif_baby'),
-        default=0.0)
+        default=0.0
+    )
 
     taxe = models.FloatField(
         verbose_name=_('taxe'),
-        default=0.0)
+        default=0.0
+    )
     actif = models.BooleanField(
         verbose_name=_('actif_tarif'),
         default=True
     )
+
+    def __str__(self) -> str:
+        return f"{self.pk}"
 
     @property
     def pttc_adulte(self) -> float:
@@ -241,9 +260,23 @@ class Journey(BaseModel):
     )
 
     def __str__(self) -> str:
-        return f"{self.pk} {self.numJourney} {self.company}"
+        return f"{self.pk} {self.numJourney}"
 
     @property
     def exprired(self) -> bool:
-        timing = self.dateDeparture
+        timing = self.date_time_departure
         return is_expired(timing)
+
+    @property
+    def date_time_departure(self) -> datetime:
+        return cobine_date_n_time(
+            date=self.dateDeparture,
+            time=self.hoursDeparture
+        )
+
+    @property
+    def date_time_return(self) -> datetime:
+        return cobine_date_n_time(
+            date=self.dateReturn,
+            time=self.hoursReturn
+        )

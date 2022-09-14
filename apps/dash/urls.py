@@ -77,4 +77,10 @@ urlpatterns = router.urls + [
         VR.DashViewDetailReservation.as_view(),
         name="dash_detail_reservation"
     ),
+
+    path(
+        "search/journey",
+        VR.JourneyFinder.as_view(),
+        name="dash_detail_reservation"
+    ),
 ]

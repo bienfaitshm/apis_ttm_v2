@@ -1,5 +1,6 @@
 from typing import Any, Dict
 
+from django.conf import settings
 from django.utils.translation import gettext as _
 from rest_framework import serializers
 
@@ -17,6 +18,35 @@ from apps.dash.serializers.serializers import JourneyTarifSerializer
 from utils import fields
 
 from ..models import ResearchReservation, SeletectedJourney
+
+default_device = ["USD", "CDF"]
+
+
+class JPassengersDataSerializer(serializers.Serializer):
+    adult = serializers.IntegerField(default=settings.ADULT)
+    child = serializers.IntegerField(default=settings.CHILD)
+    inf = serializers.IntegerField(default=settings.INF)
+
+
+class JReservationSerializer(serializers.Serializer):
+    uid = serializers.IntegerField()
+    where_from = serializers.CharField()
+    where_to = serializers.CharField()
+    datetime_from = serializers.DateTimeField()
+    datetime_to = serializers.DateTimeField()
+    duration = serializers.DateTimeField()
+    passengers = JPassengersDataSerializer()
+    j_class = serializers.CharField()
+    total_price = serializers.FloatField()
+    device = serializers.ChoiceField(choices=default_device, default="USD")
+    has_scale = serializers.BooleanField(default=False)  # type: ignore
+    scales = serializers.ListField(
+        child=serializers.CharField(),
+        required=False
+    )
+    message = serializers.CharField(required=False)
+    is_selected_for = serializers.BooleanField(default=False)  # type: ignore
+    is_expired = serializers.BooleanField(default=False)  # type: ignore
 
 
 class ReachercheJourneyReservationSerializer(serializers.ModelSerializer):

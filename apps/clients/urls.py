@@ -6,10 +6,17 @@ from apps.clients.views.actions import SplitFolderView, VoidSelectedJourneyView
 from .views import views as ActionView
 from .views.reservation import (
     OtherInfoReservationView, PassengerJourneyReservationView,
-    ReachercheJourneyReservationView, SelectJourneyreservationView,
+    ReachercheJourneyReservationView, ReservationViewApis,
+    SelectJourneyreservationView,
 )
 
 router = DefaultRouter()
+router.register(
+    prefix=r"reservations",
+    viewset=ReservationViewApis,
+    basename="reservations_actions"
+)
+
 router.register(
     r"actions/reservations",
     ActionView.SeletectedJourneyView,

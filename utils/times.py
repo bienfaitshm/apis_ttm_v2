@@ -1,11 +1,21 @@
+import inspect
+
 from datetime import datetime, timedelta
-from typing import Callable
+from typing import Any, Callable
 
 FuncGetNowType = Callable[[], datetime]
 
 
 def get_now() -> datetime:
     return datetime.now()
+
+# def get_diff_datetime(date1:datetime, date2:datetime)->datetime:
+#     return date1.now() - date2.now()
+
+
+def cobine_date_n_time(date: Any, time: Any) -> datetime:
+    """combine date and time to datetime"""
+    return datetime.combine(date=date, time=time)
 
 
 def get_date_expiration(
@@ -28,7 +38,7 @@ def is_expired(
     from_date: FuncGetNowType = get_now
 ) -> bool:
     """  """
+    if not inspect.isfunction(from_date):
+        raise AttributeError("from_date is not a function or callable.")
     now = from_date()
-    if not isinstance(date_time, datetime):
-        return True
-    return date_time > now
+    return date_time > now if isinstance(date_time, datetime) else True

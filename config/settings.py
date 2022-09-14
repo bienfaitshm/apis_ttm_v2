@@ -187,6 +187,14 @@ INTERNAL_IPS = [
     "127.0.0.1",
     # ...
 ]
+
+# Reservation Config
+# default number of passengers type input
+ADULT = 1
+CHILD = 0
+INF = 0
+
+
 REST_FRAMEWORK = {
     "SEARCH_PARAM": "q",
     "DEFAULT_AUTHENTICATION_CLASSES": [
