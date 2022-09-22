@@ -181,7 +181,7 @@ def add_passengers(jouney: Any, passengers: List[Any]) -> QuerySet[Passenger]:
 
 
 def void_reservation(reservation: Union[Reservation, int]) -> int:
-    if isinstance(reservation, int):
+    if isinstance(reservation, (int, str)):
         return Reservation.objects.filter(
             pk=reservation).update(status=Reservation.VOIDED)
 
