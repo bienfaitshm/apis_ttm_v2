@@ -1,20 +1,24 @@
-from rest_framework import viewsets, filters, generics
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, generics, viewsets
+
 from apps.dash.filters.routes import FilterRouteType
 from utils import methods
 
-
-from utils import methods
 from ..filters.filters import IsComponyFilterBackend
-from ..filters.search_journey import FilterIntensive, SearchJourneyByDateFilters, SearchJourneyByDepartureFilters, SearchJourneyByDestinationFilters
-
-from ..serializers import (
-    CarSerializer, CoverCitySerializer, JourneyMoreInfoSerializer, JourneySerializer, PointOfSaleSerializer,
-    PointOfSaleWorkerSerializer, RoutingMoreInfoSerializer, RoutingSerializer, SeatSerializer,
-    CabinePlaneSerializer, JourneyTarifSerializer, JourneyClassSerializer
+from ..filters.search_journey import (
+    FilterIntensive, SearchJourneyByDateFilters,
+    SearchJourneyByDepartureFilters, SearchJourneyByDestinationFilters,
 )
-from ..models.technique import Cars, Seat, CabinePlane
+from ..models.technique import CabinePlane, Cars, Seat
 from ..models.transport import (
-    CoverCity, Journey, PointOfSaleWorker, PointOfSale, Routing, JourneyClass, JourneyTarif
+    CoverCity, Journey, JourneyClass, JourneyTarif, PointOfSale,
+    PointOfSaleWorker, Routing,
+)
+from ..serializers import (
+    CabinePlaneSerializer, CarSerializer, CoverCitySerializer,
+    JourneyClassSerializer, JourneyMoreInfoSerializer, JourneySerializer,
+    JourneyTarifSerializer, PointOfSaleSerializer, PointOfSaleWorkerSerializer,
+    RoutingMoreInfoSerializer, RoutingSerializer, SeatSerializer,
 )
 
 
@@ -31,11 +35,6 @@ class CabinePlaneView(viewsets.ModelViewSet):
 class CarsView(viewsets.ModelViewSet):
     serializer_class = CarSerializer
     queryset = Cars.objects.all()
-
-
-class SeatView(viewsets.ModelViewSet):
-    serializer_class = SeatSerializer
-    queryset = Seat.objects.all()
 
 
 class CoverCityView(viewsets.ModelViewSet):
@@ -56,10 +55,22 @@ class JourneyTarifView(viewsets.ModelViewSet):
 class JourneyView(viewsets.ModelViewSet):
     serializer_class = JourneySerializer
     queryset = Journey.objects.all()
-    filter_backends = [filters.SearchFilter,
-                       IsComponyFilterBackend, SearchJourneyByDateFilters,
-                       SearchJourneyByDepartureFilters, SearchJourneyByDestinationFilters, FilterIntensive]
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        IsComponyFilterBackend,
+        SearchJourneyByDateFilters,
+        SearchJourneyByDepartureFilters,
+        SearchJourneyByDestinationFilters,
+        FilterIntensive
+    ]
     search_fields = ['numJourney']
+    filterset_fields = [
+        'dateDeparture',
+        'dateReturn',
+        'route',
+        'numJourney',
+    ]
 
     def get_serializer_class(self):
         if self.action in methods.DETAIL_METHODS:

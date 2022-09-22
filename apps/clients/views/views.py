@@ -1,4 +1,5 @@
 
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 
 from utils import methods
@@ -24,6 +25,20 @@ class SeletectedJourneyView(viewsets.ModelViewSet):
     queryset = SeletectedJourney.objects.all()\
         .select_related("session", "journey", "journey_class")
     # .prefetch_related("passengers")
+    filter_backends = [
+        DjangoFilterBackend
+    ]
+
+    filterset_fields = [
+        'status',
+        'pnr',
+        'folder',
+        'journey',
+        'journey__dateDeparture',
+        'journey__dateReturn',
+        'journey_class',
+        'session'
+    ]
 
     def get_serializer_class(self):
         if self.action is methods.RETRIEVE:
