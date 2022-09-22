@@ -60,6 +60,7 @@ PyJWT = "*"
 psycopg2 = "*"
 pillow = "*"
 django-debug-toolbar = "*"
+jellyfish = "*"
 
 [dev-packages]
 flake8 = "*"

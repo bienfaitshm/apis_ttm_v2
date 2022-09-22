@@ -1,10 +1,28 @@
-from rest_framework import generics
+from rest_framework import generics, mixins, status, viewsets
+from rest_framework.response import Response
 
-from ..serializers.reservation import(ReachercheJourneyReservationSerializer,
-                                      PassengerJourneyReservation, SelectjourneyReservation,
-                                      OtherInfoJourneyReservation
-                                      )
-from ..models import SeletectedJourney, Passenger, OtherInfoReservation, ResearchReservation
+from apps.clients.selectors import selector_reservation
+from apps.dash import models as dash_model
+
+from ..models import (
+    OtherInfoReservation, Passenger, ResearchReservation, SeletectedJourney,
+)
+from ..serializers import reservation as reserv_serializer
+from ..serializers.reservation import (
+    OtherInfoJourneyReservation, PassengerJourneyReservation,
+    ReachercheJourneyReservationSerializer, SelectjourneyReservation,
+)
+
+
+class ReservationViewApis(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+    reservations actions
+    """
+    serializer_class = reserv_serializer.JReservationSerializer
+    # queryset = selector_reservation.find_reservation_journey()
+
+    def get_queryset(self):
+        return selector_reservation.find_reservation_journey()
 
 
 class ReachercheJourneyReservationView(generics.CreateAPIView):

@@ -1,9 +1,14 @@
 
 import random
-from rest_framework import generics, serializers, status
-from rest_framework.response import Response
+
+from rest_framework import generics, serializers
+
 from apps.clients.models import SeletectedJourney
 from apps.clients.selectors import selector_reservation as SR
+from apps.dash.models.transport import Journey
+from apps.dash.selectors.finder import finder_journey
+
+# from rest_framework.response import Response
 
 
 def create_serializer_class(name, fields):
@@ -21,11 +26,62 @@ def inline_serializer(*, fields, data=None, **kwargs):
 
 class GenericMixinView:
     def get_serializer_class(self):
-        assert self.OutputSerializer is not None, (
+        assert self.OutputSerializer is not None, (  # type: ignore
             "'%s' should either include a `OutputSerializer` attribute, "
             % self.__class__.__name__
         )
-        return self.OutputSerializer
+        return self.OutputSerializer  # type: ignore
+
+
+class JourneyFinder(GenericMixinView, generics.ListAPIView):
+    """
+    finder of journey
+    `bienfait`\n
+    Args:
+        GenericMixinView (_type_): _description_
+        generics (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    class OutputSerializer(serializers.ModelSerializer):
+
+        sugestion = serializers.BooleanField(
+            default=False,  # type: ignore
+            help_text="the sugestion search"
+        )
+        direct = serializers.BooleanField(
+            default=False,  # type: ignore
+            help_text="journey with scale or no scale"
+        )
+
+        whereFromName = serializers.CharField(
+            default=None,
+            help_text="the name where the journey comming from"
+        )
+
+        whereToName = serializers.CharField(
+            default=None,
+            help_text="the name where the journey comming from"
+        )
+
+        class Meta:
+            model = Journey
+            fields = [
+                "id",
+                "dateDeparture",
+                "hoursDeparture",
+                "whereFromName",
+                "whereToName",
+                "numJourney",
+                "exprired",
+                "sugestion",
+                "direct"
+            ]
+            ref_name = "finder_journey"
+
+    def get_queryset(self):
+        return finder_journey()
 
 
 class DashViewReservation(GenericMixinView, generics.ListAPIView):

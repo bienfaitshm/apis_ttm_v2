@@ -1,12 +1,13 @@
 import string
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Any, Callable, Dict, List, Literal, Tuple, Union
 
 from django.db.models import Count, QuerySet
 from django.utils.crypto import get_random_string
 
 from apps.dash.models.transport import Journey
+from utils.times import get_date_expiration
 
 from ..models import (
     JourneyClientFolder, JourneySession, OtherInfoReservation, Passenger,
@@ -47,17 +48,6 @@ def _get_number_type_user(passengers: list[Passenger]) -> Dict[str, int]:
     return {"adult": adult, "child": child, "baby": baby}
 
 
-def _get_date_expiration(date_dep: Any) -> Any:
-    now = datetime.now()
-    weeks_tow_diff = now + timedelta(days=14)
-    hours_3_diff = now + timedelta(days=3)
-    if date_dep > weeks_tow_diff:
-        return now + timedelta(days=7)
-    if date_dep > hours_3_diff:
-        return now + timedelta(hours=12)
-    return now + timedelta(hours=3)
-
-
 def create_pnr():
     """create png function"""
     return get_random_string(6, string.ascii_uppercase)
@@ -96,7 +86,7 @@ def create_reservation(journey: Journey, *args, **kwargs):
 def create_session(
         date_dep: Any = None,
         get_key_creator: Callable[[], str] = _get_radom_string,
-        get_data_creator: Callable[[Any], Any] = _get_date_expiration
+        get_data_creator: Callable[[Any], Any] = get_date_expiration
 ) -> JourneySession:
     """ session creator """
     date_exp = get_data_creator(date_dep)

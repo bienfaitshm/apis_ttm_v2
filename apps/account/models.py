@@ -1,11 +1,10 @@
-from django.db.models import CharField
-from apps.account.employe_type import Employetype
-
-from utils.base_model import BaseModel
-from django.contrib.auth.models import BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser
+from django.db.models import CharField
 from django.utils.translation import gettext as _
+
+from apps.account.employe_type import Employetype
+from utils.base_model import BaseModel
 
 
 class UserManager(BaseUserManager):
@@ -123,6 +122,26 @@ class Company(BaseModel):
         return self.mail
 
 
+class PersonneGenderBase(models.Model):
+    WOMAN = "F"
+    MAN = "H"
+    INDERTEMINAT = "I"
+    _GENDERS = [
+        (WOMAN, _("Woman")),
+        (MAN, _("Man")),
+        (INDERTEMINAT, _("Indeterminate")),
+    ]
+    gender = models.CharField(
+        verbose_name=_("gender"),
+        max_length=10,
+        choices=_GENDERS,
+        default=INDERTEMINAT
+    )
+
+    class Meta:
+        abstract = True
+
+
 class PersonalMixin(BaseModel):
     firstname = models.CharField(max_length=45)
     middlename = models.CharField(max_length=45)
@@ -133,7 +152,7 @@ class PersonalMixin(BaseModel):
         abstract = True
         ordering = ['firstname']
 
-    def get_full_name(self):
+    def fullname(self):
         return f"{self.firstname} {self.middlename} {self.lastname}"
 
     def __str__(self):
