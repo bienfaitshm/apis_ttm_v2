@@ -22,7 +22,7 @@ class RJourneyDataType(TypedDict):
     device: str
     has_ascale: bool
     passengers: Optional[Any]
-    acales: Optional[List[str]]
+    scales: Optional[List[str]]
     message: Optional[str]
     is_selected_for: Optional[bool]
     is_expired: Optional[bool]
@@ -40,7 +40,7 @@ fake_data: List[RJourneyDataType] = [
         "total_price": 90,
         "device": "CDF",
         "has_ascale": False,
-        "acales": [],
+        "scales": [],
         "is_expired":False,
         "is_selected_for":False,
         "message":"selection pour vous",
@@ -61,9 +61,9 @@ fake_data: List[RJourneyDataType] = [
         "total_price": 923,
         "device": "CDF",
         "has_ascale": False,
-        "acales": [],
+        "scales": [],
         "is_expired":False,
-        "is_selected_for":True,
+        "is_selected_for":False,
         "message":"selection pour vous",
         "passengers":{
             "adult": 3,
@@ -81,14 +81,14 @@ fake_data: List[RJourneyDataType] = [
         "j_class": "Ecolo",
         "total_price": 923,
         "device": "CDF",
-        "has_ascale": False,
-        "acales": [],
-        "is_expired":False,
+        "has_ascale": True,
+        "scales": ["Dilolo", "Kambove"],
+        "is_expired":True,
         "is_selected_for":True,
         "message":"selection pour vous",
         "passengers":{
             "adult": 3,
-            "inf": 0,
+            "inf": 3,
             "child": 0
         }
     },

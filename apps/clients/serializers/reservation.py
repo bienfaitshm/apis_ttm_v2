@@ -7,7 +7,7 @@ from rest_framework import serializers
 from apps.clients.process.search import SearchProcess
 from apps.clients.process.selectors import get_tarif_for_a_reservation
 from apps.clients.serializers.serialzers import (
-    OtherInfoReservationSerializer, PassengerSerializer,
+    PassengerSerializer, R_OtherInfoSerializer,
 )
 from apps.clients.services.reservations_services import (
     add_other_info, add_passengers, create_reservation,
@@ -146,7 +146,7 @@ class OtherInfoJourneyReservation(serializers.Serializer):
         required=True, write_only=True,
         queryset=SeletectedJourney.objects.all()
     )
-    other_info = OtherInfoReservationSerializer()
+    other_info = R_OtherInfoSerializer()
 
     def create(self, validated_data: Dict[str, Any]):
         other_info: list = validated_data.get("other_info")

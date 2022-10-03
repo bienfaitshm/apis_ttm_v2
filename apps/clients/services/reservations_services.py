@@ -6,6 +6,8 @@ from typing import Any, Callable, Dict, List, Literal, Tuple, Union
 from django.db.models import Count, QuerySet
 from django.utils.crypto import get_random_string
 
+from apps.clients import data_type as dtype
+from apps.clients.message import ErrorMessage
 from apps.dash.models.transport import Journey
 from utils.times import get_date_expiration
 
@@ -159,25 +161,53 @@ def splite_reservation(
     return "error", MessageExpection.IMPOSSIBLE
 
 
-def add_other_info(
-        journey: Any,
-        other_info: Any
-) -> Union[OtherInfoReservation, None]:
-    existing_other_info = OtherInfoReservation.objects.filter(
-        journey=journey)
-    if not existing_other_info.exists():
-        return OtherInfoReservation.objects.create(
-            journey=journey, **other_info
-        )
-    return existing_other_info.first()
+def add_other_info(*args, **kwargs):
+    journey = kwargs.get("journey")
+    if not journey:
+        return False, ErrorMessage
+
+    other_info = OtherInfoReservation.objects.filter(
+        journey=journey
+    )
+
+    return (
+        True, other_info.first()
+    ) if other_info.exists() else (
+        True, OtherInfoReservation.objects.create(*args, **kwargs)
+    )
 
 
-def add_passengers(jouney: Any, passengers: List[Any]) -> QuerySet[Passenger]:
+def add_passengers(*args, **kwargs):
+    journey = kwargs.get("journey")
+    passengers: list = kwargs.get("passengers", [])
+
+    if not journey:
+        return False, ErrorMessage
+
     Passenger.objects.bulk_create([
-        Passenger(**i, journey=jouney) for i in passengers
+        Passenger(**i, journey=journey) for i in passengers
     ])
 
-    return Passenger.objects.filter(journey=jouney)
+    return True, Passenger.objects.filter(journey=journey)
+
+
+class ReservationServices:
+    def __init__(self, session):
+        self.session = session
+
+    def get_completed(self, ) -> dtype.RCompletedDataType:
+        return {
+            "booker": "Mr bienfait kilumba shomari",
+            "expire_datetime": datetime.now(),
+            "pnr": "YYTRE345",
+            "text_reservation":
+                "voyage No 2345, likashi-kolwezi, depart mardi 12/02/2002 a 12h20; arrive mardi mardi 12/02/2002 a 12h20",
+            "total_price": "20000 Fc",
+            "passengers": [
+                "Mr kilumba shomari",
+                "Mm prisca kilumba",
+            ],
+        }
 
 
 def void_reservation(reservation: Union[Reservation, int]) -> int:
