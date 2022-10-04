@@ -51,7 +51,7 @@ class RSearchSerializer(serializers.Serializer):
 
 
 class RSelectSerializer(JPassengersDataSerializer):
-
+    session = serializers.CharField(read_only=True)
     journey = serializers.PrimaryKeyRelatedField(queryset=dash_model.Journey)
     j_class_id = serializers.PrimaryKeyRelatedField(
         queryset=dash_model.JourneyClass
