@@ -1,8 +1,10 @@
 
 from django.conf import settings
-from rest_framework import serializers
+from rest_framework import exceptions, serializers
 
 from apps.clients import models as client_model
+from apps.clients.serializers.validators import journey_expired_validator
+from apps.clients.services import reservations_services as r_services
 from apps.dash import models as dash_model
 from utils import fields
 
@@ -29,16 +31,16 @@ class JPassengersDataSerializer(serializers.Serializer):
 
 
 class RSearchSerializer(serializers.Serializer):
-    uid = serializers.IntegerField()
-    where_from = serializers.CharField()
-    where_to = serializers.CharField()
+    id = serializers.IntegerField()
+    where_from = serializers.CharField(default="")
+    where_to = serializers.CharField(default="")
     datetime_from = serializers.DateTimeField()
     datetime_to = serializers.DateTimeField()
-    duration = serializers.DateTimeField()
-    passengers = JPassengersDataSerializer()
-    j_class = serializers.CharField()
-    j_class_id = serializers.IntegerField(default=0)
-    total_price = serializers.FloatField()
+    duration = serializers.CharField()
+    passengers = JPassengersDataSerializer(default=[])
+    j_class = serializers.CharField(default="")
+    j_class_id = serializers.IntegerField(default=1)
+    total_price = serializers.FloatField(default=0)
     device = serializers.ChoiceField(choices=default_device, default="USD")
     has_scale = serializers.BooleanField(default=False)  # type: ignore
     scales = serializers.ListField(
@@ -52,10 +54,28 @@ class RSearchSerializer(serializers.Serializer):
 
 class RSelectSerializer(JPassengersDataSerializer):
     session = serializers.CharField(read_only=True)
-    journey = serializers.PrimaryKeyRelatedField(queryset=dash_model.Journey)
-    j_class_id = serializers.PrimaryKeyRelatedField(
-        queryset=dash_model.JourneyClass
+    journey = serializers.PrimaryKeyRelatedField(
+        queryset=dash_model.Journey.objects.all(),
+        validators=[journey_expired_validator],
+        write_only=True
     )
+    j_class_id = serializers.PrimaryKeyRelatedField(
+        queryset=dash_model.JourneyClass.objects.all(),
+        write_only=True
+    )
+
+    def create(self, validated_data: dict):
+        j_cls = validated_data.pop("j_class_id")
+        baby = validated_data.pop("inf")
+        r_service = r_services.ReservationServices(session=None)
+        succes, value = r_service.create_reservation(
+            j_cls=j_cls, baby=baby, **validated_data)
+
+        if not succes:
+            raise exceptions.ValidationError(value)
+        return {
+            "session": value.session.key  # type: ignore
+        }
 
 
 class RPassengerSerializer(serializers.Serializer):
@@ -64,6 +84,18 @@ class RPassengerSerializer(serializers.Serializer):
         required=True, write_only=True,
     )
     passengers = PassengerSerializer(many=True)
+
+    def create(self, validated_data):
+        session = validated_data.get("session")
+        psg = validated_data.get("passengers")
+        r_service = r_services.ReservationServices(session=session)
+        success, value = r_service.passengers(psg=psg)
+        if not success:
+            raise exceptions.ValidationError(value)
+        return {
+            "session": session.session.key,
+            "passengers": value
+        }
 
 
 class R_OtherInfoSerializer(serializers.ModelSerializer):

@@ -36,6 +36,8 @@ urlpatterns = [
         VoidSelectedJourneyView.as_view(),
         name="void_folder"
     ),
+
+    path("template/ticket", ActionView.TicketTemplateView.as_view())
     # path(
     #     "reservation/search/",
     #     ReachercheJourneyReservationView.as_view(),

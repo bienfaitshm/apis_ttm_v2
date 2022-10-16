@@ -1,13 +1,33 @@
 
-from rest_framework import serializers
+from typing import Any, Dict, Literal, Tuple, Union
+
+from rest_framework import exceptions, serializers, status
+
 from apps.dash.process.routes import RouteProcess
 from apps.dash.process.tarif import get_tarif_of_route
-
 from apps.dash.serializers.type import JourneyDataType
-from ..models.technique import Cars, Seat, CabinePlane
+from apps.dash.services import routes
+
+from ..models.technique import CabinePlane, Cars, Seat
 from ..models.transport import (
-    CoverCity, Journey, JourneyClass, JourneyTarif, PointOfSale, Routing, PointOfSaleWorker
+    CoverCity, Journey, JourneyClass, JourneyTarif, PointOfSale,
+    PointOfSaleWorker, Routing,
 )
+
+
+class PerfomCreateMixin:
+    def perfom_create(
+        self,
+        validated_data: Dict[str, Any]
+    ) -> Union[Tuple[Literal[False], str], Tuple[Literal[True], Any]]:
+        raise Exception("perfom_create must be implated")
+
+    def create(self, validated_data: Dict[str, Any]):
+        created, value = self.perfom_create(validated_data)
+        if created:
+            return value
+        raise exceptions.APIException(
+            value, code=status.HTTP_400_BAD_REQUEST)
 
 
 class CarSerializer(serializers.ModelSerializer):
@@ -64,13 +84,22 @@ class RoutingProcessSerializer(serializers.ModelSerializer):
         return RoutingProcessSerializer(obj.whereTo).data
 
 
-class RoutingSerializer(serializers.ModelSerializer):
+class RoutingSerializer(PerfomCreateMixin, serializers.ModelSerializer):
     class Meta:
         model = Routing
         fields = "__all__"
+        extra_kwargs = {
+            'level': {'read_only': True},
+            'origin': {'read_only': True},
+        }
 
-    def create(self, validated_data):
-        return RouteProcess.create(**validated_data)
+    def perfom_create(
+        self,
+        validated_data: Dict[str, Any]
+    ) -> Union[Tuple[Literal[False], str], Tuple[Literal[True], Any]]:
+        where_from = validated_data.pop("whereFrom")
+        route = routes.Routes()
+        return route.create(where_from=where_from, **validated_data)
 
 
 class RoutingMoreInfoSerializer(serializers.ModelSerializer):

@@ -61,6 +61,9 @@ psycopg2 = "*"
 pillow = "*"
 django-debug-toolbar = "*"
 jellyfish = "*"
+fuzzywuzzy = "*"
+python-levenshtein = "*"
+xhtml2pdf = "*"
 
 [dev-packages]
 flake8 = "*"

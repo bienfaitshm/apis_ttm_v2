@@ -1,13 +1,16 @@
 
+import time
+
 from datetime import datetime
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from apps.account.models import Company, Employe
+from apps.dash.models import managers
 from apps.dash.models.technique import Cars
+from utils import times as utils_time
 from utils.base_model import BaseModel, PaymentBaseModel
-from utils.times import cobine_date_n_time, is_expired
 
 
 class CoverCity(BaseModel):
@@ -79,6 +82,12 @@ class Routing(BaseModel):
         on_delete=models.SET_DEFAULT,
         help_text=_("the orgin of routing(first town)")
     )
+
+    level = models.IntegerField(
+        default=0,
+        help_text=_("level of deeper of route")
+    )
+
     distance = models.FloatField(
         _("distance(Km)"),
         default=0.0
@@ -206,21 +215,6 @@ class JourneyTarif(PaymentBaseModel):
     def __str__(self) -> str:
         return f"{self.pk}"
 
-    @property
-    def pttc_adulte(self) -> float:
-        # prix toute taxe confondu adulte
-        return self.adult + self.taxe
-
-    @property
-    def pttc_child(self) -> float:
-        # prix toute taxe confondu adulte
-        return self.child + self.taxe
-
-    @property
-    def pttc_baby(self) -> float:
-        # prix toute taxe confondu adulte
-        return self.baby + self.taxe
-
 
 class Journey(BaseModel):
     company = models.ForeignKey(
@@ -259,24 +253,34 @@ class Journey(BaseModel):
         on_delete=models.SET_DEFAULT,
     )
 
+    # managers
+    objects = managers.JourneyManager()
+
     def __str__(self) -> str:
         return f"{self.pk} {self.numJourney}"
 
     @property
-    def exprired(self) -> bool:
-        timing = self.date_time_departure
-        return is_expired(timing)
+    def is_expired(self) -> bool:
+        return utils_time.is_expired(self.datetime_from)
 
     @property
-    def date_time_departure(self) -> datetime:
-        return cobine_date_n_time(
+    def duration(self):
+        duration = (
+            self.datetime_to - self.datetime_from
+        ).total_seconds()
+        return time.strftime("%H:%M",
+                             time.gmtime(duration)) if duration > 0 else "-"
+
+    @property
+    def datetime_from(self) -> datetime:
+        return utils_time.cobine_date_n_time(
             date=self.dateDeparture,
             time=self.hoursDeparture
         )
 
     @property
-    def date_time_return(self) -> datetime:
-        return cobine_date_n_time(
+    def datetime_to(self) -> datetime:
+        return utils_time.cobine_date_n_time(
             date=self.dateReturn,
             time=self.hoursReturn
         )

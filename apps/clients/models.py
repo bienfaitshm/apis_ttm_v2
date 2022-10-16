@@ -128,7 +128,9 @@ class SeletectedJourney(BaseModel):
         JourneyClientFolder,
         verbose_name=_("folder"),
         on_delete=models.CASCADE,
-        related_name="reservations"
+        related_name="reservations",
+        null=True,
+        default=None
     )
     journey = models.ForeignKey(
         Journey,
