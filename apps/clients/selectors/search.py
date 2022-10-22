@@ -39,7 +39,7 @@ class ClsSelector:
     def get_cls_name(self):
         return Subquery(
             queryset=self.query.select_related(*self.cls_join).annotate(
-                cls_name=models.F(self.cls_field)
+                cls_name=models.F(self.cls_field_name)
             ).values("cls_name"),
             output_field=models.CharField()
         )
@@ -153,6 +153,7 @@ def search_selector(manager: managers.JourneyManager, *args, **kwargs):
     svc_route = Routes()
     price_selector = PriceSelector(query=cls_selector.query)
     route_selector = RouteSelector(route_services=svc_route)
+
     jouries = JourneySelector(
         query=manager,
         cls_selector=cls_selector,
