@@ -29,7 +29,7 @@ class JPassengersDataSerializer(serializers.Serializer):
 
 
 class JReservationSerializer(serializers.Serializer):
-    uid = serializers.IntegerField()
+    id = serializers.IntegerField()
     where_from = serializers.CharField()
     where_to = serializers.CharField()
     datetime_from = serializers.DateTimeField()
@@ -42,7 +42,8 @@ class JReservationSerializer(serializers.Serializer):
     has_scale = serializers.BooleanField(default=False)  # type: ignore
     scales = serializers.ListField(
         child=serializers.CharField(),
-        required=False
+        required=False,
+        default=[]
     )
     message = serializers.CharField(required=False)
     is_selected_for = serializers.BooleanField(default=False)  # type: ignore

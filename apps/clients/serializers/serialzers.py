@@ -38,14 +38,15 @@ class RSearchSerializer(serializers.Serializer):
     datetime_to = serializers.DateTimeField()
     duration = serializers.CharField()
     passengers = JPassengersDataSerializer(default=[])
-    j_class = serializers.CharField(default="")
-    j_class_id = serializers.IntegerField(default=1)
+    cls_name = serializers.CharField(default="")
+    cls_id = serializers.IntegerField(default=1)
     total_price = serializers.FloatField(default=0)
     device = serializers.ChoiceField(choices=default_device, default="USD")
     has_scale = serializers.BooleanField(default=False)  # type: ignore
     scales = serializers.ListField(
         child=serializers.CharField(),
-        required=False
+        required=False,
+        default=[],
     )
     message = serializers.CharField(required=False)
     is_selected_for = serializers.BooleanField(default=False)  # type: ignore

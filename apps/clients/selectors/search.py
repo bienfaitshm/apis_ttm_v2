@@ -1,28 +1,79 @@
-from dataclasses import dataclass
+from collections import OrderedDict, deque
+from dataclasses import dataclass, field
+from typing import List, Union
 
 from django.db import models
 from django.db.models import OuterRef, Subquery
-from django.db.models.expressions import RawSQL
 
-from apps.clients.selectors import sql
-from apps.dash import models as dash_model
-from apps.dash.models import managers
+from apps.dash.models import Journey, JourneyTarif, managers
+from apps.dash.services.routes import Routes
+
+JOURNEY_ORDERD = deque[Journey]
+
+
+def initial_value() -> JOURNEY_ORDERD:
+    return deque([])
+
+
+@dataclass
+class RouteSelector:
+    route_services: Routes
+    route_join = (
+        "route",
+        "route__node",
+        "route__origin__node",
+    )
+
+    @property
+    def get_route_join(self):
+        return self.get_route_join
+
+    @property
+    def sync_route(self) -> None:
+        self.route_services.sync()
+
+    def get_scales(self, origin: Union[str, int]) -> List[str]:
+        scales = self.route_services.get_scales_in_ordered(origin)
+        return [i.town for i in scales]
+
+
+@dataclass
+class JourneySelector:
+    pass
 
 
 @dataclass
 class SearchSelector:
     j_manager: managers.JourneyManager
+    ordered_data: JOURNEY_ORDERD = field(
+        init=False,
+        default_factory=initial_value
+    )
+
+    root_join = (
+        "route",
+        "route__node",
+        "route__origin__node",
+    )
+
+    def get_journies(self) -> JOURNEY_ORDERD:
+        _data = self.get_search()
+        for item in _data:
+            self.ordered_data.append(item)
+        return self.ordered_data
+
+    def get_anotation(self) -> dict:
+        return {
+            "where_to": models.F("route__node__town"),
+            "where_from": models.F("route__origin__node__town"),
+            "cls_name": self.get_cls_name,
+            "cls_id": self.get_cls_id,
+            "total_price": self.get_total_price()
+        }
 
     def get_search(self):
-        return self.j_manager.select_related("route", "route__node").annotate(
-            where_to=models.F("route__node__town"),
-            j_class=self.get_cls_name(),
-            j_class_id=self.get_cls_id(),
-            total_price=self.get_total_price(),
-            where_from=RawSQL("SELECT town  FROM dash_covercity WHERE id = 2",
-                              params=[],
-                              output_field=models.CharField()
-                              )
+        return self.j_manager.select_related(*self.root_join).annotate(
+            **self.get_anotation()
         )
 
     def ptt(self, name: str = "adult"):
@@ -47,18 +98,20 @@ class SearchSelector:
         )
 
     def get_cls(self):
-        return dash_model.JourneyTarif.objects.filter(
+        return JourneyTarif.objects.filter(
             route=OuterRef("route")
         )
 
+    @property
     def get_cls_name(self):
         return Subquery(
             queryset=self.get_cls().select_related("journey_class").annotate(
-                j_class=models.F("journey_class__name")
-            ).values("j_class"),
+                cls_name=models.F("journey_class__name")
+            ).values("cls_name"),
             output_field=models.CharField()
         )
 
+    @property
     def get_cls_id(self):
         return Subquery(
             queryset=self.get_cls().values("journey_class"),

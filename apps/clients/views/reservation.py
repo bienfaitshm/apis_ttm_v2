@@ -1,11 +1,12 @@
-from rest_framework import status, viewsets
+from rest_framework import pagination, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from apps.clients.selectors import search, selector_reservation
+from apps.clients.selectors import search
 from apps.clients.serializers import serialzers as sr
 from apps.clients.services import reservations_services as r_service
 from apps.dash import models as dash_model
+from apps.dash.services import routes
 from utils import rest_actions
 
 register_serializers = {
@@ -17,6 +18,16 @@ register_serializers = {
 }
 
 
+class CustomPagination(pagination.PageNumberPagination):
+    def get_paginated_response(self, data):
+        return Response({
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'count': len(data),
+            'results': data
+        })
+
+
 class ReservationViewApis(
     rest_actions.PostAction,
     rest_actions.ListAction,
@@ -25,16 +36,21 @@ class ReservationViewApis(
     """
     reservations actions
     """
+    pagination_class = CustomPagination
     serializer_class = sr.RSearchSerializer
     queryset = dash_model.Journey.objects.all()
 
     def get_queryset(self):
-        return search.SearchSelector(self.queryset).get_search()
+        data = search.SearchSelector(self.queryset).get_journies()
+        return list(data)
 
     def get_serializer_class(self, *args, **kwargs):
         return register_serializers.get(self.action, self.serializer_class)
 
-    def progression(self, request, session):
+    @action(detail=False, name="Reservation Progression")
+    def progression(self, request):
+        route = routes.Routes()
+        print("data: => ",  route.get_routes_data())
         return Response({})
 
     @action(detail=False, name="Search journey")
