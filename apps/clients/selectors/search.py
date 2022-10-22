@@ -1,6 +1,6 @@
 from collections import OrderedDict, deque
 from dataclasses import dataclass, field
-from typing import List, Union
+from typing import Any, List, Optional, TypedDict, Union
 
 from django.db import models
 from django.db.models import OuterRef, Subquery
@@ -11,8 +11,45 @@ from apps.dash.services.routes import Routes
 JOURNEY_ORDERD = deque[Journey]
 
 
+class JourneyAnotationDictType(TypedDict):
+    where_to: Any
+    where_from: Any
+    cls_name: Any
+    cls_id: Any
+    total_price: Optional[Any]
+
+
 def initial_value() -> JOURNEY_ORDERD:
     return deque([])
+
+
+@dataclass
+class ClsSelector:
+    cls_field = "journey_class"
+    cls_field_name = f"{cls_field}__name"
+    cls_join = (cls_field_name,)
+
+    @property
+    def query(self):
+        return JourneyTarif.objects.filter(
+            route=OuterRef("route")
+        )
+
+    @property
+    def get_cls_name(self):
+        return Subquery(
+            queryset=self.query.select_related(*self.cls_join).annotate(
+                cls_name=models.F(self.cls_field)
+            ).values("cls_name"),
+            output_field=models.CharField()
+        )
+
+    @property
+    def get_cls_id(self):
+        return Subquery(
+            queryset=self.query.values(self.cls_field),
+            output_field=models.IntegerField()
+        )
 
 
 @dataclass
@@ -26,7 +63,7 @@ class RouteSelector:
 
     @property
     def get_route_join(self):
-        return self.get_route_join
+        return self.route_join
 
     @property
     def sync_route(self) -> None:
@@ -38,43 +75,8 @@ class RouteSelector:
 
 
 @dataclass
-class JourneySelector:
-    pass
-
-
-@dataclass
-class SearchSelector:
-    j_manager: managers.JourneyManager
-    ordered_data: JOURNEY_ORDERD = field(
-        init=False,
-        default_factory=initial_value
-    )
-
-    root_join = (
-        "route",
-        "route__node",
-        "route__origin__node",
-    )
-
-    def get_journies(self) -> JOURNEY_ORDERD:
-        _data = self.get_search()
-        for item in _data:
-            self.ordered_data.append(item)
-        return self.ordered_data
-
-    def get_anotation(self) -> dict:
-        return {
-            "where_to": models.F("route__node__town"),
-            "where_from": models.F("route__origin__node__town"),
-            "cls_name": self.get_cls_name,
-            "cls_id": self.get_cls_id,
-            "total_price": self.get_total_price()
-        }
-
-    def get_search(self):
-        return self.j_manager.select_related(*self.root_join).annotate(
-            **self.get_anotation()
-        )
+class PriceSelector:
+    query: models.QuerySet[JourneyTarif]
 
     def ptt(self, name: str = "adult"):
         """ prix toutes taxe confondu """
@@ -87,7 +89,7 @@ class SearchSelector:
 
     def get_total_price(self, *args, **kwargs):
         return Subquery(
-            queryset=self.get_cls().annotate(
+            queryset=self.query.annotate(
                 tp_ad=self.ptt(),
                 tp_chd=self.ptt("child"),
                 tp_inf=self.ptt("baby")
@@ -97,23 +99,54 @@ class SearchSelector:
             output_field=models.FloatField()
         )
 
-    def get_cls(self):
-        return JourneyTarif.objects.filter(
-            route=OuterRef("route")
-        )
 
-    @property
-    def get_cls_name(self):
-        return Subquery(
-            queryset=self.get_cls().select_related("journey_class").annotate(
-                cls_name=models.F("journey_class__name")
-            ).values("cls_name"),
-            output_field=models.CharField()
-        )
+@dataclass
+class PassengerSelector:
+    pass
 
-    @property
-    def get_cls_id(self):
-        return Subquery(
-            queryset=self.get_cls().values("journey_class"),
-            output_field=models.IntegerField()
-        )
+
+@dataclass
+class JourneySelector:
+    cls_selector: ClsSelector
+    route_selector: RouteSelector
+    query: managers.JourneyManager
+    price_selector: PriceSelector
+    journies: JOURNEY_ORDERD = field(
+        init=False,
+        default_factory=initial_value
+    )
+
+    def get_annotate(self) -> JourneyAnotationDictType:
+        return {
+            "total_price": self.price_selector.get_total_price(),
+            "cls_id": self.cls_selector.get_cls_id,
+            "cls_name": self.cls_selector.get_cls_name,
+            "where_to": models.F("route__node__town"),
+            "where_from": models.F("route__origin__node__town"),
+        }
+
+    def get_queryset(self):
+        route_join = self.route_selector.get_route_join
+        return self.query.select_related(*route_join).annotate(**self.get_annotate())
+
+    def get_journies(self):
+        return self.get_queryset()
+
+
+@dataclass
+class SearchSelector:
+    pass
+
+
+def search_selector(manager: managers.JourneyManager, *args, **kwargs):
+    cls_selector = ClsSelector()
+    svc_route = Routes()
+    price_selector = PriceSelector(query=cls_selector.query)
+    route_selector = RouteSelector(route_services=svc_route)
+    jouries = JourneySelector(
+        query=manager,
+        cls_selector=cls_selector,
+        route_selector=route_selector,
+        price_selector=price_selector
+    )
+    return jouries.get_journies()

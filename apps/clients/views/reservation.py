@@ -2,7 +2,7 @@ from rest_framework import pagination, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from apps.clients.selectors import search
+from apps.clients.selectors.search import search_selector
 from apps.clients.serializers import serialzers as sr
 from apps.clients.services import reservations_services as r_service
 from apps.dash import models as dash_model
@@ -41,7 +41,7 @@ class ReservationViewApis(
     queryset = dash_model.Journey.objects.all()
 
     def get_queryset(self):
-        data = search.SearchSelector(self.queryset).get_journies()
+        data = search_selector(self.queryset)
         return list(data)
 
     def get_serializer_class(self, *args, **kwargs):
