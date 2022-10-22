@@ -58,6 +58,7 @@ class RouteSelector:
     route_join = (
         "route",
         "route__node",
+        "route__origin",
         "route__origin__node",
     )
 
@@ -65,27 +66,29 @@ class RouteSelector:
     def get_route_join(self):
         return self.route_join
 
-    @property
     def sync_route(self) -> None:
         self.route_services.sync()
 
     def get_scales(self, origin: Union[str, int]) -> List[str]:
         scales = self.route_services.get_scales_in_ordered(origin)
-        return [i.town for i in scales]
+        return [i.node.town for i in scales]
 
 
 @dataclass
 class PriceSelector:
     query: models.QuerySet[JourneyTarif]
+    adult: int = 3
+    child: int = 2
+    inf: int = 1
 
     def ptt(self, name: str = "adult"):
         """ prix toutes taxe confondu """
         return models.F(name) * ((models.F("taxe") / 100) + 1)
 
-    def f_total_price(self, adult: int = 1, child: int = 0, inf: int = 0):
+    def f_total_price(self):
         return (
-            models.F("tp_ad") * adult
-        ) + (models.F("tp_chd") * child) + (models.F("tp_inf") * inf)
+            models.F("tp_ad") * self.adult
+        ) + (models.F("tp_chd") * self.child) + (models.F("tp_inf") * self.inf)
 
     def get_total_price(self, *args, **kwargs):
         return Subquery(
@@ -99,10 +102,9 @@ class PriceSelector:
             output_field=models.FloatField()
         )
 
-
-@dataclass
-class PassengerSelector:
-    pass
+    @property
+    def passengers(self):
+        return OrderedDict(adult=self.adult, child=self.child, inf=self.inf)
 
 
 @dataclass
@@ -130,7 +132,15 @@ class JourneySelector:
         return self.query.select_related(*route_join).annotate(**self.get_annotate())
 
     def get_journies(self):
-        return self.get_queryset()
+        data = self.get_queryset()
+        self.route_selector.sync_route()
+        for item in data:
+            scales = self.route_selector.get_scales(item.route.origin.pk)
+            setattr(item, "scales", scales)
+            setattr(item, "has_scale", len(scales) >= 1)
+            setattr(item, "passengers", self.price_selector.passengers)
+            self.journies.append(item)
+        return self.journies
 
 
 @dataclass
