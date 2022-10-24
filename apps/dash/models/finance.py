@@ -49,6 +49,7 @@ class Ticket(PaymentBaseModel):
         help_text=_("the price of thing"),
         default=0.0
     )
+
     passenger = models.OneToOneField(
         Passenger, on_delete=models.CASCADE,
         related_name="passenger_ticket",

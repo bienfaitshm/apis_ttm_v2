@@ -74,7 +74,7 @@ class JourneyFinder(GenericMixinView, generics.ListAPIView):
                 "whereFromName",
                 "whereToName",
                 "numJourney",
-                "exprired",
+                # "exprired",
                 "sugestion",
                 "direct"
             ]

@@ -7,7 +7,7 @@ from rest_framework import serializers
 from apps.clients.process.search import SearchProcess
 from apps.clients.process.selectors import get_tarif_for_a_reservation
 from apps.clients.serializers.serialzers import (
-    OtherInfoReservationSerializer, PassengerSerializer,
+    PassengerSerializer, R_OtherInfoSerializer,
 )
 from apps.clients.services.reservations_services import (
     add_other_info, add_passengers, create_reservation,
@@ -29,7 +29,7 @@ class JPassengersDataSerializer(serializers.Serializer):
 
 
 class JReservationSerializer(serializers.Serializer):
-    uid = serializers.IntegerField()
+    id = serializers.IntegerField()
     where_from = serializers.CharField()
     where_to = serializers.CharField()
     datetime_from = serializers.DateTimeField()
@@ -42,7 +42,8 @@ class JReservationSerializer(serializers.Serializer):
     has_scale = serializers.BooleanField(default=False)  # type: ignore
     scales = serializers.ListField(
         child=serializers.CharField(),
-        required=False
+        required=False,
+        default=[]
     )
     message = serializers.CharField(required=False)
     is_selected_for = serializers.BooleanField(default=False)  # type: ignore
@@ -146,7 +147,7 @@ class OtherInfoJourneyReservation(serializers.Serializer):
         required=True, write_only=True,
         queryset=SeletectedJourney.objects.all()
     )
-    other_info = OtherInfoReservationSerializer()
+    other_info = R_OtherInfoSerializer()
 
     def create(self, validated_data: Dict[str, Any]):
         other_info: list = validated_data.get("other_info")

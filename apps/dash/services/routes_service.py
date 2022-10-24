@@ -1,10 +1,14 @@
 from abc import ABC, abstractmethod
-from typing import Any, Union
+from collections import namedtuple
+from dataclasses import dataclass
+from typing import Union
 
-from django.db.models import BaseManager
+from django.db import connection
 
 from apps.dash.models import CoverCity, Routing
 from utils.args_utils import kwargs_id_creator
+
+from .route_sql import recursive_route_sql
 
 NodeType = Union[CoverCity, int]
 LinkType = Union[Routing, None]
@@ -116,6 +120,76 @@ class RouteProcess(RouteProcessABC):
             where_from.whereTo = routing
             where_from.save()
         return routing
+
+
+@dataclass
+class RouteCreatorService:
+    def create(self, *args, **kwargs):
+        pass
+
+
+class RouteServices:
+    init_route: Union[str, int]
+    routes = {}
+    deeper = 0
+
+    def __init__(self, route) -> None:
+        self.routes = {}
+        self.fix_data(route)
+
+    def fix_data(self, route):
+        obj = queryset_routes(route)
+        for item in obj:
+            if item.level in self.routes:
+                if item.level >= 1:
+                    previous_item = self.routes[item.level-1]
+                    if item.id == previous_item.whereTo:
+                        self.routes[item.level] = item
+                if item.whereTo is None:
+                    break
+            else:
+                self.routes[item.level] = item
+                self.deeper = item.level
+
+    def get_routes(self):
+        return [value for _, value in self.routes.items()]
+
+    def get_deeper(self):
+        return self.deeper
+
+    def get_where_from(self):
+        return self.routes.get(0)
+
+    def get_where_to(self):
+        return self.routes.get(self.deeper)
+
+    def get_scales(self):
+        excludes = [0, self.deeper]
+        return [
+            value for key, value in self.routes.items() if key not in excludes
+        ]
+
+
+def namedtuplefetchall(route):
+    "Return all rows from a cursor as a namedtuple"
+    desc = route.description
+    nt_result = namedtuple('Route', [col[0] for col in desc])
+    return [nt_result(*row) for row in route.fetchall()]
+
+
+def queryset_routes(route=9):
+    with connection.cursor() as cursor:
+        cursor.execute(recursive_route_sql, [route])
+        row = namedtuplefetchall(cursor)
+    return row
+
+
+def recursive():
+    service = RouteServices(route=7)
+    re = service.get_scales()
+    print("recursive", re)
+    # for item in re:
+    #     print("===>", item)
 
 
 def create_route() -> Union[Routing, None]:

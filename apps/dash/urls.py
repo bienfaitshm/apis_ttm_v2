@@ -1,8 +1,9 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
 
+from apps.dash.views.routes import RouteProcessView
+
 from .views import view_reservations as VR
-from .views.routes import RouteProcessView
 from .views.views import (
     CabinePlaneView, CarsView, CoverCityView, JourneyClassView,
     JourneyTarifView, JourneyView, PointOfSaleView, PointOfSaleWorkerView,
@@ -50,21 +51,25 @@ router.register(
     PointOfSaleView,
     basename='point_of_sale'
 )
-router.register(
-    r'transport/routes',
-    RouteProcessView,
-    basename='route'
-)
-router.register(
-    r'technic/cabine_plane',
-    CabinePlaneView,
-    basename='cabine_plane'
-)
+
 router.register(
     r'transport/pos_worker',
     PointOfSaleWorkerView,
     basename='point_of_sale_worker'
 )
+
+router.register(
+    r'transport/routes',
+    RouteProcessView,
+    basename='route'
+)
+
+router.register(
+    r'technic/cabine_plane',
+    CabinePlaneView,
+    basename='cabine_plane'
+)
+
 
 urlpatterns = router.urls + [
     path(

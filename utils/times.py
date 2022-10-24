@@ -3,11 +3,13 @@ import inspect
 from datetime import datetime, timedelta
 from typing import Any, Callable
 
+from django.utils import timezone
+
 FuncGetNowType = Callable[[], datetime]
 
 
 def get_now() -> datetime:
-    return datetime.now()
+    return timezone.datetime.now()
 
 # def get_diff_datetime(date1:datetime, date2:datetime)->datetime:
 #     return date1.now() - date2.now()
@@ -15,7 +17,7 @@ def get_now() -> datetime:
 
 def cobine_date_n_time(date: Any, time: Any) -> datetime:
     """combine date and time to datetime"""
-    return datetime.combine(date=date, time=time)
+    return timezone.datetime.combine(date=date, time=time)
 
 
 def get_date_expiration(
@@ -41,4 +43,4 @@ def is_expired(
     if not inspect.isfunction(from_date):
         raise AttributeError("from_date is not a function or callable.")
     now = from_date()
-    return date_time > now if isinstance(date_time, datetime) else True
+    return date_time < now if isinstance(date_time, datetime) else True
