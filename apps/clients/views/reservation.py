@@ -1,7 +1,9 @@
+
 from rest_framework import pagination, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from apps.clients.selectors.infos_reservations import reservation_progression
 from apps.clients.selectors.search import search_selector
 from apps.clients.serializers import serialzers as sr
 from apps.clients.services import reservations_services as r_service
@@ -15,6 +17,7 @@ register_serializers = {
     "passengers": sr.RPassengerSerializer,
     "other_info": sr.R_OtherInfoSerializer,
     "complete": sr.RCompletedSerializer,
+    "progression": sr.ProgressionInfoSerializer
 }
 
 
@@ -35,23 +38,35 @@ class ReservationViewApis(
 ):
     """
     reservations actions
+    params
+        adult:1
+        baby:0
+        child:0
+        dateDepature: ""
+        journeyClass:""
+        whereFrom:""
+        whereTo:"bienfait"
     """
     pagination_class = CustomPagination
     serializer_class = sr.RSearchSerializer
     queryset = dash_model.Journey.objects.all()
 
-    def get_queryset(self):
-        data = search_selector(self.queryset)
-        return list(data)
+    def get_data(self):
+        params: dict = {}
+        if hasattr(self.request, "query_params"):
+            params = self.request.query_params  # type: ignore
+        return list(search_selector(self.queryset, **params))
 
     def get_serializer_class(self, *args, **kwargs):
         return register_serializers.get(self.action, self.serializer_class)
 
-    @action(detail=False, name="Reservation Progression")
-    def progression(self, request):
-        route = routes.Routes()
-        print("data: => ",  route.get_routes_data())
-        return Response({})
+    @action(detail=True, name="Reservation Progression")
+    def progression(self, request, pk):
+        success, value = reservation_progression(session=pk)
+        if success:
+            serializer = self.get_serializer(value)
+            return Response(serializer.data)
+        return Response({"detail": value}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, name="Search journey")
     def search(self, request):

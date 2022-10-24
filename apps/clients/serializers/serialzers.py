@@ -28,6 +28,7 @@ class JPassengersDataSerializer(serializers.Serializer):
     adult = serializers.IntegerField(default=settings.ADULT)
     child = serializers.IntegerField(default=settings.CHILD)
     inf = serializers.IntegerField(default=settings.INF)
+    step = serializers.IntegerField(default=0)
 
 
 class RSearchSerializer(serializers.Serializer):
@@ -51,6 +52,11 @@ class RSearchSerializer(serializers.Serializer):
     message = serializers.CharField(required=False)
     is_selected_for = serializers.BooleanField(default=False)  # type: ignore
     is_expired = serializers.BooleanField(default=False)  # type: ignore
+
+
+class ProgressionInfoSerializer(JPassengersDataSerializer):
+    # id = serializers.IntegerField(source="pk")
+    passengers = PassengerSerializer(many=True, default=[])
 
 
 class RSelectSerializer(JPassengersDataSerializer):

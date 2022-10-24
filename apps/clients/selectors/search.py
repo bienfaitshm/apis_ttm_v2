@@ -9,6 +9,15 @@ from apps.dash.models import Journey, JourneyTarif, managers
 from apps.dash.services.routes import Routes
 
 JOURNEY_ORDERD = deque[Journey]
+INT_STR = Union[str, int]
+# query string
+ADULT_PARAMS = "adult"
+CHILD_PARAMS = "child"
+INF_PARAMS = "baby"
+DATE_DEPARTURE_PARAMS = "dateDepature"
+CLS_NAME_PARAMS = "journeyClass"
+WHERE_FROM_PARAMS = "whereFrom"
+WHERE_TO_PARAMS = "whereTo"
 
 
 class JourneyAnotationDictType(TypedDict):
@@ -106,13 +115,61 @@ class PriceSelector:
     def passengers(self):
         return OrderedDict(adult=self.adult, child=self.child, inf=self.inf)
 
+    def parse_int(self, value: INT_STR, default: int = 0) -> int:
+        if isinstance(value, int):
+            return value
+        return int(value) if isinstance(value, str) and value.isdigit() else default
+
+    def set_adult(self, adult: INT_STR):
+        self.adult = self.parse_int(adult, self.adult)
+
+    def set_child(self, child: INT_STR):
+        self.child = self.parse_int(child, self.child)
+
+    def set_inf(self, inf: INT_STR):
+        self.inf = self.parse_int(inf, self.inf)
+
+
+@dataclass
+class SearchSelector:
+    cls_selector: ClsSelector
+    route_selector: RouteSelector
+    price_selector: PriceSelector
+
+    def get_route_join(self):
+        return self.route_selector.get_route_join
+
+    def sync_route(self):
+        self.route_selector.sync_route()
+
+    def get_total_price(self):
+        return self.price_selector.get_total_price()
+
+    def cls_id(self):
+        return self.cls_selector.get_cls_id
+
+    def cls_name(self):
+        return self.cls_selector.get_cls_name
+
+    def passengers(self):
+        return self.price_selector.passengers
+
+    def get_scales(self, item: Any):
+        return self.route_selector.get_scales(item)
+
+    def request(self, *args, **kwargs):
+        if adult := kwargs.get(ADULT_PARAMS):
+            self.price_selector.set_adult(get_params_value(adult))
+        if child := kwargs.get(CHILD_PARAMS):
+            self.price_selector.set_child(get_params_value(child))
+        if inf := kwargs.get(INF_PARAMS):
+            self.price_selector.set_inf(get_params_value(inf))
+
 
 @dataclass
 class JourneySelector:
-    cls_selector: ClsSelector
-    route_selector: RouteSelector
+    search_selector: SearchSelector
     query: managers.JourneyManager
-    price_selector: PriceSelector
     journies: JOURNEY_ORDERD = field(
         init=False,
         default_factory=initial_value
@@ -120,44 +177,53 @@ class JourneySelector:
 
     def get_annotate(self) -> JourneyAnotationDictType:
         return {
-            "total_price": self.price_selector.get_total_price(),
-            "cls_id": self.cls_selector.get_cls_id,
-            "cls_name": self.cls_selector.get_cls_name,
+            "total_price": self.search_selector.get_total_price(),
+            "cls_id": self.search_selector.cls_id(),
+            "cls_name": self.search_selector.cls_name(),
             "where_to": models.F("route__node__town"),
             "where_from": models.F("route__origin__node__town"),
         }
 
     def get_queryset(self):
-        route_join = self.route_selector.get_route_join
+        route_join = self.search_selector.get_route_join()
         return self.query.select_related(*route_join).annotate(**self.get_annotate())
 
     def get_journies(self):
         data = self.get_queryset()
-        self.route_selector.sync_route()
+        self.search_selector.sync_route()
         for item in data:
-            scales = self.route_selector.get_scales(item.route.origin.pk)
+            scales = self.search_selector.get_scales(item.route.origin.pk)
             setattr(item, "scales", scales)
             setattr(item, "has_scale", len(scales) >= 1)
-            setattr(item, "passengers", self.price_selector.passengers)
+            setattr(item, "passengers", self.search_selector.passengers())
             self.journies.append(item)
         return self.journies
 
 
-@dataclass
-class SearchSelector:
-    pass
-
-
 def search_selector(manager: managers.JourneyManager, *args, **kwargs):
+
     cls_selector = ClsSelector()
     svc_route = Routes()
     price_selector = PriceSelector(query=cls_selector.query)
     route_selector = RouteSelector(route_services=svc_route)
 
-    jouries = JourneySelector(
-        query=manager,
+    search = SearchSelector(
         cls_selector=cls_selector,
         route_selector=route_selector,
         price_selector=price_selector
     )
+
+    jouries = JourneySelector(
+        query=manager,
+        search_selector=search,
+    )
+
+    print("data:===>", args, kwargs)
+    search.request(*args, **kwargs)
     return jouries.get_journies()
+
+
+def get_params_value(value: Union[INT_STR, list[int]]) -> INT_STR:
+    return value[0] if isinstance(
+        value, list
+    ) and len(value) > 0 else value  # type: ignore

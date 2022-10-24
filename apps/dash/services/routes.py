@@ -118,7 +118,7 @@ class Routes:
         routes: Optional[List[Routing]] = None
     ):
         scales = deque([])
-        data: List[Routing] = routes or self.ordered_data.get(origin, [])
+        data: List[Routing] = routes or self.ordered_data.get(str(origin), [])
         for item in data:
             if item.whereFrom is not None and item.whereTo is not None:
                 scales.append(item)

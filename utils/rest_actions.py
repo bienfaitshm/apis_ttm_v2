@@ -27,7 +27,7 @@ class PostAction:
 
 class ListAction:
     def list_action(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())  # type: ignore
+        queryset = self.filter_queryset(self.get_data())  # type: ignore
 
         page = self.paginate_queryset(queryset)  # type: ignore
         if page is not None:
