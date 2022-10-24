@@ -1,4 +1,6 @@
 
+from typing import Any, Dict
+
 from django.conf import settings
 from rest_framework import exceptions, serializers
 
@@ -28,7 +30,6 @@ class JPassengersDataSerializer(serializers.Serializer):
     adult = serializers.IntegerField(default=settings.ADULT)
     child = serializers.IntegerField(default=settings.CHILD)
     inf = serializers.IntegerField(default=settings.INF)
-    step = serializers.IntegerField(default=0)
 
 
 class RSearchSerializer(serializers.Serializer):
@@ -57,6 +58,7 @@ class RSearchSerializer(serializers.Serializer):
 class ProgressionInfoSerializer(JPassengersDataSerializer):
     # id = serializers.IntegerField(source="pk")
     passengers = PassengerSerializer(many=True, default=[])
+    step = serializers.IntegerField(default=0)
 
 
 class RSelectSerializer(JPassengersDataSerializer):
@@ -115,6 +117,10 @@ class R_OtherInfoSerializer(serializers.ModelSerializer):
         model = client_model.OtherInfoReservation
         exclude = ["journey"]
         read_only_fields = []
+
+    def create(self, validated_data: Dict[str, Any]):
+        session: list = validated_data.pop("session")
+        return super().create({"journey": session, **validated_data})
 
 
 class RCompletedSerializer(serializers.Serializer):

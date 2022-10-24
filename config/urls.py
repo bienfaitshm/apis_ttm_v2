@@ -1,16 +1,16 @@
-from django.contrib import admin
-from django.urls import path, re_path, include
-from .views import current_datetime, index
-from rest_framework import permissions
-from drf_yasg.views import get_schema_view
-from drf_yasg import openapi
-from django.views.decorators.csrf import csrf_exempt
-from graphql_jwt.decorators import jwt_cookie
-from django.conf.urls.static import static
 from django.conf import settings
-from .schemas import schema
+from django.conf.urls.static import static
+from django.contrib import admin
+from django.urls import include, path, re_path
+from django.views.decorators.csrf import csrf_exempt
+from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
 from graphene_django.views import GraphQLView
+from graphql_jwt.decorators import jwt_cookie
+from rest_framework import permissions
 
+from .schemas import schema
+from .views import current_datetime, index
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -29,8 +29,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('__debug__/', include('debug_toolbar.urls')),
     path("time", current_datetime),
-    path("", index),
     # documentaion route...
+    path("", schema_view.with_ui('redoc',
+         cache_timeout=0), name='schema-redoc'),
     re_path(r'^docs/swagger(?P<format>\.json|\.yaml)/$',
             schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path("docs/swagger/", schema_view.with_ui('swagger',
