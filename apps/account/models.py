@@ -1,6 +1,5 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
-from django.db.models import CharField
 from django.utils.translation import gettext as _
 
 from apps.account.employe_type import Employetype
@@ -79,7 +78,7 @@ class Users(AbstractBaseUser):
     def has_module_perms(self, app_label):
         return True
 
-    def natural_key(self) -> CharField:
+    def natural_key(self) -> str:
         return self.username
 
     @property
@@ -105,9 +104,9 @@ class Company(BaseModel):
     def __str__(self):
         return f"{self.nom} - {self.pk}"
 
-    def get_slogan(self):
+    def get_slogan(self) -> str:
         """return le slogan de la comapagnie"""
-        return _(self.slogan)
+        return f"{self.slogan}"
 
     def get_responsable(self):
         """return le responsable..."""
@@ -122,26 +121,6 @@ class Company(BaseModel):
         return self.mail
 
 
-class PersonneGenderBase(models.Model):
-    WOMAN = "F"
-    MAN = "H"
-    INDERTEMINAT = "I"
-    _GENDERS = [
-        (WOMAN, _("Woman")),
-        (MAN, _("Man")),
-        (INDERTEMINAT, _("Indeterminate")),
-    ]
-    gender = models.CharField(
-        verbose_name=_("gender"),
-        max_length=10,
-        choices=_GENDERS,
-        default=INDERTEMINAT
-    )
-
-    class Meta:
-        abstract = True
-
-
 class PersonalMixin(BaseModel):
     firstname = models.CharField(max_length=45)
     middlename = models.CharField(max_length=45)
@@ -152,6 +131,7 @@ class PersonalMixin(BaseModel):
         abstract = True
         ordering = ['firstname']
 
+    @property
     def fullname(self):
         return f"{self.firstname} {self.middlename} {self.lastname}"
 

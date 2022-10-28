@@ -1,12 +1,15 @@
+from email.policy import default
+from tabnanny import verbose
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from apps.account.models import Client, PersonalMixin, PersonneGenderBase
+from apps.account.models import Client, PersonalMixin
 from apps.dash.models.technique import Seat
 from apps.dash.models.transport import (
     CoverCity, Journey, JourneyClass, Routing,
 )
-from utils.base_model import BaseModel
+from utils.base_model import BaseModel, PersonneGenderBase
 
 
 class ResearchReservation(BaseModel):
@@ -282,6 +285,25 @@ class OtherInfoReservation(PersonneGenderBase, PersonalMixin):
     def __str__(self) -> str:
         return f"{self.pk} - {self.fullname}"
 
-    @property
-    def fullname(self) -> str:
-        return f"{self.firstname} {self.middlename} {self.lastname}"
+
+class SendTicket(BaseModel):
+    journey = models.OneToOneField(
+        SeletectedJourney,
+        verbose_name=_("reservations"),
+        related_name="send_ticket",
+        help_text=_("the selected journey reservations"),
+        on_delete=models.CASCADE,
+    )
+    sended = models.BooleanField(
+        verbose_name=("sended Ticket"),
+        default=False
+    )
+    to = models.CharField(
+        null=True,
+        blank=True,
+        max_length=200,
+        verbose_name=("sended Ticket"),
+    )
+
+    def __str__(self) -> str:
+        return f"sended {self.sended} to {self.to}"

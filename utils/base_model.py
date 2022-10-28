@@ -13,6 +13,26 @@ class BaseModel(models.Model):
         return f"{self.pk}"
 
 
+class PersonneGenderBase(models.Model):
+    WOMAN = "F"
+    MAN = "H"
+    INDERTEMINAT = "I"
+    _GENDERS = [
+        (WOMAN, _("Woman")),
+        (MAN, _("Man")),
+        (INDERTEMINAT, _("Indeterminate")),
+    ]
+    gender = models.CharField(
+        verbose_name=_("gender"),
+        max_length=10,
+        choices=_GENDERS,
+        default=INDERTEMINAT
+    )
+
+    class Meta:
+        abstract = True
+
+
 class PaymentBaseModel(BaseModel):
     USD = "USD"
     CDF = "DCF"

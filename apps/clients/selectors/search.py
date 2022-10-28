@@ -201,7 +201,6 @@ class JourneySelector:
 
 
 def search_selector(manager: managers.JourneyManager, *args, **kwargs):
-
     cls_selector = ClsSelector()
     svc_route = Routes()
     price_selector = PriceSelector(query=cls_selector.query)

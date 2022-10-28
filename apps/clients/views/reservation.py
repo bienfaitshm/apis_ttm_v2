@@ -3,7 +3,9 @@ from rest_framework import pagination, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from apps.clients.selectors.infos_reservations import reservation_progression
+from apps.clients.selectors.infos_reservations import (
+    RETURN_TYPE, reservation_completed, reservation_progression,
+)
 from apps.clients.selectors.search import search_selector
 from apps.clients.serializers import serialzers as sr
 from apps.clients.services import reservations_services as r_service
@@ -60,13 +62,23 @@ class ReservationViewApis(
     def get_serializer_class(self, *args, **kwargs):
         return register_serializers.get(self.action, self.serializer_class)
 
-    @action(detail=True, name="Reservation Progression")
-    def progression(self, request, pk):
-        success, value = reservation_progression(session=pk)
+    def get_info_responce(self, result: RETURN_TYPE):
+        success, value = result
         if success:
             serializer = self.get_serializer(value)
             return Response(serializer.data)
         return Response({"detail": value}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, name="Reservation Progression")
+    def progression(self, request, pk):
+        result = reservation_progression(session=pk)
+        return self.get_info_responce(result)
+
+    @action(detail=True, methods=["get"], name="Servation Complted")
+    def complete(self, request, pk):
+        """ get and check if the reservation is finiched"""
+        result = reservation_completed(session=pk)
+        return self.get_info_responce(result)
 
     @action(detail=False, name="Search journey")
     def search(self, request):
@@ -90,10 +102,3 @@ class ReservationViewApis(
     def other_info(self, request, pk):
         """ adding the other information in the reservation"""
         return self.post_action(request, pk=pk)
-
-    @action(detail=True, methods=["get"], name="Servation Complted")
-    def complete(self, request, pk):
-        """ get and check if the reservation is finiched"""
-        reservation = r_service.ReservationServices(session=pk)
-        data = self.get_serializer(reservation.get_completed()).data
-        return Response(data, status=status.HTTP_200_OK)
