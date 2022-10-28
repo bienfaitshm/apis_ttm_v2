@@ -9,6 +9,9 @@ from typing import (
 
 from django.db import models
 
+from apps.clients.message import (
+    InfoJourneyMessage, InfoMessageJourneyTypedDict,
+)
 from apps.clients.models import (
     OtherInfoReservation, Passenger, SeletectedJourney,
 )
@@ -36,6 +39,10 @@ def title_fullname(gender: str, fullname: str):
     return f"{title} {fullname}"
 
 
+def stringfy_datetime(value: datetime, format: str = "%A %d %B %Y") -> str:
+    return value.strftime(format) if hasattr(value, "strftime") else "-"
+
+
 class StepReservation:
     SELECT = 0
     PASSENGER = 1
@@ -60,7 +67,14 @@ class InfoReservation:
     queryset = SeletectedJourney.objects.all()
 
     # relation models
-    related = ("journey", "session", "journey_class", "other_info")
+    related = (
+        "journey",
+        "journey__route__node",
+        "journey__route__origin__node",
+        "session",
+        "journey_class",
+        "other_info"
+    )
     prefetch = ("passengers",)
 
     def get_queryset(self, session: Optional[str] = None):
@@ -83,6 +97,20 @@ class InfoReservation:
         with contextlib.suppress(OtherInfoReservation.DoesNotExist):
             if hasattr(self.reservation, "other_info"):
                 return self.reservation.other_info  # type: ignore
+
+    @property
+    def info_journey_message(self) -> str:
+        value: InfoMessageJourneyTypedDict = {
+            "j_number": self.reservation.journey.numJourney,
+            "where_from": self.reservation.journey.route.origin.node.town,  # type: ignore
+            "where_to": self.reservation.journey.route.node.town,  # type: ignore
+            "d_where_from": stringfy_datetime(self.reservation.journey.dateDeparture),
+            "h_where_from": stringfy_datetime(self.reservation.journey.hoursDeparture, "%H:%M"),
+            "w_where_to":  stringfy_datetime(self.reservation.journey.hoursReturn, "%H:%M"),
+            "d_where_to": stringfy_datetime(self.reservation.journey.dateReturn)
+        }
+
+        return InfoJourneyMessage.get_info_message(**value)  # type: ignore
 
     def booker(self) -> str:
         """ fullname of booker """
@@ -117,7 +145,7 @@ class InfoReservation:
             pnr=self.reservation.pnr,
             passengers=passengers,
             total_price="",
-            text_reservation="",
+            text_reservation=self.info_journey_message,
         )
 
     def send_ticket(self, *args, **kwargs):
