@@ -94,15 +94,37 @@ class JourneySession(BaseModel):
         return self.key
 
 
-class SeletectedJourney(BaseModel):
+class Reservation(BaseModel):
+    # status of reservation
     OPTION = "OP"
     VOIDED = "VD"
     EMITED = "ES"
+
+    # step of reservation
+    SELECT = 1
+    PASSENGER = 2
+    OTHER_INFO = 3
+    COMPLETED = 4
+
     RESERVAION_STATUS = [
         (OPTION, 'In option'),
         (VOIDED, "Voided"),
         (EMITED, "Emis")
     ]
+
+    RESERVAION_STEP = [
+        (SELECT, "SELECT_JOURNEY"),
+        (PASSENGER, "PASSENGER"),
+        (OTHER_INFO, "OTHER_INFO"),
+        (COMPLETED, "COMPLETED")
+    ]
+
+    step = models.IntegerField(
+        verbose_name=_("step reservation"),
+        choices=RESERVAION_STEP,
+        default=SELECT
+    )
+
     status = models.CharField(
         verbose_name=_('status reservation'),
         max_length=20,
@@ -127,14 +149,7 @@ class SeletectedJourney(BaseModel):
         unique=True,
         null=True
     )
-    folder = models.ForeignKey(
-        JourneyClientFolder,
-        verbose_name=_("folder"),
-        on_delete=models.CASCADE,
-        related_name="reservations",
-        null=True,
-        default=None
-    )
+
     journey = models.ForeignKey(
         Journey,
         verbose_name=_("journey"),
@@ -170,7 +185,7 @@ class Passenger(PersonneGenderBase, PersonalMixin):
     ]
 
     journey = models.ForeignKey(
-        SeletectedJourney,
+        Reservation,
         verbose_name=_("journey"),
         on_delete=models.CASCADE,
         related_name="passengers"
@@ -237,7 +252,7 @@ class OtherInfoReservation(PersonneGenderBase, PersonalMixin):
     """
 
     journey = models.OneToOneField(
-        SeletectedJourney,
+        Reservation,
         verbose_name=_("reservations"),
         related_name="other_info",
         help_text=_("the selected journey reservations"),
@@ -288,7 +303,7 @@ class OtherInfoReservation(PersonneGenderBase, PersonalMixin):
 
 class SendTicket(BaseModel):
     journey = models.OneToOneField(
-        SeletectedJourney,
+        Reservation,
         verbose_name=_("reservations"),
         related_name="send_ticket",
         help_text=_("the selected journey reservations"),

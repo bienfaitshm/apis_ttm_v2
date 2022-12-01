@@ -12,7 +12,7 @@ from apps.clients.selectors import search
 from apps.dash import models as dash_model
 from apps.dash.services import routes_service
 
-from ..models import Passenger, SeletectedJourney
+from ..models import Passenger, Reservation
 
 fake_data: List[RJourneyDataType] = [
     {
@@ -189,7 +189,7 @@ def find_reservation_journey() -> List[RJourneyDataType]:
 
 
 def get_dash_reservations():
-    return SeletectedJourney.objects.all()
+    return Reservation.objects.all()
 
 
 def get_dash_detail_reservation():
@@ -207,7 +207,7 @@ def get_dash_detail_reservation():
         output_field=models.CharField(max_length=200)
     )
 
-    return SeletectedJourney.objects\
+    return Reservation.objects\
         .select_related(*select_related)\
         .prefetch_related(*prefetch_related)\
         .annotate(

@@ -1,11 +1,11 @@
 import inspect
 
 from datetime import datetime, timedelta
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 
 from django.utils import timezone
 
-FuncGetNowType = Callable[[], datetime]
+FuncGetNowType = Optional[Callable[[], datetime]]
 
 
 def get_now() -> datetime:
@@ -22,10 +22,13 @@ def cobine_date_n_time(date: Any, time: Any) -> datetime:
 
 def get_date_expiration(
     date_dep: datetime,
-    from_date: FuncGetNowType = get_now
+    from_date: FuncGetNowType = get_now,
+    *args, **kwargs
 ) -> datetime:
     """ get expiration of ..."""
-    now = from_date()
+    now = get_now()
+    if from_date:
+        now = from_date()
     weeks_tow_diff = now + timedelta(days=14)
     hours_3_diff = now + timedelta(days=3)
     if date_dep > weeks_tow_diff:

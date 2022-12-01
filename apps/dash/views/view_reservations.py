@@ -3,7 +3,7 @@ import random
 
 from rest_framework import generics, serializers
 
-from apps.clients.models import SeletectedJourney
+from apps.clients.models import Reservation
 from apps.clients.selectors import selector_reservation as SR
 from apps.dash.models.transport import Journey
 from apps.dash.selectors.finder import finder_journey
@@ -88,7 +88,7 @@ class DashViewReservation(GenericMixinView, generics.ListAPIView):
     class OutputSerializer(serializers.ModelSerializer):
 
         class Meta:
-            model = SeletectedJourney
+            model = Reservation
             fields = ("id", "status",)
             ref_name = "OutputSerializerDetail"
 
@@ -111,7 +111,7 @@ class DashViewDetailReservation(GenericMixinView, generics.RetrieveAPIView):
 
         class Meta:
             ref_name = "OutputSerializerDetail"
-            model = SeletectedJourney
+            model = Reservation
             fields = ("id", "status", "pnr", "folder", "n_folder",
                       "client_full_name", "date_created", )
 

@@ -1,5 +1,8 @@
 
-from typing import Any, Dict
+import logging
+
+from collections import OrderedDict
+from typing import Any, Dict, Literal, Tuple, Union
 
 from django.conf import settings
 from rest_framework import exceptions, serializers
@@ -7,10 +10,27 @@ from rest_framework import exceptions, serializers
 from apps.clients import models as client_model
 from apps.clients.serializers.validators import journey_expired_validator
 from apps.clients.services import reservations_services as r_services
+from apps.clients.services.reservation import reservation_apis_service
 from apps.dash import models as dash_model
 from utils import fields
 
 default_device = ["USD", "CDF"]
+
+TTReturn = Tuple[Union[Literal[False], Literal[True]], Any]
+
+
+class CreatorServiceSerializerMixin:
+    def callback(self, value: Any) -> Any:
+        return value
+
+    def action(self, *args, **kwargs) -> TTReturn:
+        raise NotImplementedError("method not implatemented")
+
+    def create(self, *args, **kwargs):
+        succes, value = self.action(*args, **kwargs)
+        if not succes:
+            raise exceptions.ValidationError(value)
+        return self.callback(value)
 
 
 class FretPassengerSerializer(serializers.ModelSerializer):
@@ -20,10 +40,15 @@ class FretPassengerSerializer(serializers.ModelSerializer):
 
 
 class PassengerSerializer(serializers.ModelSerializer):
+    """passengers info with price information"""
+    taxe = serializers.FloatField(default=0.0)
+    price = serializers.FloatField(default=0.0)
+    devise = serializers.ChoiceField(choices=default_device, default="CDF")
+
     class Meta:
         model = client_model.Passenger
         fields = "__all__"
-        read_only_fields = ["journey"]
+        read_only_fields = ["journey", "taxe", "price", "devise"]
 
 
 class JPassengersDataSerializer(serializers.Serializer):
@@ -61,7 +86,7 @@ class ProgressionInfoSerializer(JPassengersDataSerializer):
     step = serializers.IntegerField(default=0)
 
 
-class RSelectSerializer(JPassengersDataSerializer):
+class RSelectSerializer(CreatorServiceSerializerMixin, JPassengersDataSerializer):
     session = serializers.CharField(read_only=True)
     journey = serializers.PrimaryKeyRelatedField(
         queryset=dash_model.Journey.objects.all(),
@@ -73,43 +98,48 @@ class RSelectSerializer(JPassengersDataSerializer):
         write_only=True
     )
 
-    def create(self, validated_data: dict):
+    def callback(self, value: Any) -> Any:
+        return OrderedDict(
+            session=value.session.key,
+            adult=value.adult,
+            inf=value.baby,
+            child=value.child
+        )
+
+    def action(self, validated_data) -> TTReturn:
         j_cls = validated_data.pop("j_class_id")
         baby = validated_data.pop("inf")
-        r_service = r_services.ReservationServices(session=None)
-        succes, value = r_service.create_reservation(
-            j_cls=j_cls, baby=baby, **validated_data)
-
-        if not succes:
-            raise exceptions.ValidationError(value)
-        return {
-            "session": value.session.key  # type: ignore
-        }
+        return reservation_apis_service.reserve(
+            j_cls=j_cls,
+            baby=baby,
+            **validated_data
+        )
 
 
-class RPassengerSerializer(serializers.Serializer):
+class RPassengerSerializer(CreatorServiceSerializerMixin, serializers.Serializer):
     session = fields.SessionField(
-        queryset=client_model.SeletectedJourney.objects.all(),
+        queryset=client_model.Reservation.objects.all(),
         required=True, write_only=True,
     )
     passengers = PassengerSerializer(many=True)
 
-    def create(self, validated_data):
+    def callback(self, value: Any) -> Any:
+        passengers = value.get("passengers", [])
+        reservation = value.get("reservation")
+        return OrderedDict(
+            session=reservation.session.key if reservation else "NoKey",
+            passengers=passengers
+        )
+
+    def action(self, validated_data) -> TTReturn:
         session = validated_data.get("session")
         psg = validated_data.get("passengers")
-        r_service = r_services.ReservationServices(session=session)
-        success, value = r_service.passengers(psg=psg)
-        if not success:
-            raise exceptions.ValidationError(value)
-        return {
-            "session": session.session.key,
-            "passengers": value
-        }
+        return reservation_apis_service.passengers(session, psg)
 
 
-class R_OtherInfoSerializer(serializers.ModelSerializer):
+class R_OtherInfoSerializer(CreatorServiceSerializerMixin, serializers.ModelSerializer):
     session = fields.SessionField(
-        queryset=client_model.SeletectedJourney.objects.all(),
+        queryset=client_model.Reservation.objects.all(),
         required=True, write_only=True,
     )
 
@@ -118,9 +148,9 @@ class R_OtherInfoSerializer(serializers.ModelSerializer):
         exclude = ["journey"]
         read_only_fields = []
 
-    def create(self, validated_data: Dict[str, Any]):
-        session: list = validated_data.pop("session")
-        return super().create({"journey": session, **validated_data})
+    def action(self, validated_data: Dict[str, Any]):
+        session = validated_data.pop("session")
+        return reservation_apis_service.other_info({"journey": session, **validated_data})
 
 
 class RCompletedSerializer(serializers.Serializer):
@@ -146,7 +176,7 @@ class SeletectedJourneySerializer(serializers.ModelSerializer):
     session_key = serializers.CharField(source="session.key", read_only=True)
 
     class Meta:
-        model = client_model.SeletectedJourney
+        model = client_model.Reservation
         fields = "__all__"
         read_only_fields = ["folder", "session"]
 

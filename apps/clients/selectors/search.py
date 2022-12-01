@@ -37,11 +37,15 @@ class ClsSelector:
     cls_field = "journey_class"
     cls_field_name = f"{cls_field}__name"
     cls_join = (cls_field_name,)
+    out_ref: OuterRef = field(
+        init=False,
+        default_factory=lambda: OuterRef("route")
+    )
 
     @property
     def query(self):
         return JourneyTarif.objects.filter(
-            route=OuterRef("route")
+            route=self.out_ref
         )
 
     @property
@@ -71,7 +75,6 @@ class RouteSelector:
         "route__origin__node",
     )
 
-    @property
     def get_route_join(self):
         return self.route_join
 
@@ -86,9 +89,9 @@ class RouteSelector:
 @dataclass
 class PriceSelector:
     query: models.QuerySet[JourneyTarif]
-    adult: int = 3
-    child: int = 2
-    inf: int = 1
+    adult: int = 1
+    child: int = 0
+    inf: int = 0
 
     def ptt(self, name: str = "adult"):
         """ prix toutes taxe confondu """
@@ -137,7 +140,7 @@ class SearchSelector:
     price_selector: PriceSelector
 
     def get_route_join(self):
-        return self.route_selector.get_route_join
+        return self.route_selector.get_route_join()
 
     def sync_route(self):
         self.route_selector.sync_route()

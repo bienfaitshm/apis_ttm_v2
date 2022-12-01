@@ -197,6 +197,10 @@ INTERNAL_IPS = [
     # ...
 ]
 
+# TTM config services...
+SEND_TICKET_EMAIL: bool = False
+
+
 # Reservation Config
 # default number of passengers type input
 ADULT = 1

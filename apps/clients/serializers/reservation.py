@@ -17,7 +17,7 @@ from apps.dash.process import routes
 from apps.dash.serializers.serializers import JourneyTarifSerializer
 from utils import fields
 
-from ..models import ResearchReservation, SeletectedJourney
+from ..models import ResearchReservation, Reservation
 
 default_device = ["USD", "CDF"]
 
@@ -78,7 +78,7 @@ class SelectjourneyReservation(serializers.ModelSerializer):
     info = serializers.SerializerMethodField(method_name="get_info")
 
     class Meta:
-        model = SeletectedJourney
+        model = Reservation
         # depth = 2
         exclude = ['folder', 'session']
         read_only_fields = ['session', 'folder', 'state', "pnr"]
@@ -100,7 +100,7 @@ class SelectjourneyReservation(serializers.ModelSerializer):
             route=objet.journey.route, journey_class=objet.journey_class)
         return JourneyTarifSerializer(tarif).data
 
-    def get_info(self, objet: SeletectedJourney):
+    def get_info(self, objet: Reservation):
         """  Voyage <b>234 n0 1234</b> dimanche 19 decembre 2021
         - Depart Kinshasa N'Djili a 08:00 - Arrivee Goma a
         11:20 """
@@ -129,7 +129,7 @@ class SelectjourneyReservation(serializers.ModelSerializer):
 class PassengerJourneyReservation(serializers.Serializer):
     session = fields.SessionField(
         required=True, write_only=True,
-        queryset=SeletectedJourney.objects.all()
+        queryset=Reservation.objects.all()
     )
     passengers = PassengerSerializer(many=True)
 
@@ -145,7 +145,7 @@ class PassengerJourneyReservation(serializers.Serializer):
 class OtherInfoJourneyReservation(serializers.Serializer):
     session = fields.SessionField(
         required=True, write_only=True,
-        queryset=SeletectedJourney.objects.all()
+        queryset=Reservation.objects.all()
     )
     other_info = R_OtherInfoSerializer()
 

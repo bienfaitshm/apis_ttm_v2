@@ -11,7 +11,7 @@ from utils import methods
 from utils.pdf import pdf_link
 
 from ..models import (
-    FretPassenger, JourneySession, Passenger, PlaceReserved, SeletectedJourney,
+    FretPassenger, JourneySession, Passenger, PlaceReserved, Reservation,
 )
 from ..serializers import serialzers as sz
 
@@ -54,7 +54,7 @@ class PlaceReservedView(viewsets.ModelViewSet):
 
 class SeletectedJourneyView(viewsets.ModelViewSet):
     serializer_class = sz.SeletectedJourneySerializer
-    queryset = SeletectedJourney.objects.all()\
+    queryset = Reservation.objects.all()\
         .select_related("session", "journey", "journey_class")
     # .prefetch_related("passengers")
     filter_backends = [

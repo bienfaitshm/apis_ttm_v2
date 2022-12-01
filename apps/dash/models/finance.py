@@ -1,14 +1,9 @@
-# import random
 
 from django.db import models
 from django.utils.translation import gettext as _
 
 from apps.clients.models import Passenger
 from utils.base_model import PaymentBaseModel
-
-# from django.db.models.signals import post_save
-# from django.dispatch import receiver
-
 
 __all__ = ["Ticket", ]
 
@@ -61,14 +56,3 @@ class Ticket(PaymentBaseModel):
         db_table = "tb_tickets"
         verbose_name = _("Billet")
         verbose_name_plural = _("Billets")
-
-
-# @receiver(post_save, sender=Passenger)
-# def on_create_new_passenger(sender, instance, created, **kwargs):
-#     """signal of passenger ticket"""
-#     if created:
-#         n_ticket = random.randint(000000, 9999999)
-#         Ticket.objects.create(
-#             passenger=instance,
-#             n_ticket=n_ticket
-#         )

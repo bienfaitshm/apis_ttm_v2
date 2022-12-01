@@ -3,9 +3,7 @@ from rest_framework import pagination, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from apps.clients.selectors.infos_reservations import (
-    RETURN_TYPE, reservation_completed, reservation_progression,
-)
+from apps.clients.selectors.infos_reservations import RETURN_TYPE, apis_info
 from apps.clients.selectors.search import search_selector
 from apps.clients.serializers import serialzers as sr
 from apps.clients.services import reservations_services as r_service
@@ -71,13 +69,13 @@ class ReservationViewApis(
 
     @action(detail=True, name="Reservation Progression")
     def progression(self, request, pk):
-        result = reservation_progression(session=pk)
+        result = apis_info.progression(session=pk)
         return self.get_info_responce(result)
 
     @action(detail=True, methods=["get"], name="Servation Complted")
     def complete(self, request, pk):
         """ get and check if the reservation is finiched"""
-        result = reservation_completed(session=pk)
+        result = apis_info.completed(session=pk)
         return self.get_info_responce(result)
 
     @action(detail=False, name="Search journey")

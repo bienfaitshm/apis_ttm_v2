@@ -1,6 +1,9 @@
 from rest_framework import serializers
-from ..models import (Passenger, JourneyClientFolder, Client,
-                      OtherInfoReservation, JourneySession, SeletectedJourney)
+
+from ..models import (
+    Client, JourneyClientFolder, JourneySession, OtherInfoReservation,
+    Passenger, Reservation,
+)
 
 # from django.contrib.auth.middleware import AuthenticationMiddleware
 # from django.contrib.sessions.middleware import SessionMiddleware

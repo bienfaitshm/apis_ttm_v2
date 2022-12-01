@@ -14,7 +14,7 @@ from utils.times import get_date_expiration
 
 from ..models import (
     JourneyClientFolder, JourneySession, OtherInfoReservation, Passenger,
-    SeletectedJourney as Reservation,
+    Reservation,
 )
 from .exceptions import MessageExpection
 
@@ -270,7 +270,7 @@ class ReservationServices:
         if pnr_creator and journey:
             pnr = pnr_creator()
             session = self.create_session(date_dep=journey.datetime_from)
-            select = client_model.SeletectedJourney.objects.create(
+            select = client_model.Reservation.objects.create(
                 pnr=pnr,
                 session=session,
                 journey_class=j_cls,
