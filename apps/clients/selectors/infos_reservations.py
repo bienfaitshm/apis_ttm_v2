@@ -1,6 +1,6 @@
 import contextlib
 
-from collections import OrderedDict
+from collections import OrderedDict, namedtuple
 from dataclasses import dataclass, field
 from typing import (
     Any, Callable, List, Literal, Optional, Protocol, Tuple, Union,
@@ -9,8 +9,9 @@ from typing import (
 from django.db import models
 
 from apps.clients import models as c_models
+from apps.clients.anotate import APassenger
 from apps.clients.message import InfoJourneyMessage
-from apps.clients.models import OtherInfoReservation, Reservation
+from apps.clients.models import OtherInfoReservation, Passenger, Reservation
 from apps.clients.selectors.selectors import (
     PriceSelector, PriceSelectorProtocol,
 )
@@ -32,11 +33,40 @@ class TicketSender(Protocol):
     def send_ticket(self, *args, **kwargs) -> None: ...
 
 
+# Progression object
+Progression = namedtuple("Progression", [
+    "adult", "child", "inf", "step", "passengers"
+])
+
+
 class StepReservation:
     SELECT = 0
     PASSENGER = 1
     OTHER_INFO = 2
     CONFIRMATION = 3
+
+
+@dataclass
+class PassengersQueries:
+    tarif: PriceSelectorProtocol
+    model = Passenger
+    related = ("journey__journey",)
+
+    def queryset(self):
+        return self.model.objects.all()
+
+    def anotate(self) -> dict:
+        return {
+            APassenger.TAXE: self.tarif.get_taxe_price(),
+            APassenger.DEVISE: self.tarif.get_device(),
+            Passenger.CHILD: self.tarif.get_child_unit_price(),
+            Passenger.ADULT: self.tarif.get_adult_unit_price(),
+            Passenger.BABY: self.tarif.get_inf_unit_price()
+        }
+
+    def passengers_infos(self, reservation) -> Any:
+        return self.queryset().filter(journey=reservation)\
+            .annotate(**self.anotate())
 
 
 @dataclass
@@ -52,6 +82,8 @@ class ReservationQuery:
     )
     prefetch = ()
 
+    # passengers queries
+    passengers: PassengersQueries
     tarif: PriceSelectorProtocol
     queryset: models.QuerySet[Reservation]
     reservation: Reservation = field(init=False)
@@ -76,14 +108,15 @@ class ReservationQuery:
 
     def get_passengers(self) -> list:
         """ list of passengers of reservations."""
-        if (
-            hasattr(self.reservation, "passengers") and
-            hasattr(self.reservation.passengers,
-                    "select_related")  # type: ignore
-        ):
-            # type: ignore
-            return self.reservation.passengers.select_related("passenger_ticket")
-        return []
+        return self.passengers.passengers_infos(reservation=self.reservation)
+        # if (
+        #     hasattr(self.reservation, "passengers") and
+        #     hasattr(self.reservation.passengers,
+        #             "select_related")  # type: ignore
+        # ):
+        #     # type: ignore
+        #     return self.reservation.passengers.select_related("passenger_ticket")
+        # return []
 
     def get_other_info(self) -> Optional[OtherInfoReservation]:
         with contextlib.suppress(OtherInfoReservation.DoesNotExist):
@@ -134,7 +167,15 @@ class InfoReservation:
         return False
 
     def reservation_progression(self):
-        return self.queryset.reservation
+        """return the progression of reservation"""
+        progression = self.queryset.reservation
+        return Progression(
+            adult=progression.adult,
+            child=progression.child,
+            inf=progression.baby,
+            step=progression.step,
+            passengers=self.queryset.get_passengers()
+        )
 
     def info_journey_message(self) -> str:
         if info := self.queryset.get_journey():
@@ -191,7 +232,7 @@ class InfoReservation:
             ) for passenger in tmp_passengers
         ]
 
-        completed = OrderedDict(
+        return OrderedDict(
             booker=self.booker(),
             total_price=self.total_price(),
             text_reservation=self.info_journey_message(),
@@ -199,8 +240,8 @@ class InfoReservation:
             pnr=self.reservation.pnr,
             passengers=passengers,
         )
-        self.send_ticket(to=self.reservation.other_info.email)
-        return completed
+        # self.send_ticket(to=self.reservation.other_info.email)
+        # return completed
 
     def send_ticket(self, *args, **kwargs):
         """ sending ticket to booker"""
@@ -234,6 +275,13 @@ apis_info = InfoReservationInterface(
         ticket_sender=SendTicket,
         price_sys=PriceSystem(),
         queryset=ReservationQuery(
+            passengers=PassengersQueries(
+                tarif=PriceSelector(
+                    queryset=JourneyTarif.objects.filter(
+                        route=models.OuterRef("journey__journey__route")
+                    )
+                )
+            ),
             queryset=Reservation.objects.all(),
             tarif=PriceSelector(
                 queryset=JourneyTarif.objects.filter(

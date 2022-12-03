@@ -5,6 +5,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from apps.account.models import Client, PersonalMixin
+from apps.clients.anotate import APassenger
 from apps.dash.models.technique import Seat
 from apps.dash.models.transport import (
     CoverCity, Journey, JourneyClass, Routing,
@@ -197,6 +198,27 @@ class Passenger(PersonneGenderBase, PersonalMixin):
         choices=_PASSENGER_TYPE,
         default=ADULT
     )
+
+    @property
+    def taxe(self):
+        return getattr(self, APassenger.TAXE, 0.0)
+
+    @property
+    def devise(self):
+        return getattr(self, APassenger.DEVISE, "CDF")
+
+    @property
+    def price(self):
+        return getattr(self, self.typeUser, 0.0)
+
+    @property
+    def taxe_price(self):
+        return (self.taxe * self.price / 100)
+
+    @property
+    def pttc(self):
+        """ prix toutes taxe confondu"""
+        return self.price + self.taxe_price
 
 
 class PlaceReserved(BaseModel):

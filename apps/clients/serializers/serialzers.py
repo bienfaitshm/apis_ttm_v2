@@ -8,8 +8,8 @@ from django.conf import settings
 from rest_framework import exceptions, serializers
 
 from apps.clients import models as client_model
+from apps.clients.models import Passenger
 from apps.clients.serializers.validators import journey_expired_validator
-from apps.clients.services import reservations_services as r_services
 from apps.clients.services.reservation import reservation_apis_service
 from apps.dash import models as dash_model
 from utils import fields
@@ -43,12 +43,23 @@ class PassengerSerializer(serializers.ModelSerializer):
     """passengers info with price information"""
     taxe = serializers.FloatField(default=0.0)
     price = serializers.FloatField(default=0.0)
+    pttc = serializers.FloatField(default=0.0)
+    taxe_price = serializers.FloatField(default=0.0)
     devise = serializers.ChoiceField(choices=default_device, default="CDF")
+    cls_name = serializers.CharField(required=False, default=None)
 
     class Meta:
-        model = client_model.Passenger
+        model = Passenger
         fields = "__all__"
-        read_only_fields = ["journey", "taxe", "price", "devise"]
+        read_only_fields = [
+            "journey",
+            "taxe",
+            "price",
+            "pttc",
+            "taxe_price",
+            "devise",
+            "cls_name"
+        ]
 
 
 class JPassengersDataSerializer(serializers.Serializer):
@@ -150,7 +161,8 @@ class R_OtherInfoSerializer(CreatorServiceSerializerMixin, serializers.ModelSeri
 
     def action(self, validated_data: Dict[str, Any]):
         session = validated_data.pop("session")
-        return reservation_apis_service.other_info({"journey": session, **validated_data})
+        print(validated_data, session)
+        return reservation_apis_service.other_info(journey=session, **validated_data)
 
 
 class RCompletedSerializer(serializers.Serializer):

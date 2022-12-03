@@ -5,7 +5,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link href="{% static 'dist/output.css' %}" rel="stylesheet" />
+        {% comment %} <link href="{% static 'dist/output.css' %}" rel="stylesheet" /> {% endcomment %}
     </head>
     <style>
         /*
@@ -87,10 +87,7 @@ hr {
 Add the correct text decoration in Chrome, Edge, and Safari.
 */
 
-abbr:where([title]) {
-  -webkit-text-decoration: underline dotted;
-          text-decoration: underline dotted;
-}
+
 
 /*
 Remove the default font size and weight for headings.
@@ -786,7 +783,7 @@ video {
 
 .border-slate-600 {
   --tw-border-opacity: 1;
-  border-color: rgb(71 85 105 / var(--tw-border-opacity));
+  border-color: rgba(71,85,105,1);
 }
 
 .border-slate-700 {
@@ -796,7 +793,7 @@ video {
 
 .border-gray-800 {
   --tw-border-opacity: 1;
-  border-color: rgb(31 41 55 / var(--tw-border-opacity));
+  border-color: rgb(31,41,55,1);
 }
 
 .bg-blue-600 {
@@ -949,7 +946,7 @@ video {
 .underline {
   text-decoration-line: underline;
 }
-    </style>
+</style>
     <body>
         <main class="container max-w-4xl m-auto my-20">
             <div>
@@ -961,7 +958,7 @@ video {
                     </div>
                     <div class="text-right flex flex-col items-end text-gray-600">
                         <label class="font-bold text-3xl text-gray-800"
-                            >Reservation-2019-79</label
+                            >Code Reservation : {{pnr}}</label
                         >
                         <label class="block text-gray-600 my-2"
                             >Date de reservation: samedi, le 30/12/2019</label
@@ -1013,106 +1010,109 @@ video {
                           </tr>
                         </thead class="border-b">
                         <tbody>
+                          
+                          {% for passenger in passengers %}
                             <tr class="bg-white border-b">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    Kilumba shomari speaker
-                                </td>
-                                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                    23/03/1995
-                                </td>
-                                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                    AD
-                                </td>
-                                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                    200CDF
-                                </td>
-                                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                    20%
-                                </td>
-                                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                    1200CDF
-                                </td>
-                            </tr class="bg-white border-b">
-                            <tr class="bg-white border-b">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    Kilumba shomari speaker
-                                </td>
-                                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                    23/03/1995
-                                </td>
-                                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                    AD
-                                </td>
-                                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                    200CDF
-                                </td>
-                                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                    20%
-                                </td>
-                                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                    1200CDF
-                                </td>
-                            </tr class="bg-white border-b">
-                            <tr class="bg-white border-b">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    Kilumba shomari speaker
-                                </td>
-                                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                    23/03/1995
-                                </td>
-                                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                    AD
-                                </td>
-                                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                    200CDF
-                                </td>
-                                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                    20%
-                                </td>
-                                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                    1200CDF
-                                </td>
-                            </tr class="bg-white border-b">
-                            <tr class="bg-white border-b">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    Kilumba shomari speaker
-                                </td>
-                                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                    23/03/1995
-                                </td>
-                                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                    AD
-                                </td>
-                                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                    200CDF
-                                </td>
-                                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                    20%
-                                </td>
-                                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                    1200CDF
-                                </td>
-                            </tr class="bg-white border-b">
-                            <tr class="bg-white border-b">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    Kilumba shomari speaker
-                                </td>
-                                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                    23/03/1995
-                                </td>
-                                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                    AD
-                                </td>
-                                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                    200CDF
-                                </td>
-                                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                    20%
-                                </td>
-                                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                    1200CDF
-                                </td>
-                            </tr class="bg-white border-b">
+                              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {{passenger.name}}
+                              </td>
+                              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                  23/03/1995
+                              </td>
+                              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                  AD
+                              </td>
+                              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                  200CDF
+                              </td>
+                              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                  20%
+                              </td>
+                              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                  1200CDF
+                              </td>
+                          </tr class="bg-white border-b">
+                          <tr class="bg-white border-b">
+                              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                  Kilumba shomari speaker
+                              </td>
+                              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                  23/03/1995
+                              </td>
+                              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                  AD
+                              </td>
+                              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                  200CDF
+                              </td>
+                              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                  20%
+                              </td>
+                              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                  1200CDF
+                              </td>
+                          </tr class="bg-white border-b">
+                          <tr class="bg-white border-b">
+                              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                  Kilumba shomari speaker
+                              </td>
+                              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                  23/03/1995
+                              </td>
+                              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                  AD
+                              </td>
+                              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                  200CDF
+                              </td>
+                              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                  20%
+                              </td>
+                              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                  1200CDF
+                              </td>
+                          </tr class="bg-white border-b">
+                          <tr class="bg-white border-b">
+                              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                  Kilumba shomari speaker
+                              </td>
+                              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                  23/03/1995
+                              </td>
+                              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                  AD
+                              </td>
+                              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                  200CDF
+                              </td>
+                              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                  20%
+                              </td>
+                              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                  1200CDF
+                              </td>
+                          </tr class="bg-white border-b">
+                          <tr class="bg-white border-b">
+                              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                  Kilumba shomari speaker
+                              </td>
+                              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                  23/03/1995
+                              </td>
+                              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                  AD
+                              </td>
+                              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                  200CDF
+                              </td>
+                              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                  20%
+                              </td>
+                              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                  1200CDF
+                              </td>
+                          </tr class="bg-white border-b">
+                          {% endfor %}
                         </tbody>
                       </table>
                 </div>
@@ -1139,7 +1139,7 @@ video {
             <div class="flex flex-col items-center text-center text-gray-500 text-sm mt-20">
                 <div class="font-bold text-gray-800 text-md">Ttm reservation</div>
                 <div class="block">12, rue rdc</div>
-                <div class="block">Numero de reservation:23399929837</div>
+                <div class="block">Numero de reservation : {{pnr}}</div>
                 <div class="block">Veiller confirmer votre reservation avant l'Echeance</div>
             </div>
         </main>

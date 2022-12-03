@@ -161,7 +161,8 @@ class ReservationQuery(IQueryReservation):
     def other_info(self, journey: Journey, *args, **kwargs) -> TTReturn:
         """adding creating other info"""
         other_info = self.other_info_model.objects.filter(journey=journey)
-        return (False, other_info.first()) if other_info.exists() else (True, self.other_info_model.objects.create(*args, **kwargs))
+        return (False, other_info.first()) if other_info.exists() else (
+            True, self.other_info_model.objects.create(journey=journey, *args, **kwargs))
 
 
 @dataclass
@@ -190,6 +191,10 @@ class ActionReservation:
     res_field_name = "reservation"
     number_by_type_of_user: NumberOfPassengersByType
     query: IQueryReservation
+
+    def download_ticket(self, *args, **kwargs) -> tuple:
+        print("dowload ticket......")
+        return None,
 
     def void(self, *args, **kwargs) -> bool:
         """ void a reservation"""
@@ -241,6 +246,9 @@ class ReservationApisService:
 
     def splite(self, *args, **kwargs):
         return self.actions.splite(*args, **kwargs)
+
+    def download_ticket(self, *args, **kwargs):
+        return None
 
 
 query_res = ReservationQuery(

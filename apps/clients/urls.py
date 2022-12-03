@@ -4,19 +4,26 @@ from rest_framework.routers import DefaultRouter
 from apps.clients.views.actions import SplitFolderView, VoidSelectedJourneyView
 
 from .views import views as ActionView
+from .views.actions import ActionViewApis
 from .views.reservation import ReservationViewApis
 
 router = DefaultRouter()
 router.register(
     prefix=r"reservations",
     viewset=ReservationViewApis,
+    basename="reservations"
+)
+
+router.register(
+    prefix=r"actions/reservations",
+    viewset=ActionViewApis,
     basename="reservations_actions"
 )
 
 router.register(
     r"actions/reservations",
     ActionView.SeletectedJourneyView,
-    basename="reservations"
+    basename="reservations2"
 )
 router.register(
     r'actions/passengers',
@@ -38,24 +45,5 @@ urlpatterns = [
     ),
 
     path("template/ticket", ActionView.TicketTemplateView.as_view())
-    # path(
-    #     "reservation/search/",
-    #     ReachercheJourneyReservationView.as_view(),
-    #     name="search_journey_reservation"
-    # ),
-    # path(
-    #     "reservation/select/",
-    #     SelectJourneyreservationView.as_view(),
-    #     name="select_journey"
-    # ),
-    # path(
-    #     "reservation/passengers/",
-    #     PassengerJourneyReservationView.as_view(),
-    #     name="passengers_journey"
-    # ),
-    # path(
-    #     "reservation/other_info/",
-    #     OtherInfoReservationView.as_view(),
-    #     name="other_info_journey"
-    # ),
+
 ]+router.urls
