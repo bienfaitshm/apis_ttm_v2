@@ -38,7 +38,7 @@ flowchart LR
 
 # Diangramme Design last update
 
-la comision est valable si une entreprise vent pour un autre entreprise (en %)
+la comision est valable si une entreprise vent pour une autre entreprise (en %)
 ### NB (en %)
 frais des services
 taxe
